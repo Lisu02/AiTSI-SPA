@@ -39,12 +39,21 @@ public class PreProc {
             }
 
             for(int i=1;i<tmp.length;i++) {
-                if(Character.isLetter(tmp[i].charAt(0))) {
+                if(!Character.isLetter(tmp[i].charAt(0))) {
                     throw new InvalidQueryException("Invalid synonym name: " + tmp[i]);
                 }
                 synonyms.put(tmp[i],tmp[0]);
             }
         }
+
+//        How we will validate relations arguments
+//        RelationSignature rs = relations.get("Modifies");
+//        if(!rs.isArg1TypeAllowed(synonyms.get("a"))) {
+//            throw new InvalidQueryException("Invalid argument: " + synonyms.get("a"));
+//        }
+//        else {
+//            System.out.println("valid argument");
+//        }
 
         System.out.println(synonyms);
 //        System.out.println(queryArguments);
