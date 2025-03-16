@@ -8,7 +8,7 @@ public class QueryController {
     public static void main(String[] args) {
         QueryTree queryTree = null;
         try {
-            queryTree = preProc.parseQuery("stmt s1; Select s1 such that Follows (s1, 2)");
+            queryTree = preProc.parseQuery("stmt s1,s2; assign a; Select s1 such that Follows (s1, 2)");
         } catch (InvalidQueryException e) {
             System.out.println(e.getMessage());
         }
