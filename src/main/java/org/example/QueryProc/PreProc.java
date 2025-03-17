@@ -31,11 +31,9 @@ public class PreProc {
         String queryBody = queryElements.get(queryElements.size()-1);
 
         Map<String,String> synonyms = separateSynonyms(queryArguments);
-        System.out.println(synonyms);
 
 //        System.out.println(queryArguments);
         String[] bodyElements = Arrays.stream(queryBody.split("(?=\\b(such that|with)\\b)")).filter(e->!e.isBlank()).toArray(String[]::new);
-        System.out.println(Arrays.toString(bodyElements));
 
         String[] returnValues = Arrays.stream(bodyElements[0]
                         .split("[ ,]"))
@@ -72,10 +70,14 @@ public class PreProc {
         validateSuchThatStatements(suchThatStatements,synonyms);
         validateWithStatements(withStatements,synonyms);
 
-        return crateQueryTree(query);
+        System.out.println(synonyms);
+        System.out.println(Arrays.toString(returnValues));
+        suchThatStatements.forEach(e->System.out.println(Arrays.toString(e)));
+        withStatements.forEach(e->System.out.println(Arrays.toString(e)));
+
+        return new QueryTree(synonyms,returnValues,suchThatStatements,withStatements);
     }
     private Map<String,String> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
-        //creating synonym map (separate them, so they can be easily used)
         Map<String,String> synonyms = new HashMap<>();
         for(String element : queryArguments) {
             String[] tmp = Arrays.stream(element
@@ -110,17 +112,23 @@ public class PreProc {
                 else if(relation[i].charAt(0) == '"' && relation[i].charAt(relation[i].length()-1) == '"') {
                     type[i-1] = "string";
                 }
+                else if(relation[i].equals("_")) {
+                    type[i-1] = "_";
+                }
                 else {
                     type[i-1] = synonyms.get(relation[i]);
                 }
+
+                if(type[i-1] == null) {
+                    throw new InvalidQueryException("Synonym " + relation[i] + " not found");
+                }
             }
-            if(signature.isArg1TypeAllowed(type[0])) {
+            if(!signature.isArg1TypeAllowed(type[0])) {
                 throw new InvalidQueryException("Incorrect argument type: " + relation[1] + " - " + type[0] + " in relation " + relation[0]);
             }
-            else if(signature.isArg2TypeAllowed(type[1])) {
+            else if(!signature.isArg2TypeAllowed(type[1])) {
                 throw new InvalidQueryException("Incorrect argument type: " + relation[2] + " - " + type[1] + " in relation " + relation[0]);
             }
-            System.out.println(signature);
         }
     }
     private void validateWithStatements(List<String[]> withStatements, Map<String,String> synonyms) throws InvalidQueryException {
@@ -135,14 +143,14 @@ public class PreProc {
             if((statement[1].equals("procName") || statement[1].equals("valName")) &&
                     (statement[2].charAt(0) != '"' || statement[2].charAt(statement[2].length()-1) != '"')) {
 
-                throw new InvalidQueryException("Incorrect type :" + statement[2] + ". Type should be string");
+                throw new InvalidQueryException("Incorrect type " + statement[2] + ". Type should be string");
             }
-            else if(!statement[2].matches("\\d+")) {
-                throw new InvalidQueryException("Incorrect type :" + statement[2] + ". Type should be integer");
+            else if((statement[1].equals("value") || statement[1].equals("stmt#")) && !statement[2].matches("\\d+")) {
+                throw new InvalidQueryException("Incorrect type " + statement[2] + ". Type should be integer");
             }
         }
     }
-    private QueryTree crateQueryTree(String query) {
-        return new QueryTree();
-    }
+//    private QueryTree crateQueryTree(String query) {
+//        return new QueryTree();
+//    }
 }
