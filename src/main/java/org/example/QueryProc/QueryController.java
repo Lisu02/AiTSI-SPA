@@ -13,8 +13,7 @@ public class QueryController {
         } catch (InvalidQueryException e) {
             System.out.println(e.getMessage());
         }
-//        String result = evaluator.evaluateQuery(queryTree);
-//        System.out.println(result);
+        System.out.println(queryTree);
     }
 
 }

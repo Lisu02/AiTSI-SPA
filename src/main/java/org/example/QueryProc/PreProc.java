@@ -32,7 +32,6 @@ public class PreProc {
 
         Map<String,String> synonyms = separateSynonyms(queryArguments);
 
-//        System.out.println(queryArguments);
         String[] bodyElements = Arrays.stream(queryBody.split("(?=\\b(such that|with)\\b)")).filter(e->!e.isBlank()).toArray(String[]::new);
 
         String[] returnValues = Arrays.stream(bodyElements[0]
@@ -40,7 +39,6 @@ public class PreProc {
                 .filter(s->!s.isBlank())
                 .toArray(String[]::new);
 
-//        System.out.println(Arrays.toString(returnValues));
         if(!returnValues[0].equals("Select") && !returnValues[0].equals("Boolean")) {
             throw new InvalidQueryException("Missing Select: " + query);
         }
@@ -64,16 +62,9 @@ public class PreProc {
                 withStatements.add(tmp);
             }
         }
-//        System.out.println("such that:" + suchThatStatements);
-//        System.out.println("with:" + Arrays.toString(withStatements.get(0)));
 
         validateSuchThatStatements(suchThatStatements,synonyms);
         validateWithStatements(withStatements,synonyms);
-
-        System.out.println(synonyms);
-        System.out.println(Arrays.toString(returnValues));
-        suchThatStatements.forEach(e->System.out.println(Arrays.toString(e)));
-        withStatements.forEach(e->System.out.println(Arrays.toString(e)));
 
         return new QueryTree(synonyms,returnValues,suchThatStatements,withStatements);
     }
@@ -150,7 +141,4 @@ public class PreProc {
             }
         }
     }
-//    private QueryTree crateQueryTree(String query) {
-//        return new QueryTree();
-//    }
 }
