@@ -1,5 +1,6 @@
 package org.example.PKB;
 //sprawdzic z tymi public bo nie jestem pewien czy dobrze :/
+//sprawdzic czy wszystkie metody w API
 public class PKB {
     private final VarTable varTable = new VarTable();
     private final AST ast = new AST();
