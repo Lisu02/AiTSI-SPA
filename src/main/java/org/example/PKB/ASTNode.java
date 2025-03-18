@@ -6,7 +6,6 @@ import java.util.*;
 
 public class ASTNode {
     //Chyba nic nie pominalem ale sprawdzcie Damian i Lewy
-    enum EntityType { PROGRAM, PROCEDURE, STMTLIST, STMT, ASSIGN, CALL, WHILE, IF, PLUS, MINUS, TIMES, VARIABLE, CONSTANT }
 
     private final EntityType type;
     private final String value;
