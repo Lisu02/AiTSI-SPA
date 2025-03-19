@@ -1,7 +1,7 @@
 procedure First {
     x = 0;
     y =      6;
-    while (x < 5)
+    while x
     {
         x = x
         + 1;
