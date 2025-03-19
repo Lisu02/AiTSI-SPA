@@ -1,6 +1,6 @@
 package org.example.PKB;
 
-public    enum EntityType {
+public enum EntityType {
     PROGRAM,
     PROCEDURE,
     STMTLIST,

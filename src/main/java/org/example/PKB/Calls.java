@@ -2,7 +2,7 @@ package org.example.PKB;
 
 import java.util.*;
 
-class Calls {
+public class Calls {
     private final Map<String, Set<String>> callsMap = new HashMap<>();
 
     public void setCalls(String caller, String callee) {

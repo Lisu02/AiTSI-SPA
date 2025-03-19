@@ -2,7 +2,7 @@ package org.example.PKB;
 
 import java.util.*;
 
-class Modifies {
+public class Modifies {
     private final Map<Integer, Set<String>> modifiesStmt = new HashMap<>();
     private final Map<String, Set<String>> modifiesProc = new HashMap<>();
 

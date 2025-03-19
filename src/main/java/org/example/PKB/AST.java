@@ -1,6 +1,6 @@
 package org.example.PKB;
 
-class AST {
+public class AST {
     private ASTNode root;
 
     public void setRoot(ASTNode root) {

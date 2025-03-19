@@ -3,7 +3,7 @@ package org.example.PKB;
 import java.util.HashMap;
 import java.util.Map;
 
-class VarTable {
+public class VarTable {
     private final Map<String, Integer> varMap = new HashMap<>();
     private int indexCounter = 0;
 
