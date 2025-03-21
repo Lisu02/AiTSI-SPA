@@ -16,7 +16,7 @@ public class TokenizerTest {
 
     @BeforeEach
     void init(){
-        tokenizer = new Tokenizer();
+        tokenizer = Tokenizer.getInstance();
     }
 
     @Test
