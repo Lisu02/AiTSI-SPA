@@ -1,4 +1,4 @@
-package org.example.PKB;
+package org.example.PKB.Old;
 
 class AST {
     private ASTNode root;
