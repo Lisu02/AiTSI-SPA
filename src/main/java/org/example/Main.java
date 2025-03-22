@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.PKB.PKB;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
@@ -11,7 +13,6 @@ public class Main {
         Scanner consoleScaner = new Scanner(System.in);
         Scanner fileScanner = new Scanner(new FileReader("SimpleFirst.txt"));
         String userWord = consoleScaner.nextLine();
-
         String[] wordArray = userWord.split(" ");
         for (String word : wordArray) {
             getWord(word);
@@ -26,11 +27,15 @@ public class Main {
             if(wordBytes[wordBytes.length-1] == 10) {counter++;}
         }
         System.out.println("User word: " + userWord);
+
+
     }
+
     private static void getWord(String wordPart){
         switch (wordPart){
             case "SELECT" -> System.out.println("selekcik");
             case "FROM" -> System.out.println("Frommm");
         }
     }
+
 }
