@@ -26,6 +26,10 @@ public abstract class ASTNode implements TNode {
         return parent;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public abstract Attr getAttr();
     public abstract int setNextChild(ASTNode child);
     public abstract List<ASTNode> getChildren();
