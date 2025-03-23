@@ -72,9 +72,6 @@ public abstract class ASTCheckers extends ASTFollows {
         if(checkIfEntityIsWhileOrIf(astNode1))
         {
             while (parent != null) {
-                if (parent.getId() < astNode2.getId()) {
-                    break;
-                }
                 if (checkIfEntityIsWhileOrIf(parent)) {
                     if (parent == astNode1) {
                         return true;
@@ -88,12 +85,5 @@ public abstract class ASTCheckers extends ASTFollows {
         return false;
     }
 
-    private boolean checkIfEntityIsWhileOrIf(ASTNode n1)
-    {
-        if(n1.getEntityType()==EntityType.WHILE || n1.getEntityType()==EntityType.IF)
-        {
-            return true;
-        }
-        return false;
-    }
+
 }
