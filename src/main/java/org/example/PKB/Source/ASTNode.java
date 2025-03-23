@@ -34,5 +34,5 @@ public abstract class ASTNode implements TNode {
     public abstract int setNextChild(ASTNode child);
     public abstract List<ASTNode> getChildren();
     public abstract ASTNode getChild(int num);
-
+    public abstract int getChildCount();
 }
