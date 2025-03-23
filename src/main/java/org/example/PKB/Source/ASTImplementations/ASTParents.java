@@ -95,7 +95,7 @@ public abstract class ASTParents extends ASTLinks {
             }
         }
     }
-    public boolean checkIfEntityIsWhileOrIf(ASTNode n1)
+    protected boolean checkIfEntityIsWhileOrIf(ASTNode n1)
     {
         if(n1.getEntityType()== EntityType.WHILE || n1.getEntityType()==EntityType.IF)
         {
