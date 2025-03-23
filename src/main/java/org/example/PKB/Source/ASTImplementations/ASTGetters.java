@@ -3,21 +3,24 @@ package org.example.PKB.Source.ASTImplementations;
 import org.example.PKB.API.Attr;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.TNode;
+import org.example.PKB.Source.ASTNode;
 
 public abstract class ASTGetters extends ASTFactory {
     public TNode getRoot()
     {
-        return null; // To be implemented...
+        return root;
     }
 
     public EntityType getType(TNode node)
     {
-        return null; // To be implemented...
+        ASTNode astNode = (ASTNode) node;
+        return astNode.getEntityType();
     }
 
     public Attr getAttr(TNode node)
     {
-        return null; // To be implemented...
+        ASTNode astNode = (ASTNode) node;
+        return astNode.getAttr();
     }
 
 }
