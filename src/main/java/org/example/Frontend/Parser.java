@@ -34,7 +34,7 @@ public class Parser {
         statementNumber = 0;
     }
 
-    void checkToken(String token) {
+    public void checkToken(String token) {
         if (tokenIterator.hasNext()) {
             if (nextToken.equals(token)) {
                 nextToken = tokenIterator.next();
