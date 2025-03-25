@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ASTParents extends ASTLinks {
+public abstract class ASTParents extends ASTSetters {
     public TNode getParent(TNode c)
     {
         ASTNode astNode = (ASTNode)c;

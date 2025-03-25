@@ -4,7 +4,7 @@ import org.example.PKB.API.LinkType;
 import org.example.PKB.API.TNode;
 import org.example.PKB.Source.ASTNode;
 // chyba trzeba zmienic hierarchie
-public abstract class ASTLinks extends ASTSetters {
+public abstract class ASTLinks extends ASTCheckers {
     public TNode getFirstChild(TNode p)
     {
         ASTNode astNode = (ASTNode) p;

@@ -1,7 +1,7 @@
 package org.example.PKB.Source;
 
-import org.example.PKB.Source.ASTImplementations.ASTCheckers;
+import org.example.PKB.Source.ASTImplementations.ASTLinks;
 
-public class AST extends ASTCheckers {
+public class AST extends ASTLinks {
     // Duża szansa, że tu nic nie będzie poza jakimś prostym konstruktorem!
 }
