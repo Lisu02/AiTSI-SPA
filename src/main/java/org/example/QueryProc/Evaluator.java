@@ -5,5 +5,4 @@ public class Evaluator {
     public String evaluateQuery(QueryTree queryTree) {
         return "query result";
     }
-
 }

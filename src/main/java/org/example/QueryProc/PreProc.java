@@ -8,27 +8,15 @@ public class PreProc {
     private final Set<String> entities = Set.of(
             "procedure", "stmtLst", "stmt", "assign", "if", "while"
     );
-    private final Map<String, RelationSignature> relationsDefinition = Map.of(
-            "Follows", new RelationSignature(Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line")),
-            "Follows*", new RelationSignature(Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line")),
-            "Parent", new RelationSignature(Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line")),
-            "Parent*", new RelationSignature(Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line")),
-            "Modifies", new RelationSignature(Set.of("procedure", "prog_line", "stmt", "assign", "call", "while", "if", "string", "integer"),
-                    Set.of("variable", "string", "_")),
-            "Modifies*", new RelationSignature(Set.of("procedure", "prog_line", "stmt", "assign", "call", "while", "if", "string", "integer"),
-                    Set.of("variable", "string", "_")),
-            "Uses", new RelationSignature(Set.of("procedure", "stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("variable", "_", "string")),
-            "Uses*", new RelationSignature(Set.of("procedure", "stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("variable", "_", "string")),
+    private final Map<String, RelationSignature> relations = Map.of(
             "Calls", new RelationSignature(Set.of("procedure", "_", "string"),
                     Set.of("procedure", "_", "string")),
+
             "Calls*", new RelationSignature(Set.of("procedure", "_", "string"),
-                    Set.of("procedure", "_", "string"))
+                    Set.of("procedure", "_", "string")),
+
+            "Modifies", new RelationSignature(Set.of("procedure", "prog_line", "stmt", "assign", "string", "integer"),
+                    Set.of("variable", "string", "_"))
     );
     private static final Map<String, Set<String>> attributes = Map.of(
             "procName", Set.of("procedure", "call"),
@@ -46,17 +34,17 @@ public class PreProc {
 
         String[] bodyElements = Arrays.stream(queryBody.split("(?=\\b(such that|with)\\b)")).filter(e->!e.isBlank()).toArray(String[]::new);
 
-        List<String> returnValues = Arrays.stream(bodyElements[0]
+        String[] returnValues = Arrays.stream(bodyElements[0]
                         .split("[ ,]"))
                 .filter(s->!s.isBlank())
-                .toList();
+                .toArray(String[]::new);
 
-        if(!returnValues.get(0).equals("Select") && !returnValues.get(0).equals("Boolean")) {
+        if(!returnValues[0].equals("Select") && !returnValues[0].equals("Boolean")) {
             throw new InvalidQueryException("Missing Select: " + query);
         }
-        for (int i=1;i<returnValues.size();i++) {
-            if(!synonyms.containsKey(returnValues.get(i))) {
-                throw new InvalidQueryException("Not recognize synonym: " + returnValues.get(i));
+        for (int i=1;i<returnValues.length;i++) {
+            if(!synonyms.containsKey(returnValues[i])) {
+                throw new InvalidQueryException("Not recognize synonym: " + returnValues[i]);
             }
         }
 
@@ -75,12 +63,10 @@ public class PreProc {
             }
         }
 
-        suchThatStatements.forEach(s->System.out.println(Arrays.toString(s)));
-
-        List<Relation> relations = validateSuchThatStatements(suchThatStatements,synonyms);
+        validateSuchThatStatements(suchThatStatements,synonyms);
         validateWithStatements(withStatements,synonyms);
 
-        return new QueryTree(synonyms,returnValues,relations,withStatements);
+        return new QueryTree(synonyms,returnValues,suchThatStatements,withStatements);
     }
     private Map<String,String> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
         Map<String,String> synonyms = new HashMap<>();
@@ -103,10 +89,9 @@ public class PreProc {
         }
         return synonyms;
     }
-    private List<Relation> validateSuchThatStatements(List<String[]> suchThatStatements, Map<String,String> synonyms) throws InvalidQueryException {
-        List<Relation> relations = new ArrayList<>();
+    private void validateSuchThatStatements(List<String[]> suchThatStatements, Map<String,String> synonyms) throws InvalidQueryException {
         for(String[] relation : suchThatStatements) {
-            RelationSignature signature = relationsDefinition.get(relation[0]);
+            RelationSignature signature = relations.get(relation[0]);
             if(signature == null) {
                 throw new InvalidQueryException("Incorrect relation name: " + relation[0]);
             }
@@ -135,9 +120,7 @@ public class PreProc {
             else if(!signature.isArg2TypeAllowed(type[1])) {
                 throw new InvalidQueryException("Incorrect argument type: " + relation[2] + " - " + type[1] + " in relation " + relation[0]);
             }
-            relations.add(new Relation(relation[0],new Argument(relation[1],type[0]),new Argument(relation[2],type[1])));
         }
-        return relations;
     }
     private void validateWithStatements(List<String[]> withStatements, Map<String,String> synonyms) throws InvalidQueryException {
         for(String[] statement : withStatements) {
