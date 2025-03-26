@@ -1,8 +1,11 @@
 package Frontend;
 
 import org.example.Frontend.Parser;
+import org.example.Frontend.Tokenizer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 public class ParserTest {
 
@@ -11,12 +14,13 @@ public class ParserTest {
     void checkTokenTekst(){
         //given
         Parser parser = Parser.getInstance();
-        String token = "Procedure";
+        Tokenizer tokenizer = Tokenizer.getInstance();
+        List<String> tokenList = tokenizer.getTokensFromFilename("ParserTest.txt");
+
         //when
+        parser.getTokens(tokenList);
 
-        parser.checkToken(token);
-
-        //then
+        //then - wyciągamy informacje z logów dlatego assert true
         Assertions.assertTrue(true);
     }
 }

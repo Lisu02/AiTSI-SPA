@@ -1,7 +1,10 @@
 package org.example.Frontend;
 
+import org.example.Exceptions.ASTBuildException;
+import org.example.PKB.API.*;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +12,7 @@ import java.util.regex.Pattern;
 public class Parser {
 
     Logger log = Logger.getLogger(Parser.class.getName());
+    IASTImplementationFrontend iast = new IASTImplementationFrontend();
 
     //Singleton
     private static Parser parserInstance = null;
@@ -27,11 +31,12 @@ public class Parser {
     private List<String> tokens;
     private Iterator<String> tokenIterator;
 
-    void getTokens(List<String> tokens_out) {
+    public void getTokens(List<String> tokens_out) {
         tokens = tokens_out;
         tokenIterator = tokens.iterator();
         nextToken = tokenIterator.next();
         statementNumber = 0;
+        program();
     }
 
     public void checkToken(String token) {
@@ -50,89 +55,193 @@ public class Parser {
                 Pattern pattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
                 Matcher matcher = pattern.matcher(nextToken);
                 if (!matcher.matches()) {
-                    log.severe("String podany w linii " + statementNumber + " nie jest prawidłową nazwą.");
+                    log.severe("String "+ nextToken+" podany w linii " + statementNumber + " nie jest prawidłową nazwą.");
                 }
             } else {
-                log.severe("Nieprawidłowy token w linii" + statementNumber);
+                log.severe("Nieprawidłowy token w linii " + statementNumber +" oczekiwano "+token+", a otrzymano"+nextToken);
             }
         } else {
-            log.severe("Za mało tokenów");
+            log.info("Koniec tokenow - checkToken.hasNext()");
         }
     }
-    //void program() {
-        //TNode root, child;
-        //root = PKB.createTNode("program");
-        //PKB.setRoot(root);
-        //while(nextToken.equals("procedure")){
-            //child=procedure();
-            //PKB.setParentChildLink(root,child);
-        //}
-    //}
-    //TNode procedure(){
-        //statementNumber++;
-        //TNode stmtLst, procedure;
-        //checkToken("procedure");
-        //procedure=PKB.createTNode("procedure");
-        //checkToken("NAME");
-        //PKB.setAttr(procedure, nextToken);
-        //PKB.setAttr(procedure, statementNumber);
-        //nextToken = tokenIterator.next();
-        //checkToken("{");
-        //stmtLst=stmtLst();
-        //PKB.setParentChildLink(procedure,stmtLst);
-        //checkToken("}");
-        //return procedure;
-    //}
-    //TNode stmtLst(){
-        //TNode stmtLst, stmt;
-        //stmtLst=PKB.createTNode("stmtLst");
-        //while(!nextToken.equals("}")){
-        //stmt=stmt();
-        //PKB.setParentChildLink(stmtLst,stmt);
-        //}
-        //return stmtLst;
-    //}
-    //TNode stmt(){
-        //statementNumber++;
-        //TNode stmt;
-        //if(NextToken.equals("while")){
-        // stmt=while();
-        // }
-        //else{
-        // stmt=assign();
-        // }
-    //}
-    //TNode assign(){
-        //TNode assign, leftVar, expr;
-        //assign=PKB.createTNode("assign");
-        //checkToken("NAME");
-        //PKB.setAttr(assign, statementNumber);
-        //leftVar=PKB.createTNode("var");
-        //PKB.setAttr(leftVar, nextToken);
-        //PKB.setAttr(leftVar, statementNumber);
-        //nextToken=tokenIterator.next();
-        //PKB.SetParentChildLink(assign,leftVar);
-        //checkToken("=");
-        //expr=expr();
-        //PKB.SetParentChildLink(assign,expr);
-        //PKB.setAttr(expr, statementNumber);
-        //checkToken(";");
-        //return assign;
-    // }
-    //TNode while(){
-        //TNode while, checkVar, stmtList;
-        //while=PKB.createTNode("while");
-        //checkToken("NAME");
-        //PKB.setAttr(while,statementNumber);
-        //checkVar=PKB.createTNode("var");
-        //PKB.setAttr(checkVar, nextToken);
-        //PKB.setAttr(checkVar, statementNumber);
-        //nextToken=tokenIterator.next();
-        //PKB.SetParentChildLink(while,checkVar);
-        //checkToken("{");
-        //stmtList=stmtList();
-        //PKB.SetParentChildLink(while,stmtList);
-        //checkToken("}");
-        //return while;
-    //}
+
+
+    void program() {
+        TNode root, child;
+        root = iast.createTNode(EntityType.PROGRAM);
+        iast.setRoot(root);
+        while(nextToken.equals("procedure")){
+            child=procedure();
+            try{
+                iast.setParentChildLink(root,child);
+            } catch (ASTBuildException e) {
+                log.severe("Setting parent-child link failed: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    TNode procedure(){
+        statementNumber++;
+        TNode stmtLst, procedure;
+        checkToken("procedure");
+        procedure=iast.createTNode(EntityType.PROCEDURE);
+        checkToken("NAME");
+        Attr at = new Attr();
+        at.setLine(statementNumber);
+        at.setProcName(nextToken);
+        iast.setAttr(procedure, at);
+        nextToken = tokenIterator.next();
+        checkToken("{");
+        stmtLst=stmtLst();
+        try {
+            iast.setParentChildLink(procedure,stmtLst);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken("}");
+        return procedure;
+    }
+
+    TNode stmtLst(){
+        TNode stmtLst, stmt;
+        stmtLst=iast.createTNode(EntityType.STMTLIST);
+        while(!nextToken.equals("}")){
+        stmt=stmt();
+        try {
+            iast.setParentChildLink(stmtLst,stmt);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        }
+        return stmtLst;
+    }
+
+    TNode stmt(){
+        statementNumber++;
+        return switch (nextToken){
+            case "while" -> whileStmt();
+            case "if" -> ifStmt();
+            case "call" -> callStmt();
+            default -> assignStmt();
+        };
+    }
+
+    private TNode callStmt() {
+        log.severe("Call stmt not implemented");
+        return null;
+    }
+
+    private TNode ifStmt() {
+        log.severe("If stmt not implemented!");
+        return null;
+    }
+
+    TNode whileStmt(){
+        TNode whil, checkVar, stmtList;
+        checkToken("while");
+        whil=iast.createTNode(EntityType.WHILE);
+        checkToken("NAME");
+        Attr at=new Attr();
+        at.setLine(statementNumber);
+        iast.setAttr(whil,at);
+        at.setVarName(nextToken);
+        checkVar=iast.createTNode(EntityType.VARIABLE);
+        iast.setAttr(checkVar, at);
+        nextToken=tokenIterator.next();
+        try {
+            iast.setParentChildLink(whil,checkVar);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken("{");
+        stmtList=stmtLst();
+        try {
+            iast.setParentChildLink(whil,stmtList);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken("}");
+        return whil;
+    }
+
+    TNode assignStmt(){
+        TNode assign, leftVar, expr;
+        assign=iast.createTNode(EntityType.ASSIGN);
+        checkToken("NAME"); // [zmienna] = 2 + 5 ;
+        Attr at = Attr.builder()
+                .line(statementNumber)
+                .build();
+        iast.setAttr(assign, at);
+        leftVar=iast.createTNode(EntityType.VARIABLE);
+        at.setVarName(nextToken);
+        iast.setAttr(leftVar,at);
+        nextToken=tokenIterator.next();
+        try {
+            iast.setParentChildLink(assign,leftVar);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken("="); // zmienna [=] 2 + 5 ;
+        expr=expr();
+        try {
+            iast.setParentChildLink(assign,expr);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken(";");
+        return assign;
+     }
+
+    TNode expr(){
+        TNode expr,left,right;
+        expr=iast.createTNode(EntityType.VARIABLE);
+        checkToken("NAME"); //[2] + 5 ;
+        Attr at = Attr.builder()
+                .varName(nextToken)
+                .line(statementNumber)
+                .build();
+        iast.setAttr(expr,at);
+        nextToken=tokenIterator.next(); // + 5;
+        log.info("next token przed whilem ze znakiem ';' -> " + nextToken);
+
+        while(!Objects.equals(nextToken, ";")){
+            switch(nextToken){ //[+]5
+                case "+":   // zmienna = 2 + 5 ;
+                    nextToken=tokenIterator.next();
+                    log.info("Gorny next token -> " + nextToken);
+                    left=expr;
+                    expr=iast.createTNode(EntityType.PLUS);
+                    checkToken("NAME");
+                    right=iast.createTNode(EntityType.VARIABLE);
+                    at.setVarName(nextToken);
+                    iast.setAttr(right,at);
+                    try {
+                        iast.setParentChildLink(expr,left);
+                    } catch (ASTBuildException e) {
+                        log.severe("Setting parent-child link failed: " + e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        iast.setParentChildLink(expr,right);
+                    } catch (ASTBuildException e) {
+                        log.severe("Setting parent-child link failed: " + e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                    nextToken=tokenIterator.next();
+                    log.info("Dolny next token -> " + nextToken);
+                    break;
+                default:
+                    log.severe("Symbol w linii " + statementNumber + " nie jest prawidłowy.");
+                    throw new RuntimeException();
+            }
+        }
+        return expr;
+    }
 }
