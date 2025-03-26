@@ -12,16 +12,16 @@ import java.util.stream.Collectors;
 @Getter
 public class QueryTree {
     private Map<String,String> synonyms;
-    private String[] returnValues;
-    private List<String[]> suchThatStatements;
+    private List<String> returnValues;
+    private List<Relation> relations;
     private List<String[]> withStatements;
 
     @Override
     public String toString() {
         return "QueryTree {\n" +
                 "  synonyms=" + (synonyms != null ? synonyms : "{}") + ",\n" +
-                "  returnValues=" + Arrays.toString(returnValues) + ",\n" +
-                "  suchThatStatements=\n    " + formatList(suchThatStatements) + ",\n" +
+                "  returnValues=" +returnValues + ",\n" +
+                "  suchThatStatements=\n    " + relations + ",\n" +
                 "  withStatements=\n    " + formatList(withStatements) + "\n" +
                 '}';
     }
@@ -33,5 +33,8 @@ public class QueryTree {
         return list.stream()
                 .map(Arrays::toString)
                 .collect(Collectors.joining("\n    "));
+    }
+    public boolean isThisArgumentReturnValue(Argument arg) {
+        return returnValues.contains(arg.getName()) && synonyms.get(arg.getName()).equals(arg.getType());
     }
 }
