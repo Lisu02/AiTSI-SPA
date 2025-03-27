@@ -1,0 +1,3 @@
+stmt s; Select s#s=stmt
+stmt s1,s2; Select s1#s1=stmt, s2=stmt
+stmt s1,s2; procedure p; Select p #s1=stmt, s2=stmt, p=procedure
