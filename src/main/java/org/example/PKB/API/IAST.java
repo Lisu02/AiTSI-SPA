@@ -31,5 +31,5 @@ public interface IAST {
     public boolean isParentAstra(TNode n1, TNode n2);
     List<TNode> getTNodes(String entityType);
     TNode getTNode(String name);
-    TNode getNode(int progLine);
+    TNode getTNode(int progLine);
 }

@@ -46,17 +46,23 @@ public class PreProc {
 
         String[] bodyElements = Arrays.stream(queryBody.split("(?=\\b(such that|with)\\b)")).filter(e->!e.isBlank()).toArray(String[]::new);
 
-        List<String> returnValues = Arrays.stream(bodyElements[0]
+        String[] returnElements = Arrays.stream(bodyElements[0]
                         .split("[ ,]"))
                 .filter(s->!s.isBlank())
-                .toList();
+                .toArray(String[]::new);
 
-        if(!returnValues.get(0).equals("Select") && !returnValues.get(0).equals("Boolean")) {
+        if(!returnElements[0].equals("Select") && !returnElements[0].equals("Boolean")) {
             throw new InvalidQueryException("Missing Select: " + query);
         }
-        for (int i=1;i<returnValues.size();i++) {
-            if(!synonyms.containsKey(returnValues.get(i))) {
-                throw new InvalidQueryException("Not recognize synonym: " + returnValues.get(i));
+
+        String returnType = returnElements[0];
+        List<Argument> returnValues = new ArrayList<>();
+        for (int i=1;i<returnElements.length;i++) {
+            if(synonyms.containsKey(returnElements[i])) {
+                returnValues.add(new Argument(returnElements[i], synonyms.get(returnElements[i])));
+            }
+            else {
+                throw new InvalidQueryException("Not recognize synonym: " + returnElements[i]);
             }
         }
 
@@ -80,7 +86,7 @@ public class PreProc {
         List<Relation> relations = validateSuchThatStatements(suchThatStatements,synonyms);
         validateWithStatements(withStatements,synonyms);
 
-        return new QueryTree(synonyms,returnValues,relations,withStatements);
+        return new QueryTree(returnType,returnValues,relations,withStatements);
     }
     private Map<String,String> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
         Map<String,String> synonyms = new HashMap<>();
