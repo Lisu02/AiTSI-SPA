@@ -1,103 +1,87 @@
 package org.example.QueryProc;
 
+import org.example.PKB.API.IAST;
+import org.example.PKB.API.PKB;
 import org.example.PKB.API.TNode;
+import org.example.QueryProc.DataStructs.Argument;
+import org.example.QueryProc.DataStructs.QueryTree;
+import org.example.QueryProc.DataStructs.Relation;
+import org.example.QueryProc.DataStructs.RelationFunctions;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiPredicate;
 
 public class Evaluator {
-    private QueryTree queryTree;
-    private final SuchThatEvaluator suchThatEvaluator = new SuchThatEvaluator();
+    private static final IAST IAST = PKB.getAST();
+    private final static Map<String, RelationFunctions> RELATION_FUNCTIONS_MAP = Map.of(
+            "Follows", new RelationFunctions(IAST::getFollowedBy,IAST::getFollows,IAST::isFollowed),
+            "Follows*", new RelationFunctions(IAST::getFollowedAstraBy,IAST::getFollowsAstra,IAST::isFollowedAstra),
+            "Parent", new RelationFunctions(IAST::getParentedBy,IAST::getParent,IAST::isParent),
+            "Parent*", new RelationFunctions(IAST::getParentedAstraBy,IAST::getParentAstra,IAST::isParentAstra),
+            "Modifies", new RelationFunctions(),
+            "Modifies*", new RelationFunctions(),
+            "Uses", new RelationFunctions(),
+            "Uses*", new RelationFunctions();
+
+
     public Set<TNode> evaluateQuery(QueryTree queryTree) {
-        this.queryTree = queryTree;
-        suchThatEvaluator.setReturnValues(queryTree.getReturnValues());
-        List<Relation> suchThatStatements = this.queryTree.getRelations();
+        List<Relation> suchThatStatements = queryTree.getRelations();
 
         Set<TNode> result = new HashSet<>();
         for( Relation relation : suchThatStatements) {
-            result.addAll(suchThatEvaluator.evaluate(relation));
+            result.addAll(evaluateRelation(relation,queryTree.getReturnValues()));
         }
         return result;
     }
-//    private Set<TNode> follows(Argument arg1, Argument arg2) {
-//        Set<TNode> result = new HashSet<>();
-//
-//        if(this.queryTree.isThisArgumentReturnValue(arg1)) {
-//            if(arg2.getType().equals("integer")) {
-//                System.out.println("arg1 int");
-//                TNode node = IAST.getNode(Integer.parseInt(arg2.getName()));
-//                result.add(IAST.getFollowedBy(node));
-//            }
-//            else if(arg2.getType().equals("prog_line")) {
-//                throw new NotImplementedRuntimeException("Query evaluator","prog_line not implemented");
-//            }
-//            else {
-//                System.out.println("arg1 type");
-//                List<TNode> nodes = IAST.getTNodes(arg2.getType());
-//                for(TNode node : nodes) {
-//                    result.add(IAST.getFollowedBy(node));
-//                }
-//            }
-//        }
-//        else if(this.queryTree.isThisArgumentReturnValue(arg2)) {
-//            if(arg1.getType().equals("integer")) {
-//                System.out.println("arg2 int");
-//                TNode node = IAST.getNode(Integer.parseInt(arg1.getName()));
-//                result.add(IAST.getFollows(node));
-//            }
-//            else if(arg1.getType().equals("prog_line")) {
-//                throw new NotImplementedRuntimeException("Query evaluator","prog_line not implemented");
-//            }
-//            else {
-//                System.out.println("arg2 type");
-//                List<TNode> nodes = IAST.getTNodes(arg1.getType());
-//                for(TNode node : nodes) {
-//                    result.add(IAST.getFollows(node));
-//                }
-//            }
-//        }
-//        else {
-//            boolean solutionFound = false;
-//            if(arg1.getType().equals("integer")) {
-//                System.out.println("arg1 int w");
-//                TNode node = IAST.getNode(Integer.parseInt(arg1.getName()));
-//                solutionFound = IAST.getFollows(node) != null;
-//            }
-//            else if(arg2.getType().equals("integer")) {
-//                System.out.println("arg2 int w");
-//                TNode node = IAST.getNode(Integer.parseInt(arg2.getName()));
-//                solutionFound = IAST.getFollowedBy(node) != null;
-//            }
-//            else {
-//                System.out.println("type w");
-//                List<TNode> nodes = IAST.getTNodes(arg2.getType());
-//                for(TNode node : nodes) {
-//                    solutionFound = IAST.getFollowedBy(node) != null;
-//                    if(solutionFound) {
-//                        break;
-//                    }
-//                }
-//            }
-//            if(solutionFound) {
-//                System.out.println("w true");
-//                result = new HashSet<>(IAST.getTNodes(queryTree.getSynonyms().get(queryTree.getReturnValues().get(1))));
-//            }
-//        }
-//
-//        return result;
-//    }
-    private Set<TNode> parent(Argument arg1, Argument arg2) {
-        Set<TNode> result = new HashSet<>();
-        return result;
-    }
-    private Set<TNode> modifies(Argument arg1, Argument arg2) {
-        Set<TNode> result = new HashSet<>();
-        return result;
-    }
-    private Set<TNode> uses(Argument arg1, Argument arg2) {
-        Set<TNode> result = new HashSet<>();
-        return result;
-    }
+    public Set<TNode> evaluateRelation(Relation relation, List<Argument> returnValues) {
+        RelationFunctions functions = RELATION_FUNCTIONS_MAP.get(relation.getName());
 
+        Set<TNode> result = new HashSet<>();
+
+        if(returnValues.contains(relation.getArg1())) {
+            findTNodeUsedAsParameterInASTMethod(relation.getArg2())
+                    .stream()
+                    .map(functions.getByFunction())
+                    .forEach(result::addAll);
+        }
+        else if(returnValues.contains(relation.getArg2())) {
+            findTNodeUsedAsParameterInASTMethod(relation.getArg1())
+                    .stream()
+                    .map(functions.getFunction())
+                    .forEach(result::addAll);
+        }
+        else if(doesSolutionExist(relation.getArg1(), relation.getArg2(), functions.getIsFunction())) {
+            result.addAll(IAST.getTNodes(returnValues.get(0).getType()));
+        }
+
+        return result;
+    }
+    private List<TNode> findTNodeUsedAsParameterInASTMethod(Argument arg) {
+        List<TNode> tNodes = new ArrayList<>();
+        if(arg.getType().equals("integer")) {
+            System.out.println("arg int");
+            tNodes.add(IAST.getTNode(Integer.parseInt(arg.getName())));
+        }
+        else if(arg.getType().equals("String")) {
+            System.out.println("arg string");
+            tNodes.add(IAST.getTNode(arg.getName()));
+        }
+        else {
+            System.out.println("arg type");
+            tNodes.addAll(IAST.getTNodes(arg.getType()));
+        }
+        return tNodes;
+    }
+    private boolean doesSolutionExist(Argument arg1, Argument arg2, BiPredicate<TNode, TNode> methode) {
+        List<TNode> tNodes1 = findTNodeUsedAsParameterInASTMethod(arg1);
+        List<TNode> tNodes2 = findTNodeUsedAsParameterInASTMethod(arg2);
+        for(TNode tNode1 : tNodes1) {
+            for(TNode tNode2 : tNodes2) {
+                if(methode.test(tNode1, tNode2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

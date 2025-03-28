@@ -1,4 +1,4 @@
-package org.example.QueryProc;
+package org.example.QueryProc.DataStructs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public class QueryTree {
-    private String returnType;
+    private boolean isBoolean;
     private List<Argument> returnValues;
     private List<Relation> relations;
     private List<String[]> withStatements;

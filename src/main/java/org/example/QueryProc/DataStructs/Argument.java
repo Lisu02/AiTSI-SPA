@@ -1,4 +1,4 @@
-package org.example.QueryProc;
+package org.example.QueryProc.DataStructs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

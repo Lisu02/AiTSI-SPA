@@ -1,6 +1,7 @@
 package org.example.QueryProc;
 
 import org.example.Exceptions.InvalidQueryException;
+import org.example.QueryProc.DataStructs.QueryTree;
 
 public class QueryController {
     private static final PreProc preProc = new PreProc();
