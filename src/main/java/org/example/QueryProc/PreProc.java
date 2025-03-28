@@ -1,99 +1,37 @@
 package org.example.QueryProc;
 
 import org.example.Exceptions.InvalidQueryException;
-import org.example.QueryProc.DataStructs.Argument;
-import org.example.QueryProc.DataStructs.QueryTree;
-import org.example.QueryProc.DataStructs.Relation;
-import org.example.QueryProc.DataStructs.RelationSignature;
+import org.example.QueryProc.model.*;
+import org.example.QueryProc.staticVal.GrammarRules;
 
 import java.util.*;
 
 public class PreProc {
-    private final Set<String> entities = Set.of(
-            "procedure", "stmtLst", "stmt", "assign", "if", "while"
-    );
-    private final Map<String, RelationSignature> relationsDefinition = Map.of(
-            "Follows", new RelationSignature(Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line")),
-            "Follows*", new RelationSignature(Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line")),
-            "Parent", new RelationSignature(Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line")),
-            "Parent*", new RelationSignature(Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("stmt", "assign", "call", "while", "if", "_", "integer","prog_line")),
-            "Modifies", new RelationSignature(Set.of("procedure", "prog_line", "stmt", "assign", "call", "while", "if", "string", "integer"),
-                    Set.of("variable", "string", "_")),
-            "Modifies*", new RelationSignature(Set.of("procedure", "prog_line", "stmt", "assign", "call", "while", "if", "string", "integer"),
-                    Set.of("variable", "string", "_")),
-            "Uses", new RelationSignature(Set.of("procedure", "string", "stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("variable", "_", "string")),
-            "Uses*", new RelationSignature(Set.of("procedure", "string", "stmt", "assign", "call", "while", "if", "_", "integer","prog_line"),
-                    Set.of("variable", "_", "string")),
-            "Calls", new RelationSignature(Set.of("procedure", "_", "string"),
-                    Set.of("procedure", "_", "string")),
-            "Calls*", new RelationSignature(Set.of("procedure", "_", "string"),
-                    Set.of("procedure", "_", "string"))
-    );
-    private static final Map<String, Set<String>> attributes = Map.of(
-            "procName", Set.of("procedure", "call"),
-            "varName", Set.of("variable"),
-            "value", Set.of("constant"),
-            "stmt#", Set.of("stmt", "assign", "while", "if", "call")
-    );
     public QueryTree parseQuery(String query) throws InvalidQueryException {
-        List<String> queryElements = List.of(query.split(";"));
+        List<String> elements = List.of(query.split(";"));
 
-        List<String> queryArguments = queryElements.subList(0,queryElements.size()-1);
-        String queryBody = queryElements.get(queryElements.size()-1);
+        List<String> args = elements.subList(0,elements.size()-1);
+        String body = elements.get(elements.size()-1);
 
-        Map<String,String> synonyms = separateSynonyms(queryArguments);
+        if(body.isEmpty()) {
+            throw new InvalidQueryException("Query can't have empty body");
+        }
 
-        String[] bodyElements = Arrays.stream(queryBody.split("(?=\\b(such that|with)\\b)")).filter(e->!e.isBlank()).toArray(String[]::new);
+        Map<String,String> synonyms = separateSynonyms(args);
 
-        String[] returnElements = Arrays.stream(bodyElements[0]
-                        .split("[ ,]"))
-                .filter(s->!s.isBlank())
+        String[] bodyElements = Arrays.stream(body.split("(?=\\b(such that|with)\\b)"))
+                .filter(e->!e.isBlank())
                 .toArray(String[]::new);
 
-        boolean isBoolean = false;
-        if(returnElements[0].equals("Boolean")) {
-            isBoolean = true;
-        }
-        else if(!returnElements[0].equals("Select")) {
-            throw new InvalidQueryException("Missing Select or Boolean: " + query);
-        }
+        System.out.println(Arrays.toString(bodyElements));
 
-        List<Argument> returnValues = new ArrayList<>();
-        for (int i=1;i<returnElements.length;i++) {
-            if(synonyms.containsKey(returnElements[i])) {
-                returnValues.add(new Argument(returnElements[i], synonyms.get(returnElements[i])));
-            }
-            else {
-                throw new InvalidQueryException("Not recognize synonym: " + returnElements[i]);
-            }
-        }
+        ReturnDesc returnDesc = determineReturnValues(bodyElements[0],synonyms);
+        BodyDesc bodyDesc = determineQueryBody(Arrays.copyOfRange(bodyElements,1,bodyElements.length), synonyms);
 
-        List<String[]> suchThatStatements = new ArrayList<>();
-        List<String[]> withStatements = new ArrayList<>();
-        for(int i=1;i<bodyElements.length;i++) {
-            if(bodyElements[i].startsWith("such that")) {
-                bodyElements[i] = bodyElements[i].substring(10).trim();
-                String[] tmp = Arrays.stream(bodyElements[i].split("[ ,()]")).filter(t->!t.isBlank()).toArray(String[]::new);
-                suchThatStatements.add(tmp);
-            }
-            else if(bodyElements[i].startsWith("with")) {
-                bodyElements[i] = bodyElements[i].substring(5).trim();
-                String[] tmp = Arrays.stream(bodyElements[i].split("[ .=]")).filter(t->!t.isBlank()).toArray(String[]::new);
-                withStatements.add(tmp);
-            }
-        }
+        List<Relation> relations = validateSuchThatStatements(bodyDesc.suchThatStatements,synonyms);
+        validateWithStatements(bodyDesc.withStatements,synonyms);
 
-        suchThatStatements.forEach(s->System.out.println(Arrays.toString(s)));
-
-        List<Relation> relations = validateSuchThatStatements(suchThatStatements,synonyms);
-        validateWithStatements(withStatements,synonyms);
-
-        return new QueryTree(isBoolean,returnValues,relations,withStatements);
+        return new QueryTree(returnDesc.isBoolean,returnDesc.returnValues,relations,bodyDesc.withStatements);
     }
     private Map<String,String> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
         Map<String,String> synonyms = new HashMap<>();
@@ -103,7 +41,7 @@ public class PreProc {
                     .filter(s->!s.isBlank())
                     .toArray(String[]::new);
 
-            if(!entities.contains(tmp[0])) {
+            if(!GrammarRules.ENTITIES.contains(tmp[0])) {
                 throw new InvalidQueryException("Invalid synonym type: " + tmp[0]);
             }
 
@@ -116,10 +54,64 @@ public class PreProc {
         }
         return synonyms;
     }
+    private record ReturnDesc(boolean isBoolean, List<Argument> returnValues) {}
+    private ReturnDesc determineReturnValues(String returnBody,  Map<String,String> synonyms) throws InvalidQueryException {
+        String[] returnElements = Arrays.stream(returnBody
+                        .split("[ ,]"))
+                .filter(s->!s.isBlank())
+                .toArray(String[]::new);
+
+        boolean isBoolean = false;
+        if(returnElements[0].equals("Boolean")) {
+            isBoolean = true;
+        }
+        else if(!returnElements[0].equals("Select")) {
+            throw new InvalidQueryException("Missing Select or Boolean");
+        }
+
+        List<Argument> returnValues = new ArrayList<>();
+        for (int i=1;i<returnElements.length;i++) {
+            if(synonyms.containsKey(returnElements[i])) {
+                returnValues.add(new Argument(returnElements[i], synonyms.get(returnElements[i])));
+            }
+            else {
+                throw new InvalidQueryException("Not recognize synonym: " + returnElements[i]);
+            }
+        }
+        return new ReturnDesc(isBoolean,returnValues);
+    }
+    private record BodyDesc(List<String[]> suchThatStatements, List<String[]> withStatements) {}
+
+    private BodyDesc determineQueryBody(String[] queryBody, Map<String, String> synonyms) throws InvalidQueryException {
+        List<String[]> suchThatStatements = new ArrayList<>();
+        List<String[]> withStatements = new ArrayList<>();
+
+        for (int i = 0; i < queryBody.length; i++) {
+            if (queryBody[i].startsWith("such that")) {
+                String[] relation = Arrays.stream(queryBody[i]
+                                .substring(10)
+                                .trim().split("[ ,()]"))
+                        .filter(t -> !t.isBlank())
+                        .toArray(String[]::new);
+
+                suchThatStatements.add(relation);
+
+            } else if (queryBody[i].startsWith("with")) {
+                String[] tmp = Arrays.stream(queryBody[i]
+                                .substring(5)
+                                .trim().split("[ .=]"))
+                        .filter(t -> !t.isBlank())
+                        .toArray(String[]::new);
+
+                withStatements.add(tmp);
+            }
+        }
+        return new BodyDesc(suchThatStatements, withStatements);
+    }
     private List<Relation> validateSuchThatStatements(List<String[]> suchThatStatements, Map<String,String> synonyms) throws InvalidQueryException {
         List<Relation> relations = new ArrayList<>();
         for(String[] relation : suchThatStatements) {
-            RelationSignature signature = relationsDefinition.get(relation[0]);
+            ArgumentDefinition signature = GrammarRules.RELATION_DEFINITIONS.get(relation[0]);
             if(signature == null) {
                 throw new InvalidQueryException("Incorrect relation name: " + relation[0]);
             }
@@ -158,7 +150,7 @@ public class PreProc {
             if(type == null) {
                 throw new InvalidQueryException("There is no such synonym as : " + statement[0]);
             }
-            if(!attributes.get(statement[1]).contains(type)) {
+            if(!GrammarRules.ATTRIBUTES.get(statement[1]).contains(type)) {
                 throw new InvalidQueryException("Synonym " + statement[0] + " does not have attribute " + statement[1]);
             }
             if((statement[1].equals("procName") || statement[1].equals("valName")) &&

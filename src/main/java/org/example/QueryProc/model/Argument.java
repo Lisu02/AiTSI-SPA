@@ -1,18 +1,7 @@
-package org.example.QueryProc.DataStructs;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+package org.example.QueryProc.model;
 
 import java.util.Objects;
-
-@AllArgsConstructor
-@Getter
-@ToString
-public class Argument {
-    private String name;
-    private String type;
-
+public record Argument(String name, String type) {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
