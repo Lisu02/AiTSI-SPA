@@ -1,25 +1,23 @@
-package org.example.QueryProc;
+package org.example.QueryProc.DataStructs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
 public class QueryTree {
-    private Map<String,String> synonyms;
-    private List<String> returnValues;
+    private boolean isBoolean;
+    private List<Argument> returnValues;
     private List<Relation> relations;
     private List<String[]> withStatements;
 
     @Override
     public String toString() {
         return "QueryTree {\n" +
-                "  synonyms=" + (synonyms != null ? synonyms : "{}") + ",\n" +
                 "  returnValues=" +returnValues + ",\n" +
                 "  suchThatStatements=\n    " + relations + ",\n" +
                 "  withStatements=\n    " + formatList(withStatements) + "\n" +
@@ -34,7 +32,7 @@ public class QueryTree {
                 .map(Arrays::toString)
                 .collect(Collectors.joining("\n    "));
     }
-    public boolean isThisArgumentReturnValue(Argument arg) {
-        return returnValues.contains(arg.getName()) && synonyms.get(arg.getName()).equals(arg.getType());
-    }
+//    public boolean isThisArgumentReturnValue(Argument arg) {
+//        return returnValues.contains(arg.getName()) && synonyms.get(arg.getName()).equals(arg.getType());
+//    }
 }
