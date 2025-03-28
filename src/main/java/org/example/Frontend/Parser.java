@@ -44,24 +44,34 @@ public class Parser {
             if (nextToken.equals(token)) {
                 nextToken = tokenIterator.next();
             } else if (token.equals("INTEGER")) {
-                try {
-                    int test = Integer.parseInt(nextToken);
-                } catch (NumberFormatException e) {
-
-                    log.severe(e.getMessage());
-                    log.throwing(Parser.class.getName(), "checkTokens", e);
-                }
+                checkIfTokenIsNumber(token);
             } else if (token.equals("NAME")) {
-                Pattern pattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
-                Matcher matcher = pattern.matcher(nextToken);
-                if (!matcher.matches()) {
-                    log.severe("String "+ nextToken+" podany w linii " + statementNumber + " nie jest prawidłową nazwą.");
-                }
+                checkIfTokenIsName(nextToken);
             } else {
                 log.severe("Nieprawidłowy token w linii " + statementNumber +" oczekiwano "+token+", a otrzymano"+nextToken);
             }
         } else {
             log.info("Koniec tokenow - checkToken.hasNext()");
+        }
+    }
+
+
+    private void checkIfTokenIsName(String nextToken){
+        Pattern pattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9#_]*");
+        Pattern digits=Pattern.compile("[^1-9][^0-9]*");
+        Matcher matcher = pattern.matcher(nextToken);
+        Matcher matchDigit=digits.matcher(nextToken);
+        if (!matcher.matches() && matchDigit.matches()) {
+            log.severe("String "+ nextToken+" podany w linii " + statementNumber + " nie jest prawidłową nazwą.");
+        }
+    }
+
+    private void checkIfTokenIsNumber(String token) {
+        try{
+            Integer.parseInt(token);
+        } catch (NumberFormatException e) {
+            log.severe(e.getMessage());
+            log.throwing(Parser.class.getName(), "checkTokens", e);
         }
     }
 
@@ -138,6 +148,13 @@ public class Parser {
         log.severe("If stmt not implemented!");
         return null;
     }
+
+    /*
+    *   checkToken zmiana arguentów
+    *   Check token drobny refaktor
+    *
+    *
+     */
 
     TNode whileStmt(){
         TNode whil, checkVar, stmtList;
