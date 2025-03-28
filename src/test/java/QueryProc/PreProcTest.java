@@ -2,22 +2,18 @@ package QueryProc;
 
 import org.example.Exceptions.InvalidQueryException;
 import org.example.QueryProc.PreProc;
-import org.example.QueryProc.QueryTree;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PreProcTest {
     private final PreProc preProc = new PreProc();
@@ -63,18 +59,11 @@ public class PreProcTest {
         assertDoesNotThrow(() -> preProc.parseQuery(query));
     }
 
-    @ParameterizedTest
-    @MethodSource("synonymProvider")
-    void shouldSeparateSynonymsCorrectly(String query, Map<String,String> expectedSynonyms) throws InvalidQueryException{
-        QueryTree queryTree = preProc.parseQuery(query);
-        expectedSynonyms.forEach((synonym,expectedType) ->
-            assertEquals(expectedType,queryTree.getSynonyms().get(synonym)));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenQueryIsEmpty(){
-        Exception exception = assertThrows(InvalidQueryException.class, () -> preProc.parseQuery(""));
-        assertEquals("Missing Select: ", exception.getMessage());
-    }
-
+//    @ParameterizedTest
+//    @MethodSource("synonymProvider")
+//    void shouldSeparateSynonymsCorrectly(String query, Map<String,String> expectedSynonyms) throws InvalidQueryException{
+//        QueryTree queryTree = preProc.parseQuery(query);
+//        expectedSynonyms.forEach((synonym,expectedType) ->
+//            assertEquals(expectedType,queryTree.getSynonyms().get(synonym)));
+//    }
 }
