@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public class VariableNode extends RefNode{
-    public VariableNode(ASTNode parent) {
+    public VariableNode() {
         super(EntityType.VARIABLE);
     }
 
