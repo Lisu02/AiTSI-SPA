@@ -23,15 +23,13 @@ public class PreProc {
                 .filter(e->!e.isBlank())
                 .toArray(String[]::new);
 
-        System.out.println(Arrays.toString(bodyElements));
-
         ReturnDesc returnDesc = determineReturnValues(bodyElements[0],synonyms);
         BodyDesc bodyDesc = determineQueryBody(Arrays.copyOfRange(bodyElements,1,bodyElements.length), synonyms);
 
         List<Relation> relations = validateSuchThatStatements(bodyDesc.suchThatStatements,synonyms);
-        validateWithStatements(bodyDesc.withStatements,synonyms);
+        List<WithStatement> withStatements = validateWithStatements(bodyDesc.withStatements,synonyms);
 
-        return new QueryTree(returnDesc.isBoolean,returnDesc.returnValues,relations,bodyDesc.withStatements);
+        return new QueryTree(returnDesc.isBoolean,returnDesc.returnValues,relations,withStatements);
     }
     private Map<String,String> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
         Map<String,String> synonyms = new HashMap<>();
@@ -144,7 +142,8 @@ public class PreProc {
         }
         return relations;
     }
-    private void validateWithStatements(List<String[]> withStatements, Map<String,String> synonyms) throws InvalidQueryException {
+    private List<WithStatement> validateWithStatements(List<String[]> withStatements, Map<String,String> synonyms) throws InvalidQueryException {
+        List<WithStatement> result = new ArrayList<>();
         for(String[] statement : withStatements) {
             String type = synonyms.get(statement[0]);
             if(type == null) {
@@ -161,6 +160,8 @@ public class PreProc {
             else if((statement[1].equals("value") || statement[1].equals("stmt#")) && !statement[2].matches("\\d+")) {
                 throw new InvalidQueryException("Incorrect type " + statement[2] + ". Type should be integer");
             }
+            result.add(new WithStatement(statement[0], type, statement[1], statement[2]));
         }
+        return result;
     }
 }
