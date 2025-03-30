@@ -62,7 +62,7 @@ public class AbstractionExtractorTest {
         TNode variableNode3 = new TNodeImpl();
 
 
-        //Budowa wszystkich relacji pomiedzy TNode'ami
+        //Budowa wszystkich relacji pomiedzy TNode'ami todo: poprawic when'y
 
         when(iast.getRoot()).thenReturn(rootNode); // PROGRAM
         when(iast.getFirstChild(rootNode)).thenReturn(procedureNode); // PROC

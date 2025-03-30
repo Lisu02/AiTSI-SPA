@@ -40,7 +40,7 @@
         TNode firstProcedureNode = iast.getLinkedNode(LinkType.FirstChild,tNodeRoot);
         procedureList.add(firstProcedureNode);
         TNode currentNode = firstProcedureNode;
-
+        //todo: dodatkowe logowanie + jest blad z przechodzeniem po TNode'ach
         while (iast.getLinkedNode(LinkType.RightSibling,currentNode) != null){
             currentNode = iast.getLinkedNode(LinkType.RightSibling,currentNode);
             System.out.println("currentNode = " + currentNode);
