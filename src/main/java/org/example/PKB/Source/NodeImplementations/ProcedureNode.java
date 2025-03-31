@@ -5,13 +5,14 @@ import org.example.Exceptions.ASTBuildException;
 import org.example.PKB.API.EntityType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ProcedureNode extends ASTNode {
-    private final List<ASTNode> children;
+    private final List<StmtNode> children;
 
     public ProcedureNode() {
         super(EntityType.PROCEDURE);
-        this.children = new ArrayList<ASTNode>();
+        this.children = new ArrayList<StmtNode>();
     }
 
     @Override
@@ -19,7 +20,9 @@ public class ProcedureNode extends ASTNode {
         if (child == null) {
             throw new ASTBuildException("Can't add null child node");
         }
-        children.add(child);
+        if (!(child instanceof StmtNode))
+            throw new ASTBuildException("Next child of ProgramNode must be a StmtNode!");
+        children.add((StmtNode) child);
         child.setParent(this);
         return children.size() - 1;
     }
@@ -40,5 +43,12 @@ public class ProcedureNode extends ASTNode {
     @Override
     public int getChildCount() {
         return children.size();
+    }
+
+    @Override
+    public Set<EntityType> getAllEntityTypes() {
+        Set<EntityType> set = super.getAllEntityTypes();
+        set.add(EntityType.PROCEDURE);
+        return set;
     }
 }
