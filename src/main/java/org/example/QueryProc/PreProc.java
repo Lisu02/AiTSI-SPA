@@ -69,6 +69,10 @@ public class PreProc {
             throw new InvalidQueryException("Missing Select or Boolean");
         }
 
+        if(!isBoolean && returnElements.length == 1) {
+            throw new InvalidQueryException("Missing return values");
+        }
+
         List<Argument> returnValues = new ArrayList<>();
         for (int i=1;i<returnElements.length;i++) {
             if(synonyms.containsKey(returnElements[i])) {
@@ -89,7 +93,7 @@ public class PreProc {
         for (int i = 0; i < queryBody.length; i++) {
             if (queryBody[i].startsWith("such that")) {
                 String[] relation = Arrays.stream(queryBody[i]
-                                .substring(10)
+                                .replace("such that","")
                                 .trim().split("[ ,()]"))
                         .filter(t -> !t.isBlank())
                         .toArray(String[]::new);
@@ -97,8 +101,11 @@ public class PreProc {
                 suchThatStatements.add(relation);
 
             } else if (queryBody[i].startsWith("with")) {
+                if(queryBody[i].chars().filter(ch->ch == '=').count() != 1) {
+                    throw new InvalidQueryException("Invalid number o =: " + queryBody[i].chars().filter(ch->ch == '=').count() + " In statement: " + queryBody[i]);
+                }
                 String[] tmp = Arrays.stream(queryBody[i]
-                                .substring(5)
+                                .replace("with","")
                                 .trim().split("[ .=]"))
                         .filter(t -> !t.isBlank())
                         .toArray(String[]::new);
@@ -111,6 +118,13 @@ public class PreProc {
     private List<Relation> validateSuchThatStatements(List<String[]> suchThatStatements, Map<String,String> synonyms) throws InvalidQueryException {
         List<Relation> relations = new ArrayList<>();
         for(String[] relation : suchThatStatements) {
+            if(relation.length == 0) {
+                throw new InvalidQueryException("Empty such that statement");
+            }
+            if(relation.length != 3) {
+                throw new InvalidQueryException("Incorrect number of arguments in relation " + relation[0] + ": " + (relation.length-1));
+            }
+
             ArgumentDefinition signature = GrammarRules.RELATION_DEFINITIONS.get(relation[0]);
             if(signature == null) {
                 throw new InvalidQueryException("Incorrect relation name: " + relation[0]);
@@ -150,13 +164,19 @@ public class PreProc {
             if(type == null) {
                 throw new InvalidQueryException("There is no such synonym as : " + statement[0]);
             }
+            if(statement.length != 3 && statement.length != 4) {
+                throw new InvalidQueryException("Invalid number of arguments: " + statement.length + ". In statement: " + Arrays.toString(statement));
+            }
+            if(!GrammarRules.ATTRIBUTES.containsKey(statement[1])) {
+                throw new InvalidQueryException("Invalid attribute: " + statement[1] + ". In statement: " + Arrays.toString(statement));
+            }
             if(!GrammarRules.ATTRIBUTES.get(statement[1]).contains(type)) {
                 throw new InvalidQueryException("Synonym " + statement[0] + " does not have attribute " + statement[1]);
             }
-            if((statement[1].equals("procName") || statement[1].equals("valName")) &&
+            if((statement[1].equals("procName") || statement[1].equals("varName")) &&
                     (statement[2].charAt(0) != '"' || statement[2].charAt(statement[2].length()-1) != '"')) {
 
-                throw new InvalidQueryException("Incorrect type " + statement[2] + ". Type should be string");
+                throw new InvalidQueryException("Incorrect value " + statement[2] + ". " + statement[1] + " value should be of type string");
             }
             else if((statement[1].equals("value") || statement[1].equals("stmt#")) && !statement[2].matches("\\d+")) {
                 throw new InvalidQueryException("Incorrect type " + statement[2] + ". Type should be integer");
