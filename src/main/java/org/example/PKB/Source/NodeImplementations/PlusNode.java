@@ -4,17 +4,17 @@ import org.example.Exceptions.ASTBuildException;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.Source.ASTNode;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
 public class PlusNode extends ExprNode {
-    private final List<ExprNode> operands;
+    private ExprNode leftOperand;
+    private ExprNode rightOperand;
 
     public PlusNode() {
         super(EntityType.PLUS);
-        this.operands = new ArrayList<ExprNode>(2);
     }
 
     @Override
@@ -32,43 +32,59 @@ public class PlusNode extends ExprNode {
         if (!(child instanceof ExprNode)) {
             throw new ASTBuildException("PlusNode can only have ExprNodes as children");
         }
-        operands.add((ExprNode) child);
-        child.setParent(this);
-        return operands.size() - 1;
+
+        if (leftOperand == null) {
+            leftOperand = (ExprNode) child;
+            child.setParent(this);
+            return 0;
+        } else if (rightOperand == null) {
+            rightOperand = (ExprNode) child;
+            child.setParent(this);
+            return 1;
+        } else {
+            throw new ASTBuildException("PlusNode can only have two operands");
+        }
     }
 
     @Override
     public List<ASTNode> getChildren() {
-        return new ArrayList<>(operands);
+        if (leftOperand == null) {
+            return Collections.emptyList();
+        }
+        if (rightOperand == null) {
+            return Collections.singletonList(leftOperand);
+        }
+        return List.of(leftOperand, rightOperand);
     }
 
     @Override
     public ASTNode getChild(int num) {
-        if (num < 0 || num >= operands.size()) {
-            return null;
-        }
-        return operands.get(num);
+        return switch (num) {
+            case 0 -> leftOperand;
+            case 1 -> rightOperand;
+            default -> null;
+        };
     }
 
     @Override
     public int getChildCount() {
-        return operands.size();
+        return (leftOperand != null ? 1 : 0) + (rightOperand != null ? 1 : 0);
     }
 
-    public ASTNode getLeftOperand() {
-        return operands.size() > 0 ? operands.get(0) : null;
+    private ExprNode getLeftOperand() {
+        return leftOperand;
     }
 
-    public ASTNode getRightOperand() {
-        return operands.size() > 1 ? operands.get(1) : null;
+    private ExprNode getRightOperand() {
+        return rightOperand;
     }
 
-    public boolean isBinaryOperation() {
-        return operands.size() == 2;
-    }
 
     @Override
     public String toString() {
-        return "PlusNode{" + operands + "}";
+        return "PlusNode{" +
+                "left=" + leftOperand +
+                ", right=" + rightOperand +
+                '}';
     }
 }
