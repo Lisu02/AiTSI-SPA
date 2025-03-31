@@ -29,10 +29,10 @@ public class VarTable implements IVarTable {
     }
     public int getSize()
     {
-        throw new NotImplementedRuntimeException("VarTable", "getSize not implemented!");
+        return varList.size();
     }
     public boolean isIn(String varName)
     {
-        throw new NotImplementedRuntimeException("VarTable", "isIn not implemented!");
+        return varMap.containsKey(varName);
     }
 }
