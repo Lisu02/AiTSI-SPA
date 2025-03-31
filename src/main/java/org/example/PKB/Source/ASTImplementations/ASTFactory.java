@@ -3,9 +3,7 @@ package org.example.PKB.Source.ASTImplementations;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.TNode;
 import org.example.PKB.Source.ASTNode;
-import org.example.PKB.Source.NodeImplementations.AssignNode;
-import org.example.PKB.Source.NodeImplementations.VariableNode;
-import org.example.PKB.Source.NodeImplementations.WhileNode;
+import org.example.PKB.Source.NodeImplementations.*;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -24,6 +22,12 @@ public abstract class ASTFactory extends ASTEssential {
             }
             case ASSIGN -> {
                 node = new AssignNode();
+            }
+            case PROCEDURE -> {
+                node = new ProcedureNode();
+            }
+            case PROGRAM -> {
+                node = new ProgramNode();
             }
             default -> {
             return null;
