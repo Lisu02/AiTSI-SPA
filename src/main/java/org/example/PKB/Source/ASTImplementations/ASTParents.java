@@ -32,8 +32,8 @@ public abstract class ASTParents extends ASTSetters {
         }
         return Collections.emptyList();
     }
-    //Do dogadania bo chyba bedzie musialo zwrocic liste, ustalilem z Lukaszem ze pogadamy na zajeciach z Kasprem
-    public TNode getParentAstra(TNode c)
+
+    public List<TNode> getParentAstra(TNode c)
     {
         ASTNode astNode1 = (ASTNode) c;
         List<TNode> parents = new ArrayList<>();
@@ -44,25 +44,19 @@ public abstract class ASTParents extends ASTSetters {
             if(checkIfEntityIsWhileOrIf(parent1))
             {
                 //to jest pod liste
-//                while (parent2 != null) {
-//                    if (checkIfEntityIsWhileOrIf(parent2)) {
-//                      parents.add(parent2);
-//                    }
-//                      else
-//                      {
-//                           break;
-//                      }
-//                    parent2 = parent2.getParent();
-//                }
-                if(parent2!=null)
-                {
+                while (parent2 != null) {
                     if (checkIfEntityIsWhileOrIf(parent2)) {
-                       return parent2;
+                      parents.add(parent2);
                     }
+                      else
+                      {
+                           break;
+                      }
+                    parent2 = parent2.getParent();
                 }
             }
         }
-    return null;
+    return parents;
     }
 
     public List<TNode> getParentedAstraBy(TNode p)
