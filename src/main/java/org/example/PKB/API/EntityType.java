@@ -9,9 +9,11 @@ public enum EntityType {
     CALL,
     WHILE,
     IF,
+    EXPR,
     PLUS,
     MINUS,
     TIMES,
+    REF,
     VARIABLE,
     CONSTANT
 }
