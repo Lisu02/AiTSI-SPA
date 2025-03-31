@@ -29,6 +29,10 @@ public abstract class ASTFactory extends ASTEssential {
             case PROGRAM -> {
                 node = new ProgramNode();
             }
+            case PLUS -> {
+                node = new PlusNode();
+            }
+
             default -> {
             return null;
             }
