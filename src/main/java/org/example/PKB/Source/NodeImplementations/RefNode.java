@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public abstract class RefNode extends ASTNode {
+public abstract class RefNode extends ExprNode {
     public RefNode(EntityType entityType) {
         super(entityType);
     }
