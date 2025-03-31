@@ -3,6 +3,7 @@ package org.example.PKB.Source.ASTImplementations;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.TNode;
 import org.example.PKB.Source.ASTNode;
+import org.example.PKB.Source.NodeImplementations.AssignNode;
 import org.example.PKB.Source.NodeImplementations.VariableNode;
 import org.example.PKB.Source.NodeImplementations.WhileNode;
 
@@ -20,6 +21,9 @@ public abstract class ASTFactory extends ASTEssential {
             }
             case VARIABLE -> {
                 node = new VariableNode();
+            }
+            case ASSIGN -> {
+                node = new AssignNode();
             }
             default -> {
             return null;

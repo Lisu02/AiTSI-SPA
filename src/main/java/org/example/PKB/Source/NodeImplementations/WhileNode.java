@@ -36,7 +36,7 @@ public class WhileNode extends StmtNode{
             return 0;
         }
 
-        if ((child instanceof StmtNode))
+        if (!(child instanceof StmtNode))
             throw new ASTBuildException("Next child of WhileNode must be a StmtNode!");
         StmtNode stmtChild = (StmtNode)child;
         stmtChildren.add(stmtChild);

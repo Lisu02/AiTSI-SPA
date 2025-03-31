@@ -19,7 +19,7 @@ public interface IAST {
     public List<TNode> getParentedBy(TNode p);
 
     // Astra -> Astreisk -> Nawa symbolu * na klawiaturze, bo nie może być częścią nazwy
-    public TNode getParentAstra(TNode c);
+    public List<TNode> getParentAstra(TNode c);
     public List<TNode> getParentedAstraBy(TNode p);
     public TNode getFollows(TNode n);
     public List<TNode> getFollowsAstra(TNode n);
