@@ -10,11 +10,10 @@ import java.util.Set;
 
 public class WhileNode extends StmtNode{
     private VariableNode variableChild;
-    private List<StmtNode> stmtChildren;
+    private StmtListNode stmtChildren;
 
     public WhileNode() {
         super(EntityType.WHILE);
-        stmtChildren = new ArrayList<StmtNode>();
     }
 
     @Override
@@ -26,6 +25,9 @@ public class WhileNode extends StmtNode{
 
     @Override
     public int setNextChild(ASTNode child) throws ASTBuildException {
+        if (child == null) {
+            throw new ASTBuildException("Can't add null child node");
+        }
         if(variableChild == null)
         {
             if(!(child instanceof VariableNode))
@@ -35,15 +37,15 @@ public class WhileNode extends StmtNode{
             variableChild.setParent(this);
             return 0;
         }
-
-        if (!(child instanceof StmtNode))
-            throw new ASTBuildException("Next child of WhileNode must be a StmtNode!");
-        StmtNode stmtChild = (StmtNode)child;
-        stmtChildren.add(stmtChild);
-        stmtChild.setId(stmtChildren.size());
-        stmtChild.setParent(this);
-        return stmtChild.getId();
-
+        if(stmtChildren == null) {
+            if (!(child instanceof StmtListNode))
+                throw new ASTBuildException("Next child of WhileNode must be a StmtListNode!");
+            stmtChildren = (StmtListNode) child;
+            stmtChildren.setId(1);
+            stmtChildren.setParent(this);
+            return 1;
+        }
+        throw new ASTBuildException("No more children can be assigned to a WhileNode!");
     }
 
     @Override
@@ -54,7 +56,7 @@ public class WhileNode extends StmtNode{
 
         List<ASTNode> children = new ArrayList<>();
         children.add(variableChild);
-        children.addAll(stmtChildren);
+        children.add(stmtChildren);
         return children;
     }
 
@@ -62,12 +64,14 @@ public class WhileNode extends StmtNode{
     @Override
     public ASTNode getChild(int num) {
         if(num == 0)return variableChild;
-        if (num <= stmtChildren.size())return stmtChildren.get(num-1);
+        if (num == 1)return stmtChildren;
         return null;
     }
 
     @Override
     public int getChildCount() {
-        return variableChild == null ? 0 : stmtChildren.size() + 1;
+        if(variableChild == null)return 0;
+        if (stmtChildren == null)return 1;
+        return 2;
     }
 }
