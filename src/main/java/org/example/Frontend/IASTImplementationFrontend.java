@@ -68,7 +68,7 @@ public class IASTImplementationFrontend implements IAST {
     }
 
     @Override
-    public TNode getParentAstra(TNode c) {
+    public List<TNode> getParentAstra(TNode c) {
         return null;
     }
 
@@ -115,5 +115,10 @@ public class IASTImplementationFrontend implements IAST {
     @Override
     public boolean isParentAstra(TNode n1, TNode n2) {
         return false;
+    }
+
+    @Override
+    public List<TNode> getNodesOfEntityTypes(EntityType et) {
+        return List.of();
     }
 }

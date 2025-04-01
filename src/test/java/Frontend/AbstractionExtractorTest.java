@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 public class AbstractionExtractorTest {
 
     @Mock
-    IASTImplementationFrontend iast;
+    IAST iast;
 
     @InjectMocks
     AbstractionExtractor ae;

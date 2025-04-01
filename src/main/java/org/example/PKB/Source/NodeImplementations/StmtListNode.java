@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public class StmtListNode extends ASTNode {
-    private List<StmtNode> stmtChildren;
+    private List<StmtNode> stmtChildren = new ArrayList<>();
 
     public StmtListNode() {
         super(EntityType.STMTLIST);

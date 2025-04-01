@@ -15,7 +15,7 @@
         private IModifies iModifies;
 
         public AbstractionExtractor(){
-            this(new IASTImplementationFrontend(),new ImodifiesFrontendImpl());
+            this(PKB.getAST(),new ImodifiesFrontendImpl());
         }
         public AbstractionExtractor(IAST iast){
             this(iast,new ImodifiesFrontendImpl());
@@ -58,7 +58,7 @@
 
 
         //generateModifies(tNodeRoot);
-        generateUses(tNodeRoot);
+        //generateUses(tNodeRoot);
     }
 
     private void generateModifies(TNode tNodeProcedure){
@@ -78,7 +78,7 @@
         System.out.println("End of generateModifies");
     }
 
-    private void generateUses(TNode tNodeRoot){
+    private void generateUses(TNode tNodeProcedure){
         System.out.println("generateUses - not implemented yet!");
     }
 

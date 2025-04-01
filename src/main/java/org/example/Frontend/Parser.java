@@ -12,7 +12,8 @@ import java.util.regex.Pattern;
 public class Parser {
 
     Logger log = Logger.getLogger(Parser.class.getName());
-    IASTImplementationFrontend iast = new IASTImplementationFrontend();
+    //IASTImplementationFrontend iast = new IASTImplementationFrontend();
+    IAST iast = PKB.getAST();
 
     //Singleton
     private static Parser parserInstance = null;
