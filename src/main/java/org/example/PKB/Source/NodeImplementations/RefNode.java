@@ -1,5 +1,6 @@
 package org.example.PKB.Source.NodeImplementations;
 
+import org.example.Exceptions.ASTBuildException;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.Source.ASTNode;
 
@@ -19,9 +20,9 @@ public abstract class RefNode extends ExprNode {
         return set;
     }
 
-    public int setNextChild(ASTNode child)
+    public int setNextChild(ASTNode child) throws ASTBuildException
     {
-        return -1;
+        throw new ASTBuildException("RefNode cannot have any children!");
     }
     public List<ASTNode> getChildren()
     {
