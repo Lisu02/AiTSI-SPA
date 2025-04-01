@@ -24,6 +24,9 @@ public class AssignNode  extends StmtNode{
 
     @Override
     public int setNextChild(ASTNode child) throws ASTBuildException {
+        if (child == null) {
+            throw new ASTBuildException("Can't add null child node");
+        }
         if(variableNode == null)
         {
             if(!(child instanceof VariableNode))
