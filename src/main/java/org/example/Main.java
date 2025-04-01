@@ -4,9 +4,14 @@ import org.example.Frontend.AbstractionExtractor;
 import org.example.Frontend.Parser;
 import org.example.Frontend.Tokenizer;
 
+import java.io.IOException;
+import java.util.logging.LogManager;
+
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        LogManager.getLogManager().readConfiguration(Main.class.getClassLoader().getResourceAsStream("logging.properties"));
+
         System.out.println("MAIN EMPTY");
         Tokenizer tokenizer = Tokenizer.getInstance();
 

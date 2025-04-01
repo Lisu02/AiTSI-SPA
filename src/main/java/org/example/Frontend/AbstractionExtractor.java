@@ -45,6 +45,7 @@
             currentNode = iast.getLinkedNode(LinkType.RightSibling,currentNode);
             System.out.println("currentNode = " + currentNode);
             procedureList.add(currentNode);
+            break;
         }
 
         for(TNode procedureNode: procedureList){

@@ -35,7 +35,7 @@ public abstract class ASTNode implements TNode {
     }
 
     public void setParent(ASTNode parent) {
-        if (parent != null) return;
+        if (this.parent != null) return;
         this.parent = parent;
     }
 
@@ -44,7 +44,7 @@ public abstract class ASTNode implements TNode {
     }
 
     public void setId(int id) {
-        if (id != -1) return;
+        if (this.id != -1) return;
         this.id = id;
     }
 
