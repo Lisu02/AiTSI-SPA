@@ -8,11 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 public class ProcedureNode extends ASTNode {
-    private final List<StmtNode> children;
+    private StmtListNode children;
 
     public ProcedureNode() {
         super(EntityType.PROCEDURE);
-        this.children = new ArrayList<StmtNode>();
     }
 
     @Override
@@ -20,29 +19,29 @@ public class ProcedureNode extends ASTNode {
         if (child == null) {
             throw new ASTBuildException("Can't add null child node");
         }
-        if (!(child instanceof StmtNode))
-            throw new ASTBuildException("Next child of ProgramNode must be a StmtNode!");
-        children.add((StmtNode) child);
-        child.setParent(this);
-        return children.size() - 1;
+        if(children != null)
+            throw new ASTBuildException("Cannot add more children in ProcedureNode!");
+        if (!(child instanceof StmtListNode))
+            throw new ASTBuildException("A child of a ProcedureNode must be a StmtListNode!");
+        children = (StmtListNode) child;
+        children.setId(0);
+        children.setParent(this);
+        return 0;
     }
 
     @Override
     public List<ASTNode> getChildren() {
-        return new ArrayList<>(children);  //
+        return List.of(children);  //
     }
 
     @Override
     public ASTNode getChild(int num) {
-        if (num < 0 || num >= children.size()) {
-            return null;
-        }
-        return children.get(num);
+        return num == 0 ? children : null;
     }
 
     @Override
     public int getChildCount() {
-        return children.size();
+        return children == null ? 0 : 1;
     }
 
     @Override

@@ -14,6 +14,9 @@ public abstract class ASTFactory extends ASTEssential {
         ASTNode node;
         switch (et)
         {
+            case STMTLIST ->{
+                node = new StmtListNode();
+            }
             case WHILE -> {
                 node = new WhileNode();
             }
