@@ -1,3 +1,5 @@
 package org.example.QueryProc.model;
 
-public record WithStatement (String name, String type, String attribute, String constVal) {}
+import org.example.PKB.API.EntityType;
+
+public record WithStatement (String name, EntityType type, String attribute, String constVal) {}

@@ -46,10 +46,10 @@ public class Evaluator {
 
         TNode tNode;
         if(withStatement.type().equals("integer")) {
-           tNode = IAST.getTNode(Integer.parseInt(withStatement.constVal()));
+           tNode = findNodeByProgLine(Integer.parseInt(withStatement.constVal()));
         }
         else if(withStatement.type().equals("string")) {
-            tNode = IAST.getTNode(withStatement.constVal());
+            tNode = findNodeByName(withStatement.constVal());
         }
         else {
             throw new NotImplementedRuntimeException("query evaluator","with statement with two synonyms hasn't been implemented yet");

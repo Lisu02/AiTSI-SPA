@@ -161,7 +161,7 @@ public class PreProc {
         return relations;
     }
 
-    private void validateWithStatements(List<String[]> withStatements, Map<String,EntityType> synonyms) throws InvalidQueryException {
+    private List<WithStatement> validateWithStatements(List<String[]> withStatements, Map<String,EntityType> synonyms) throws InvalidQueryException {
         List<WithStatement> result = new ArrayList<>();
         for(String[] statement : withStatements) {
             EntityType type = synonyms.get(statement[0]);
