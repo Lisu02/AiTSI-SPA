@@ -23,6 +23,7 @@ public abstract class ASTNode implements TNode {
     public EntityType getEntityType() {
         return entityType;
     }
+  
     public Set<EntityType> getAllEntityTypes()
     {
         return new HashSet<>();

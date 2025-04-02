@@ -171,11 +171,13 @@ public interface IAST {
      */
     public boolean isParentAstra(TNode n1, TNode n2);
 
+
     /**
      * Returns a list of all nodes in tree being type of @p et
      * @param et Type of nodes to find
      * @return A list of nodes or NULL, if no nodes o this type are in list.
      */
     public List<TNode> getNodesOfEntityTypes(EntityType et);
+
 
 }

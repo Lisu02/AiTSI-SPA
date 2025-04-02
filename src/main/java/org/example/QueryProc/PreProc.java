@@ -57,6 +57,7 @@ public class PreProc {
         }
         return synonyms;
     }
+  
     private record ReturnDesc(boolean isBoolean, List<Argument> returnValues) {}
     private ReturnDesc determineReturnValues(String returnBody,  Map<String,EntityType> synonyms) throws InvalidQueryException {
         String[] returnElements = Arrays.stream(returnBody
@@ -87,8 +88,8 @@ public class PreProc {
         }
         return new ReturnDesc(isBoolean,returnValues);
     }
+  
     private record BodyDesc(List<String[]> suchThatStatements, List<String[]> withStatements) {}
-
     private BodyDesc determineQueryBody(String[] queryBody) throws InvalidQueryException {
         List<String[]> suchThatStatements = new ArrayList<>();
         List<String[]> withStatements = new ArrayList<>();
