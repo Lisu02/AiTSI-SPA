@@ -14,7 +14,7 @@ public abstract class ASTFollows extends ASTParents {
             ASTNode parent = astNode.getParent();
 
             if (parent != null) {
-                return  parent.getChild(astNode.getId() + 1);
+                return  parent.getChild(astNode.getId() - 1);
             }
         } catch (NullPointerException | IndexOutOfBoundsException e) {
 
@@ -28,7 +28,7 @@ public abstract class ASTFollows extends ASTParents {
         ASTNode parent = astNode.getParent();
         if (parent != null) {
             return parent.getChildren().stream()
-                    .filter(child -> child.getId() > astNode.getId())
+                    .filter(child -> child.getId() < astNode.getId())
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
@@ -40,7 +40,7 @@ public abstract class ASTFollows extends ASTParents {
             ASTNode parent = astNode.getParent();
 
             if (parent != null) {
-                return  parent.getChild(astNode.getId() - 1);
+                return  parent.getChild(astNode.getId() + 1);
             }
         } catch (NullPointerException | IndexOutOfBoundsException e) {
 
@@ -53,7 +53,7 @@ public abstract class ASTFollows extends ASTParents {
         ASTNode parent = astNode.getParent();
         if (parent != null) {
             return parent.getChildren().stream()
-                    .filter(child -> child.getId() < astNode.getId())
+                    .filter(child -> child.getId() > astNode.getId())
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();

@@ -1,6 +1,7 @@
 package org.example.QueryProc;
 
 import org.example.Exceptions.InvalidQueryException;
+import org.example.PKB.API.EntityType;
 import org.example.QueryProc.model.*;
 import org.example.QueryProc.staticVal.GrammarRules;
 
@@ -17,7 +18,7 @@ public class PreProc {
             throw new InvalidQueryException("Query can't have empty body");
         }
 
-        Map<String,String> synonyms = separateSynonyms(args);
+        Map<String,EntityType> synonyms = separateSynonyms(args);
 
         String[] bodyElements = Arrays.stream(body.split("(?=\\b(such that|with)\\b)"))
                 .filter(e->!e.isBlank())
@@ -26,36 +27,39 @@ public class PreProc {
         System.out.println(Arrays.toString(bodyElements));
 
         ReturnDesc returnDesc = determineReturnValues(bodyElements[0],synonyms);
-        BodyDesc bodyDesc = determineQueryBody(Arrays.copyOfRange(bodyElements,1,bodyElements.length), synonyms);
+        BodyDesc bodyDesc = determineQueryBody(Arrays.copyOfRange(bodyElements,1,bodyElements.length));
 
         List<Relation> relations = validateSuchThatStatements(bodyDesc.suchThatStatements,synonyms);
         validateWithStatements(bodyDesc.withStatements,synonyms);
 
         return new QueryTree(returnDesc.isBoolean,returnDesc.returnValues,relations,bodyDesc.withStatements);
     }
-    private Map<String,String> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
-        Map<String,String> synonyms = new HashMap<>();
+    private Map<String,EntityType> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
+        Map<String,EntityType> synonyms = new HashMap<>();
         for(String element : queryArguments) {
             String[] tmp = Arrays.stream(element
                             .split("[ ,]"))
                     .filter(s->!s.isBlank())
                     .toArray(String[]::new);
 
-            if(!GrammarRules.ENTITIES.contains(tmp[0])) {
-                throw new InvalidQueryException("Invalid synonym type: " + tmp[0]);
-            }
+            EntityType entityType = GrammarRules.ENTITIES
+                    .stream()
+                    .filter(entity->entity.name().toLowerCase().equals(tmp[0]))
+                    .findFirst()
+                    .orElseThrow(()->new InvalidQueryException("Invalid synonym type: " + tmp[0]));
 
             for(int i=1;i<tmp.length;i++) {
                 if(!Character.isLetter(tmp[i].charAt(0))) {
                     throw new InvalidQueryException("Invalid synonym name: " + tmp[i]);
                 }
-                synonyms.put(tmp[i],tmp[0]);
+                synonyms.put(tmp[i],entityType);
             }
         }
         return synonyms;
     }
+  
     private record ReturnDesc(boolean isBoolean, List<Argument> returnValues) {}
-    private ReturnDesc determineReturnValues(String returnBody,  Map<String,String> synonyms) throws InvalidQueryException {
+    private ReturnDesc determineReturnValues(String returnBody,  Map<String,EntityType> synonyms) throws InvalidQueryException {
         String[] returnElements = Arrays.stream(returnBody
                         .split("[ ,]"))
                 .filter(s->!s.isBlank())
@@ -84,28 +88,28 @@ public class PreProc {
         }
         return new ReturnDesc(isBoolean,returnValues);
     }
+  
     private record BodyDesc(List<String[]> suchThatStatements, List<String[]> withStatements) {}
-
-    private BodyDesc determineQueryBody(String[] queryBody, Map<String, String> synonyms) throws InvalidQueryException {
+    private BodyDesc determineQueryBody(String[] queryBody) throws InvalidQueryException {
         List<String[]> suchThatStatements = new ArrayList<>();
         List<String[]> withStatements = new ArrayList<>();
 
-        for (int i = 0; i < queryBody.length; i++) {
-            if (queryBody[i].startsWith("such that")) {
-                String[] relation = Arrays.stream(queryBody[i]
-                                .replace("such that","")
+        for (String s : queryBody) {
+            if (s.startsWith("such that")) {
+                String[] relation = Arrays.stream(s
+                                .replace("such that", "")
                                 .trim().split("[ ,()]"))
                         .filter(t -> !t.isBlank())
                         .toArray(String[]::new);
 
                 suchThatStatements.add(relation);
 
-            } else if (queryBody[i].startsWith("with")) {
-                if(queryBody[i].chars().filter(ch->ch == '=').count() != 1) {
-                    throw new InvalidQueryException("Invalid number o =: " + queryBody[i].chars().filter(ch->ch == '=').count() + " In statement: " + queryBody[i]);
+            } else if (s.startsWith("with")) {
+                if (s.chars().filter(ch -> ch == '=').count() != 1) {
+                    throw new InvalidQueryException("Invalid number of =: " + s.chars().filter(ch -> ch == '=').count() + " In statement: " + s);
                 }
-                String[] tmp = Arrays.stream(queryBody[i]
-                                .replace("with","")
+                String[] tmp = Arrays.stream(s
+                                .replace("with", "")
                                 .trim().split("[ .=]"))
                         .filter(t -> !t.isBlank())
                         .toArray(String[]::new);
@@ -115,7 +119,7 @@ public class PreProc {
         }
         return new BodyDesc(suchThatStatements, withStatements);
     }
-    private List<Relation> validateSuchThatStatements(List<String[]> suchThatStatements, Map<String,String> synonyms) throws InvalidQueryException {
+    private List<Relation> validateSuchThatStatements(List<String[]> suchThatStatements, Map<String,EntityType> synonyms) throws InvalidQueryException {
         List<Relation> relations = new ArrayList<>();
         for(String[] relation : suchThatStatements) {
             if(relation.length == 0) {
@@ -129,16 +133,16 @@ public class PreProc {
             if(signature == null) {
                 throw new InvalidQueryException("Incorrect relation name: " + relation[0]);
             }
-            String[] type =  new String[2];
+            EntityType[] type =  new EntityType[2];
             for(int i=1;i<relation.length;i++) {
                 if(relation[i].matches("\\d+")) {
-                    type[i-1] = "integer";
+                    type[i-1] = EntityType.INTEGER;
                 }
                 else if(relation[i].charAt(0) == '"' && relation[i].charAt(relation[i].length()-1) == '"') {
-                    type[i-1] = "string";
+                    type[i-1] = EntityType.STRING;
                 }
                 else if(relation[i].equals("_")) {
-                    type[i-1] = "_";
+                    type[i-1] = EntityType.BLANK;
                 }
                 else {
                     type[i-1] = synonyms.get(relation[i]);
@@ -148,19 +152,19 @@ public class PreProc {
                     throw new InvalidQueryException("Synonym " + relation[i] + " not found");
                 }
             }
-            if(!signature.isArg1TypeAllowed(type[0])) {
+            if(!signature.isArg1TypeAllowed(type[0].name().toLowerCase())) {
                 throw new InvalidQueryException("Incorrect argument type: " + relation[1] + " - " + type[0] + " in relation " + relation[0]);
             }
-            else if(!signature.isArg2TypeAllowed(type[1])) {
+            else if(!signature.isArg2TypeAllowed(type[1].name().toLowerCase())) {
                 throw new InvalidQueryException("Incorrect argument type: " + relation[2] + " - " + type[1] + " in relation " + relation[0]);
             }
             relations.add(new Relation(relation[0],new Argument(relation[1],type[0]),new Argument(relation[2],type[1])));
         }
         return relations;
     }
-    private void validateWithStatements(List<String[]> withStatements, Map<String,String> synonyms) throws InvalidQueryException {
+    private void validateWithStatements(List<String[]> withStatements, Map<String,EntityType> synonyms) throws InvalidQueryException {
         for(String[] statement : withStatements) {
-            String type = synonyms.get(statement[0]);
+            EntityType type = synonyms.get(statement[0]);
             if(type == null) {
                 throw new InvalidQueryException("There is no such synonym as : " + statement[0]);
             }

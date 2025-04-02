@@ -1,0 +1,8 @@
+procedure nazwa {
+    zmienna = a + b + d +2 ;
+    zmienna = zmienna +2 ;
+    zmienna = zmienna + d +2 ;
+    while zmienna {
+    nowosc = 2 + 3 + 9;
+    }
+}

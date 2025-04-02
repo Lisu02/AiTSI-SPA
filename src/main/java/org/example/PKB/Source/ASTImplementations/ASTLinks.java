@@ -22,7 +22,6 @@ public abstract class ASTLinks extends ASTCheckers {
                 return getFirstChild(astNode1);
             case Follows:
                 return getFollows(astNode1);
-
             case RightSibling:
                 return getFollows(astNode1);
             case Parent:
@@ -37,14 +36,13 @@ public abstract class ASTLinks extends ASTCheckers {
         ASTNode astNode2 = (ASTNode) node2;
         switch (link) {
             case FirstChild:
-                return true;
+                return getFirstChild(astNode1).equals(astNode2)&& getFirstChild(astNode1)!=null;
             case Follows:
-                return  true;
-
+                return getFollows(astNode1).equals(astNode2)&& getFollows(astNode1)!=null;
             case RightSibling:
-                return true;
+                return getFollows(astNode1).equals(astNode2) && getFollows(astNode1)!=null;
             case Parent:
-                return true;
+                return getParent(astNode1).equals(astNode2) && getParent(astNode1)!=null;
             default:
                 return false;
         }
