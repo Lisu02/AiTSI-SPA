@@ -1,11 +1,9 @@
 package org.example.QueryProc;
 
+import org.example.Exceptions.NotImplementedRuntimeException;
+import org.example.QueryProc.model.*;
 import org.example.PKB.API.*;
 import org.example.PKB.Source.ASTNode;
-import org.example.QueryProc.model.Argument;
-import org.example.QueryProc.model.QueryTree;
-import org.example.QueryProc.model.Relation;
-import org.example.QueryProc.model.RelationFunctions;
 import org.example.QueryProc.staticVal.GrammarRules;
 
 import java.util.ArrayList;
@@ -18,12 +16,46 @@ public class Evaluator {
     private static final IAST IAST = PKB.getAST();
 
     public Set<TNode> evaluateQuery(QueryTree queryTree) {
-        List<Relation> suchThatStatements = queryTree.relations();
-
         Set<TNode> result = new HashSet<>();
-        for( Relation relation : suchThatStatements) {
-            result.addAll(evaluateRelation(relation,queryTree.returnValues()));
+
+        //We must add system where while searching for TNodes meeting our conditions we only check TNodes return by previous relation or with statement
+        for( Relation relation : queryTree.relations()) {
+            Set<TNode> tNodes = evaluateRelation(relation,queryTree.returnValues());
+            if(result.isEmpty()) {
+                result.addAll(tNodes);
+            }
+            else {
+                result.retainAll(tNodes);
+            }
         }
+
+        for( WithStatement statement : queryTree.withStatements()) {
+            Set<TNode> tNodes = evaluateWith(statement);
+            if(result.isEmpty()) {
+                result.addAll(tNodes);
+            }
+            else {
+                result.retainAll(tNodes);
+            }
+        }
+
+        return result;
+    }
+    public Set<TNode> evaluateWith(WithStatement withStatement) {
+        Set<TNode> result = new HashSet<>();
+
+        TNode tNode;
+        if(withStatement.type().equals("integer")) {
+           tNode = IAST.getTNode(Integer.parseInt(withStatement.constVal()));
+        }
+        else if(withStatement.type().equals("string")) {
+            tNode = IAST.getTNode(withStatement.constVal());
+        }
+        else {
+            throw new NotImplementedRuntimeException("query evaluator","with statement with two synonyms hasn't been implemented yet");
+        }
+        result.add(tNode);
+
         return result;
     }
     public Set<TNode> evaluateRelation(Relation relation, List<Argument> returnValues) {

@@ -16,6 +16,7 @@ public class QueryController {
         } catch (InvalidQueryException e) {
             System.out.println(e.getMessage());
         }
+        System.out.println(queryTree.withStatements());
         evaluator.evaluateQuery(queryTree);
         //System.out.println(queryTree);
     }

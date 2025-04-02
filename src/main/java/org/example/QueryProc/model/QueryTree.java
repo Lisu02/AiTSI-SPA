@@ -5,5 +5,5 @@ public record QueryTree(
         boolean isBoolean,
         List<Argument> returnValues,
         List<Relation> relations,
-        List<String[]> withStatements
+        List<WithStatement> withStatements
 ) {}
