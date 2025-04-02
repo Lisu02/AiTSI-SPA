@@ -1,7 +1,9 @@
 package org.example.QueryProc.model;
 
+import org.example.PKB.API.EntityType;
 import java.util.Objects;
-public record Argument(String name, String type) {
+
+public record Argument(String name, EntityType type) {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

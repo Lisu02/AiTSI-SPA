@@ -89,7 +89,7 @@ public class Tokenizer {
         return false;
     }
 
-
+    //todo: do zliczania stmt
     private boolean isNewStatment(String word){
         return word.endsWith("{") || word.endsWith(";");
     }
