@@ -13,16 +13,18 @@
         //Na razie testowo imodifies
         private IAST iast;
         private IModifies iModifies;
+        private IUses iUses;
 
         public AbstractionExtractor(){
-            this(PKB.getAST(),new ImodifiesFrontendImpl());
+            this(PKB.getAST(),new ImodifiesFrontendImpl(),new IUsesFrontendImpl());
         }
         public AbstractionExtractor(IAST iast){
-            this(iast,new ImodifiesFrontendImpl());
+            this(iast,new ImodifiesFrontendImpl(),new IUsesFrontendImpl());
         }
-        public AbstractionExtractor(IAST iast, IModifies iModifies){
+        public AbstractionExtractor(IAST iast, IModifies iModifies,IUses iuses){
             this.iast = iast;
             this.iModifies = iModifies;
+            this.iUses=iuses;
         }
 
     //Root - program
@@ -78,9 +80,49 @@
 
         System.out.println("End of generateModifies");
     }
-
     private void generateUses(TNode tNodeProcedure){
-        System.out.println("generateUses - not implemented yet!");
+            TNode stmtList = iast.getFirstChild(tNodeProcedure);
+            TNode currentNode = iast.getFirstChild(stmtList);
+            TNode stmtNode = currentNode;
+            do{
+                if(iast.getType(stmtNode)==EntityType.WHILE){
+                    currentNode=iast.getFirstChild(stmtNode);
+                    Attr add=iast.getAttr(currentNode);
+                    iUses.setUses(stmtNode, add.getVarName());
+                    currentNode=iast.getLinkedNode(LinkType.RightSibling,currentNode);
+                    currentNode=iast.getFirstChild(currentNode);
+                    do{
+                        TNode right=iast.getFirstChild(currentNode);
+                        right=iast.getLinkedNode(LinkType.RightSibling,right);
+                        iterateUses(right,currentNode,stmtNode);
+                        currentNode=iast.getLinkedNode(LinkType.RightSibling,currentNode);
+                    }while(iast.getLinkedNode(LinkType.RightSibling,stmtNode)!=null);
+                }
+                else if(iast.getType(stmtNode)==EntityType.ASSIGN){
+                    currentNode=iast.getFirstChild(stmtNode);
+                    currentNode=iast.getLinkedNode(LinkType.RightSibling,currentNode);
+                    iterateUses(currentNode,stmtNode,stmtNode);
+                }
+                stmtNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);
+            }while(iast.getLinkedNode(LinkType.RightSibling,stmtNode)!=null);
+            System.out.println("End of generateUses");
     }
-
+    private void iterateUses(TNode test,TNode stmt,TNode parent){
+            if(iast.getType(test)==EntityType.VARIABLE){
+                Attr add=iast.getAttr(test);
+                if(stmt!=parent){
+                    iUses.setUses(stmt, add.getVarName());
+                    iUses.setUses(parent, add.getVarName());
+                }
+                else{
+                    iUses.setUses(stmt, add.getVarName());
+                }
+            }
+            else{
+                TNode children=iast.getFirstChild(test);
+                iterateUses(children,stmt,parent);
+                children=iast.getLinkedNode(LinkType.RightSibling,children);
+                iterateUses(children,stmt,parent);
+            }
+    }
 }
