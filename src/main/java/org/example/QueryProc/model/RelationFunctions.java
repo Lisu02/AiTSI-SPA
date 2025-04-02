@@ -10,4 +10,5 @@ public record RelationFunctions(
         Function<TNode, List<TNode>> byFunction,
         Function<TNode, List<TNode>> function,
         BiPredicate<TNode, TNode> isFunction
-) {}
+) {
+}
