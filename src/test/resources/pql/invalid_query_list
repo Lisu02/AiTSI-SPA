@@ -32,6 +32,8 @@ stmt s; variable v; Select s such that Modifies(s,v) with v.varName=5 # Incorrec
 stmt s; variable v; Select s such that Modifies(s,v) with s = "stmt" # Invalid number of arguments: 2. In statement: [s, "stmt"]
 stmt s; variable v; Select s such that Modifies(s,v) with s.stmt = "stmt" # Invalid attribute: stmt. In statement: [s, stmt, "stmt"]
 stmt s; variable v; Select s such that Uses(s, v) with v.varName=="x" # Invalid number of =: 2 In statement: with v.varName=="x"
+stmt s; variable v; Select s such that Modifies(s,v) with v.stmt#="x" # Wrong attribute
+stmt s; variable v; Select s such that Modifies(s,v) with v.procName="x" # Wrong attribute
 
 // Not recognize synonym
 Select s such that Uses(s, v) # Not recognize synonym: s

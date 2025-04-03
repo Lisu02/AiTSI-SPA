@@ -6,6 +6,7 @@ import org.example.PKB.API.PKB;
 import org.example.QueryProc.model.ArgumentDefinition;
 import org.example.QueryProc.model.RelationFunctions;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,10 +30,13 @@ public class GrammarRules {
             "Calls", new ArgumentDefinition(PROCEDURE_TYPES, PROCEDURE_TYPES),
             "Calls*", new ArgumentDefinition(PROCEDURE_TYPES, PROCEDURE_TYPES)
     );
+    private static <T> List<T> safeList(T item) {
+        return item == null ? Collections.emptyList() : Collections.singletonList(item);
+    }
     public static final Map<String, RelationFunctions> RELATION_FUNCTIONS = Map.of(
-//            "Follows", new RelationFunctions(IAST::getFollowedBy,IAST::getFollows,IAST::isFollowed),
+            "Follows", new RelationFunctions(ast -> safeList(IAST.getFollowedBy(ast)),ast -> safeList(IAST.getFollows(ast)),IAST::isFollowed),
             "Follows*", new RelationFunctions(IAST::getFollowedAstraBy,IAST::getFollowsAstra,IAST::isFollowedAstra),
-//            "Parent", new RelationFunctions(IAST::getParentedBy,IAST::getParent,IAST::isParent),
+            "Parent", new RelationFunctions(IAST::getParentedBy,ast -> safeList(IAST.getParent(ast)),IAST::isParent),
             "Parent*", new RelationFunctions(IAST::getParentedAstraBy,IAST::getParentAstra,IAST::isParentAstra),
             "Modifies", new RelationFunctions(null,null,null),
             "Modifies*", new RelationFunctions(null,null,null),

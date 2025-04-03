@@ -31,7 +31,7 @@ public class PreProcTest {
 //        return synonyms;
 //    }
     static Stream<Arguments> queryProvider() throws IOException {
-        return Files.lines(Path.of("src/test/resources/invalid_query_list"))
+        return Files.lines(Path.of("src/test/resources/pql/invalid_query_list"))
                 .filter(line-> !line.isEmpty() && !line.startsWith("//"))
                 .map(line -> line.split("#", 2))
                 .map(parts -> Arguments.of(parts[0].trim(), parts[1].trim()));
@@ -46,7 +46,7 @@ public class PreProcTest {
     }
 
     static Stream<Arguments> validQueryProvider() throws IOException {
-        return Files.lines(Path.of("src/test/resources/valid_query_list"))
+        return Files.lines(Path.of("src/test/resources/pql/valid_query_list"))
                 .map(Arguments::of);
     }
     @ParameterizedTest
@@ -57,8 +57,8 @@ public class PreProcTest {
 
 //    @ParameterizedTest
 //    @MethodSource("synonymProvider")
-//    void shouldSeparateSynonymsCorrectly(String query, Map<String,String> expectedSynonyms) throws InvalidQueryException{
-//        QueryTree queryTree = preProc.parseQuery(query);
+//    void shouldSeparateSynonymsCorrectly(String queryEvaluator1, Map<String,String> expectedSynonyms) throws InvalidQueryException{
+//        QueryTree queryTree = preProc.parseQuery(queryEvaluator1);
 //        expectedSynonyms.forEach((synonym,expectedType) ->
 //            assertEquals(expectedType,queryTree.getSynonyms().get(synonym)));
 //    }

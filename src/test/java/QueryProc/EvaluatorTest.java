@@ -1,9 +1,66 @@
 package QueryProc;
 
+import org.example.Exceptions.InvalidQueryException;
+import org.example.Frontend.AbstractionExtractor;
+import org.example.Frontend.Parser;
+import org.example.Frontend.Tokenizer;
 import org.example.QueryProc.Evaluator;
+import org.example.QueryProc.PreProc;
+import org.example.QueryProc.ResultProjector;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EvaluatorTest {
+    private final PreProc preProc = new PreProc();
     private final Evaluator evaluator = new Evaluator();
+    private final ResultProjector resultProjector = new ResultProjector();
+    @BeforeAll
+    private static void setUp() {
+        Tokenizer tokenizer = Tokenizer.getInstance();
+
+        Parser parser = Parser.getInstance();
+
+        parser.getTokens(tokenizer.getTokensFromFilename("ParserTest.txt"));
+
+        AbstractionExtractor ae = new AbstractionExtractor();
+
+        ae.generateStarterAbstractions();
+    }
+
+    static Stream<Arguments> queryProvider() throws IOException {
+        return Files.lines(Path.of("src/test/resources/queryEvaluator1"))
+                //.filter(line-> !line.isEmpty() && !line.startsWith("//"))
+                .map(line -> line.split("#", 2))
+                .map(parts ->
+                        Arguments.of(parts[0].trim(),
+                        Arrays.stream(parts[1]
+                                .split(","))
+                                .map(String::trim)
+                                .collect(Collectors.toList())));
+    }
+    @ParameterizedTest
+    @MethodSource("queryProvider")
+    void evaluateQuery(String query, List<String> expectedResult) throws InvalidQueryException {
+        List<String> result = resultProjector.convertToString(evaluator.evaluateQuery(preProc.parseQuery(query)));
+
+        Collections.sort(expectedResult);
+        Collections.sort(result);
+
+        assertEquals(expectedResult,result);
+    }
 
 //    @Test
 //    void shouldReturnEmptySetForEmptyRelationList(){

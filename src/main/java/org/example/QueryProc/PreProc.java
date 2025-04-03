@@ -165,12 +165,14 @@ public class PreProc {
         List<WithStatement> result = new ArrayList<>();
         for(String[] statement : withStatements) {
             EntityType type = synonyms.get(statement[0]);
+            EntityType valType;
             if(type == null) {
                 throw new InvalidQueryException("There is no such synonym as : " + statement[0]);
             }
             if(statement.length != 3 && statement.length != 4) {
                 throw new InvalidQueryException("Invalid number of arguments: " + statement.length + ". In statement: " + Arrays.toString(statement));
             }
+
             if(!GrammarRules.ATTRIBUTES.containsKey(statement[1])) {
                 throw new InvalidQueryException("Invalid attribute: " + statement[1] + ". In statement: " + Arrays.toString(statement));
             }

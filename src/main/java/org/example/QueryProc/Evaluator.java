@@ -1,9 +1,12 @@
 package org.example.QueryProc;
 
 import org.example.Exceptions.NotImplementedRuntimeException;
-import org.example.QueryProc.model.*;
-import org.example.PKB.API.*;
+import org.example.PKB.API.EntityType;
+import org.example.PKB.API.IAST;
+import org.example.PKB.API.PKB;
+import org.example.PKB.API.TNode;
 import org.example.PKB.Source.ASTNode;
+import org.example.QueryProc.model.*;
 import org.example.QueryProc.staticVal.GrammarRules;
 
 import java.util.ArrayList;
@@ -11,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 public class Evaluator {
     private static final IAST IAST = PKB.getAST();
@@ -31,34 +35,47 @@ public class Evaluator {
 
         for( WithStatement statement : queryTree.withStatements()) {
             Set<TNode> tNodes = evaluateWith(statement);
-            if(result.isEmpty()) {
+            if (result.isEmpty()) {
                 result.addAll(tNodes);
-            }
-            else {
+            } else {
                 result.retainAll(tNodes);
             }
         }
 
-        return result;
+        return filterResults(result,queryTree.returnValues().get(0));
     }
-    public Set<TNode> evaluateWith(WithStatement withStatement) {
+    private Set<TNode> filterResults(Set<TNode> result, Argument returnValue) {
+        Set<EntityType> stmtTypes = Set.of(EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL);
+
+        return result.stream()
+                .map(tNode -> (ASTNode) tNode)
+                .filter(node -> node.getEntityType() == returnValue.type() ||
+                        (returnValue.type() == EntityType.STMT && stmtTypes.contains(node.getEntityType())))
+                .collect(Collectors.toSet());
+    }
+    private Set<TNode> evaluateWith(WithStatement withStatement) {
         Set<TNode> result = new HashSet<>();
 
+        System.out.println(withStatement.attribute());
+
         TNode tNode;
-        if(withStatement.type().equals("integer")) {
+        if(withStatement.attribute().equals("stmt#") || withStatement.attribute().equals("value")) {
            tNode = findNodeByProgLine(Integer.parseInt(withStatement.constVal()));
         }
-        else if(withStatement.type().equals("string")) {
+        else if(withStatement.attribute().equals("procName") || withStatement.attribute().equals("varName")) {
             tNode = findNodeByName(withStatement.constVal());
         }
         else {
             throw new NotImplementedRuntimeException("query evaluator","with statement with two synonyms hasn't been implemented yet");
         }
-        result.add(tNode);
+        if(tNode != null) {
+            result.add(tNode);
+        }
+
 
         return result;
     }
-    public Set<TNode> evaluateRelation(Relation relation, List<Argument> returnValues) {
+    private Set<TNode> evaluateRelation(Relation relation, List<Argument> returnValues) {
         RelationFunctions functions = GrammarRules.RELATION_FUNCTIONS.get(relation.name());
 
         Set<TNode> result = new HashSet<>();
@@ -69,6 +86,7 @@ public class Evaluator {
 ////            list.stream().map(n->(ASTNode) n).forEach(n->System.out.println(n.getAttr()));
 //            List<TNode> set = functions.byFunction().apply(list.get(0));
 //            set.stream().map(n->(ASTNode) n).forEach(n->System.out.println(n.getAttr()));
+            System.out.println(functions.byFunction());
             findTNodes(relation.arg2())
                     .stream()
                     .map(functions.byFunction())
@@ -137,6 +155,7 @@ public class Evaluator {
 //        if(index > 0) {
 //            return varTable.getVarName(index);
 //        }
+        name = name.replace("\"", "");
 
         List<TNode> procedures = IAST.getNodesOfEntityTypes(EntityType.PROCEDURE);
 
