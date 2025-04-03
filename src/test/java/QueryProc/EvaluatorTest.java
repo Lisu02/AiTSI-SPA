@@ -43,7 +43,7 @@ public class EvaluatorTest {
     static Stream<Arguments> queryProvider() throws IOException {
         return Files.lines(Path.of("src/test/resources/queryEvaluator1"))
                 //.filter(line-> !line.isEmpty() && !line.startsWith("//"))
-                .map(line -> line.split("#", 2))
+                .map(line -> line.split("!", 2))
                 .map(parts ->
                         Arguments.of(parts[0].trim(),
                         Arrays.stream(parts[1]
