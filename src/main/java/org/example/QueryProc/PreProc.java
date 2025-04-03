@@ -66,15 +66,19 @@ public class PreProc {
                 .filter(s->!s.isBlank())
                 .toArray(String[]::new);
 
-        boolean isBoolean = false;
-        if(returnElements[0].equals("Boolean")) {
-            isBoolean = true;
+//        if(returnElements[0].equals("Boolean")) {
+//            isBoolean = true;
+//        }
+        if(!returnElements[0].equals("Select")) {
+            throw new InvalidQueryException("Missing Select");
         }
-        else if(!returnElements[0].equals("Select")) {
-            throw new InvalidQueryException("Missing Select or Boolean");
+        if(returnElements.length >= 2 && returnElements[1].equals("BOOLEAN")) {
+            if(returnElements.length != 2) {
+                throw new InvalidQueryException("BOOLEAN query can't have return values");
+            }
+            return new ReturnDesc(true,new ArrayList<>());
         }
-
-        if(!isBoolean && returnElements.length == 1) {
+        if(returnElements.length == 1) {
             throw new InvalidQueryException("Missing return values");
         }
 
@@ -87,7 +91,7 @@ public class PreProc {
                 throw new InvalidQueryException("Not recognize synonym: " + returnElements[i]);
             }
         }
-        return new ReturnDesc(isBoolean,returnValues);
+        return new ReturnDesc(false,returnValues);
     }
   
     private record BodyDesc(List<String[]> suchThatStatements, List<String[]> withStatements) {}
