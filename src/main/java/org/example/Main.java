@@ -30,6 +30,12 @@ public class Main {
 
         ae.generateStarterAbstractions();
 
+        // Bierzemy instancje tokenizera oraz parsera
+        // bierzemy tokeny z pliku od użytkownika
+        // przekazujemy tokeny do parsera
+        // parser wywołuje buduje drzewo za pomoca interfejsu PKB
+
+
         QueryTree queryTree = null;
         PreProc preProc = new PreProc();
         Evaluator evaluator = new Evaluator();
@@ -46,10 +52,5 @@ public class Main {
         }
         Set<TNode> result = evaluator.evaluateQuery(queryTree);
         System.out.println(resultProjector.convertToString(result));
-
-        // Bierzemy instancje tokenizera oraz parsera
-        // bierzemy tokeny z pliku od użytkownika
-        // przekazujemy tokeny do parsera
-        // parser wywołuje buduje drzewo za pomoca interfejsu PKB
     }
 }
