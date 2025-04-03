@@ -64,19 +64,19 @@ public interface IAST {
     public TNode getFirstChild(TNode p);
 
     /**
-     *
-     * @param link
-     * @param node1
-     * @return
+     * Retrieves the node linked to the given node via a specified link type.
+     * @param link Type of link.
+     * @param node1 Node to check linkage.
+     * @return Linked node or NULL if no link exists.
      */
     public TNode getLinkedNode(LinkType link, TNode node1);
 
     /**
-     *
-     * @param link
-     * @param node1
-     * @param node2
-     * @return
+     * Checks if two nodes are linked via a specified link type.
+     * @param link Type of link.
+     * @param node1 First node.
+     * @param node2 Second node.
+     * @return True if the nodes are linked, false otherwise.
      */
     public boolean isLinked(LinkType link, TNode node1, TNode node2);
 
@@ -88,83 +88,86 @@ public interface IAST {
     public TNode getParent(TNode c);
 
     /**
-     *
-     * @param p
-     * @return
+     * Retrieves all nodes that are parents of the given node.
+     * @param p Parent node.
+     * @return List of parent nodes.
      */
     public List<TNode> getParentedBy(TNode p);
 
     /**
-     *
-     * @param c
-     * @return
+     * Retrieves all nodes that are parents* of the given child node.
+     * @param c Child node.
+     * @return List of parent nodes.
      */
     public List<TNode> getParentAstra(TNode c);
 
     /**
-     *
-     * @param p
-     * @return
+     * Retrieves all  nodes that are in relation parents*(p,c)
+     * @param p Parent node.
+     * @return List of ancestor nodes.
      */
     public List<TNode> getParentedAstraBy(TNode p);
 
+
     /**
-     *
-     * @param n
-     * @return
+     * Retrieves the node that follows the given node.
+     * @param n Node in question.
+     * @return Node that follows or NULL if none exists.
      */
     public TNode getFollows(TNode n);
 
     /**
-     *
-     * @param n
-     * @return
+     * Retrieves all nodes that  follows*  the given node.
+     * @param n Node in question.
+     * @return List of nodes that follows*.
      */
     public List<TNode> getFollowsAstra(TNode n);
 
     /**
-     *
-     * @param n
-     * @return
+     * Retrieves the node that is followed by the given node.
+     * @param n Node in question.
+     * @return Node that is followed or NULL if none exists.
      */
     public TNode getFollowedBy(TNode n);
 
     /**
-     *
-     * @param n
-     * @return
+     * Retrieves the List of nodes that are followed* by the given node.
+     * @param n Node in question.
+     * @return List of nodes
      */
     public List<TNode> getFollowedAstraBy(TNode n);
 
+
     /**
-     *
-     * @param n1
-     * @param n2
-     * @return
+     * Checks if a node is followed by another node.
+     * @param n1 First node.
+     * @param n2 Second node.
+     * @return True if n1 is followed by n2, false otherwise.
      */
     public boolean isFollowed(TNode n1, TNode n2);
 
     /**
-     *
-     * @param n1
-     * @param n2
-     * @return
+     * Checks if a node is followed* by another node.
+     * @param n1 First node.
+     * @param n2 Second node.
+     * @return True if n1 is followed* by n2, false otherwise.
      */
     public boolean isFollowedAstra(TNode n1, TNode n2);
 
     /**
-     *
-     * @param n1
-     * @param n2
-     * @return
+     * Checks if a node is a direct parent of another node.
+     * @param n1 First node.
+     * @param n2 Second node.
+     * @return True if n1 is the parent of n2, false otherwise.
      */
     public boolean isParent(TNode n1, TNode n2);
 
+
     /**
-     *
-     * @param n1
-     * @param n2
-     * @return
+     * Checks if a node is a parent* of another node.
+     * @param n1 First node.
+     * @param n2 Second node.
+     * @return True if n1 is the parent of n2, false otherwise.
      */
     public boolean isParentAstra(TNode n1, TNode n2);
 

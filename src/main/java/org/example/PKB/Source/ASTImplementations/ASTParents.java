@@ -63,21 +63,15 @@ public abstract class ASTParents extends ASTSetters {
     {
         List<TNode> nodesParentedBy = new ArrayList<>();
         ASTNode astNode1 = (ASTNode) p;
-        ASTNode parent1 = astNode1.getParent();
-        if(parent1 != null)
+
+        if(astNode1 != null)
         {
-            if(checkIfEntityIsWhileOrIf(parent1))
+            if(checkIfEntityIsWhileOrIf(astNode1))
             {
-                ASTNode parent2 = parent1.getParent();
-                if(parent2!=null)
-                {
-                    if(checkIfEntityIsWhileOrIf(parent2))
-                    {
-                        addChildrenOfParent(parent2, nodesParentedBy);
-                    }
-                }
+                addChildrenOfParent(astNode1, nodesParentedBy);
             }
         }
+
         return nodesParentedBy;
     }
     private void addChildrenOfParent(ASTNode parent, List<TNode> nodesParentedBy) {
