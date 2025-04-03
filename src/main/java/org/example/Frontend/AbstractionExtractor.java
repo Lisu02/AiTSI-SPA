@@ -54,6 +54,7 @@
             System.out.println("procedureNode = " + procedureNode);
 
             generateModifies(procedureNode);
+            generateUses(procedureNode);
         }
 
 
@@ -110,12 +111,18 @@
     private void iterateUses(TNode test,TNode stmt,TNode parent){
             if(iast.getType(test)==EntityType.VARIABLE){
                 Attr add=iast.getAttr(test);
-                if(stmt!=parent){
-                    iUses.setUses(stmt, add.getVarName());
-                    iUses.setUses(parent, add.getVarName());
+                try{
+                    int name= Integer.parseInt(add.getVarName());
+                    add.setConstantValue(name);
                 }
-                else{
-                    iUses.setUses(stmt, add.getVarName());
+                catch(NumberFormatException e){
+                    if(stmt!=parent){
+                        iUses.setUses(stmt, add.getVarName());
+                        iUses.setUses(parent, add.getVarName());
+                    }
+                    else{
+                        iUses.setUses(stmt, add.getVarName());
+                    }
                 }
             }
             else{
