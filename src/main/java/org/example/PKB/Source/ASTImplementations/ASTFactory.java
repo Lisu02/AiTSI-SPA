@@ -8,6 +8,7 @@ import org.example.PKB.Source.NodeImplementations.*;
 import java.util.ArrayList;
 import java.util.Set;
 
+
 public abstract class ASTFactory extends ASTEssential {
     public TNode createTNode(EntityType et)
     {
@@ -35,7 +36,6 @@ public abstract class ASTFactory extends ASTEssential {
             case PLUS -> {
                 node = new PlusNode();
             }
-
             default -> {
             return null;
             }

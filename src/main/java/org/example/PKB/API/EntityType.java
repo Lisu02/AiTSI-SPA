@@ -15,5 +15,9 @@ public enum EntityType {
     TIMES,
     REF,
     VARIABLE,
-    CONSTANT
+    CONSTANT,
+    INTEGER,
+    STRING,
+    BLANK,
+    PROG_LINE
 }
