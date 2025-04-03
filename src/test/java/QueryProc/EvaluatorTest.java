@@ -33,7 +33,7 @@ public class EvaluatorTest {
 
         Parser parser = Parser.getInstance();
 
-        parser.getTokens(tokenizer.getTokensFromFilename("ParserTest.txt"));
+        parser.getTokens(tokenizer.getTokensFromFilename("SimpleCode1.txt"));
 
         AbstractionExtractor ae = new AbstractionExtractor();
 
