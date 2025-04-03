@@ -28,7 +28,7 @@ public class EvaluatorTest {
     private final Evaluator evaluator = new Evaluator();
     private final ResultProjector resultProjector = new ResultProjector();
     @BeforeAll
-    private static void setUp() {
+    public static void setUp() {
         Tokenizer tokenizer = Tokenizer.getInstance();
 
         Parser parser = Parser.getInstance();
