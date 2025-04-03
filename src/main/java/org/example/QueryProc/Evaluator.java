@@ -22,7 +22,7 @@ public class Evaluator {
     public Set<TNode> evaluateQuery(QueryTree queryTree) {
         Set<TNode> result = new HashSet<>();
 
-        //We must add system where while searching for TNodes meeting our conditions we only check TNodes return by previous relation or with statement
+        // We must add system where while searching for TNodes meeting our conditions we only check TNodes return by previous relation or with statement
         for( Relation relation : queryTree.relations()) {
             Set<TNode> tNodes = evaluateRelation(relation,queryTree.returnValues());
             if(result.isEmpty()) {
@@ -41,7 +41,7 @@ public class Evaluator {
                 result.retainAll(tNodes);
             }
         }
-
+        //return result;
         return filterResults(result,queryTree.returnValues().get(0));
     }
     private Set<TNode> filterResults(Set<TNode> result, Argument returnValue) {
@@ -85,16 +85,16 @@ public class Evaluator {
 ////            list.stream().map(n->(ASTNode) n).forEach(n->System.out.println(n.getAttr()));
 //            List<TNode> set = functions.byFunction().apply(list.get(0));
 //            set.stream().map(n->(ASTNode) n).forEach(n->System.out.println(n.getAttr()));
-            System.out.println(functions.byFunction());
+
             findTNodes(relation.arg2())
                     .stream()
-                    .map(functions.byFunction())
+                    .map(functions.function())
                     .forEach(result::addAll);
         }
         else if(returnValues.contains(relation.arg2())) {
             findTNodes(relation.arg1())
                     .stream()
-                    .map(functions.function())
+                    .map(functions.byFunction())
                     .forEach(result::addAll);
         }
         else if(solutionExists(relation.arg1(), relation.arg2(), functions.isFunction())) {

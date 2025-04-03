@@ -35,6 +35,9 @@ stmt s; variable v; Select s such that Uses(s, v) with v.varName=="x" ! Invalid 
 stmt s; variable v; Select s such that Modifies(s,v) with v.stmt#="x" ! Synonym v does not have attribute stmt#
 stmt s; variable v; Select s such that Modifies(s,v) with v.procName="x" ! Synonym v does not have attribute procName
 
-// Not recognize synonym
+// Wrong synonym
 Select s such that Uses(s, v) ! Not recognize synonym: s
 stmt s; Select s such that Modifies(s, y) ! Synonym y not found
+stmt s, s2, s; Select s such that Modifies(s, s2) ! Synonym of name s already exists
+stmt s, s2; while s; Select s such that Modifies(s2, s) ! Synonym of name s already exists
+stm s, s2; Select s such that Modifies(s, s2) ! Invalid synonym type: stm

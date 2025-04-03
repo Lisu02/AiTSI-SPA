@@ -19,16 +19,16 @@ public class GrammarRules {
     private static final List<String> ALL_TYPES = List.of("procedure", "string", "stmt", "assign", "call", "while", "if", "integer", "prog_line");
 
     public static final Map<String, ArgumentDefinition> RELATION_DEFINITIONS = Map.of(
-            "Follows", new ArgumentDefinition(STATEMENT_TYPES, STATEMENT_TYPES),
-            "Follows*", new ArgumentDefinition(STATEMENT_TYPES, STATEMENT_TYPES),
-            "Parent", new ArgumentDefinition(STATEMENT_TYPES, STATEMENT_TYPES),
-            "Parent*", new ArgumentDefinition(STATEMENT_TYPES, STATEMENT_TYPES),
-            "Modifies", new ArgumentDefinition(ALL_TYPES, VARIABLE_TYPES),
-            "Modifies*", new ArgumentDefinition(ALL_TYPES, VARIABLE_TYPES),
-            "Uses", new ArgumentDefinition(ALL_TYPES, VARIABLE_TYPES),
-            "Uses*", new ArgumentDefinition(ALL_TYPES, VARIABLE_TYPES),
-            "Calls", new ArgumentDefinition(PROCEDURE_TYPES, PROCEDURE_TYPES),
-            "Calls*", new ArgumentDefinition(PROCEDURE_TYPES, PROCEDURE_TYPES)
+            "Follows", new ArgumentDefinition(STATEMENT_TYPES, STATEMENT_TYPES, EntityType.STMT),
+            "Follows*", new ArgumentDefinition(STATEMENT_TYPES, STATEMENT_TYPES, EntityType.STMT),
+            "Parent", new ArgumentDefinition(STATEMENT_TYPES, STATEMENT_TYPES, EntityType.STMT),
+            "Parent*", new ArgumentDefinition(STATEMENT_TYPES, STATEMENT_TYPES, EntityType.STMT),
+            "Modifies", new ArgumentDefinition(ALL_TYPES, VARIABLE_TYPES, EntityType.VARIABLE),
+            "Modifies*", new ArgumentDefinition(ALL_TYPES, VARIABLE_TYPES, EntityType.VARIABLE),
+            "Uses", new ArgumentDefinition(ALL_TYPES, VARIABLE_TYPES, EntityType.VARIABLE),
+            "Uses*", new ArgumentDefinition(ALL_TYPES, VARIABLE_TYPES, EntityType.VARIABLE),
+            "Calls", new ArgumentDefinition(PROCEDURE_TYPES, PROCEDURE_TYPES, EntityType.PROCEDURE),
+            "Calls*", new ArgumentDefinition(PROCEDURE_TYPES, PROCEDURE_TYPES, EntityType.PROCEDURE)
     );
     private static <T> List<T> safeList(T item) {
         return item == null ? Collections.emptyList() : Collections.singletonList(item);

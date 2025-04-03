@@ -3,3 +3,4 @@ stmt s; variable v; Select s such that Modifies(s,v) with v.varName="x"
 procedure p; Select p such that Calls("main",p)
 stmt s; Boolean such that Parent*(s,3)
 Boolean such that Follows (5,6)
+stmt s; Select s such that Follows(_, _)
