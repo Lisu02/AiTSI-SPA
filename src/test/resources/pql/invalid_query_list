@@ -2,13 +2,9 @@
 stmt s1,s2; procedure p; Select p, s2 such that Modifies (s2, _) such that Cals (p, "Second") with p.procName = "Third" ! Incorrect relation name: Cals
 
 // Incomplete query
-stmt s1; Selects s1 such that Uses (s1, _) ! Missing Select or Boolean
-stmt s1,s2,s3; procedure p; ! Missing Select or Boolean
 stmt s; Select s such Parent(1, s) ! Not recognize synonym: such
 stmt s; Select s Follows(1,2) ! Not recognize synonym: Follows(1
 ! Query can't have empty body
-stmt s; Select ! Missing return values
-stmt s; Select such that Follows(1,2) ! Missing return values
 stmt s; Select s such that ! Empty such that statement
 stmt s; Select s such that Follows(1,2) Follows(2,3) ! Incorrect number of arguments in relation Follows: 5
 stmt s; Select s such that Uses(s, "x") with ! Invalid number of =: 0 In statement: with
@@ -35,6 +31,18 @@ stmt s; variable v; Select s such that Uses(s, v) with v.varName=="x" ! Invalid 
 stmt s; variable v; Select s such that Modifies(s,v) with v.stmt#="x" ! Synonym v does not have attribute stmt#
 stmt s; variable v; Select s such that Modifies(s,v) with v.procName="x" ! Synonym v does not have attribute procName
 
-// Not recognize synonym
+// Wrong synonym
 Select s such that Uses(s, v) ! Not recognize synonym: s
 stmt s; Select s such that Modifies(s, y) ! Synonym y not found
+stmt s, s2, s; Select s such that Modifies(s, s2) ! Synonym of name s already exists
+stmt s, s2; while s; Select s such that Modifies(s2, s) ! Synonym of name s already exists
+stm s, s2; Select s such that Modifies(s, s2) ! Invalid synonym type: stm
+
+// Wrong return values
+stmt s; Select s, BOOLEAN such that Follows(_, _) ! Not recognize synonym: BOOLEAN
+stmt s; Select BOOLEAN, s such that Follows(_, _) ! BOOLEAN query can't have return values
+stmt s1; Selects s1 such that Uses (s1, _) ! Missing Select
+stmt s1,s2,s3; procedure p; ! Missing Select
+stmt s; Boolean such that Parent*(s,3) ! Missing Select
+stmt s; Select ! Missing return values
+stmt s; Select such that Follows(1,2) ! Missing return values

@@ -45,7 +45,7 @@ public class Main {
 //            queryTree = preProc.parseQuery("stmt s1,s2,s3; procedure p; Select p, s3 such that Follows (s1,s2) such that Calls (p, \"Second\") with p.procName = \"Third\"");
 //            queryTree = preProc.parseQuery("Boolean such that Follows (5,6)");
 //            queryTree = preProc.parseQuery("stmt s,s2; Select s such that Follows*(s,s2) with s.stmt# = 4");
-            queryTree = preProc.parseQuery("stmt s,s2; Select s such that Follows(s,s2)");
+            queryTree = preProc.parseQuery("stmt s; while w; Select s such that Parent(s,_)");
 //            queryTree = preProc.parseQuery("variable v; Select v with v.varName = \"nowosc\"");
         } catch (InvalidQueryException e) {
             System.out.println(e.getMessage());

@@ -5,7 +5,7 @@ import org.example.PKB.API.EntityType;
 import org.example.PKB.API.IAST;
 import org.example.PKB.API.PKB;
 import org.example.PKB.API.TNode;
-import org.example.PKB.Source.ASTNode;
+
 import org.example.QueryProc.model.*;
 import org.example.QueryProc.staticVal.GrammarRules;
 
@@ -17,12 +17,12 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 public class Evaluator {
-    private static final IAST IAST = PKB.getAST();
+    private static final IAST AST = PKB.getAST();
 
     public Set<TNode> evaluateQuery(QueryTree queryTree) {
         Set<TNode> result = new HashSet<>();
 
-        //We must add system where while searching for TNodes meeting our conditions we only check TNodes return by previous relation or with statement
+        // We must add system where while searching for TNodes meeting our conditions we only check TNodes return by previous relation or with statement
         for( Relation relation : queryTree.relations()) {
             Set<TNode> tNodes = evaluateRelation(relation,queryTree.returnValues());
             if(result.isEmpty()) {
@@ -41,16 +41,15 @@ public class Evaluator {
                 result.retainAll(tNodes);
             }
         }
-
+        //return result;
         return filterResults(result,queryTree.returnValues().get(0));
     }
     private Set<TNode> filterResults(Set<TNode> result, Argument returnValue) {
         Set<EntityType> stmtTypes = Set.of(EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL);
 
         return result.stream()
-                .map(tNode -> (ASTNode) tNode)
-                .filter(node -> node.getEntityType() == returnValue.type() ||
-                        (returnValue.type() == EntityType.STMT && stmtTypes.contains(node.getEntityType())))
+                .filter(node -> AST.getType(node) == returnValue.type() ||
+                        (returnValue.type() == EntityType.STMT && stmtTypes.contains(AST.getType(node))))
                 .collect(Collectors.toSet());
     }
     private Set<TNode> evaluateWith(WithStatement withStatement) {
@@ -86,20 +85,20 @@ public class Evaluator {
 ////            list.stream().map(n->(ASTNode) n).forEach(n->System.out.println(n.getAttr()));
 //            List<TNode> set = functions.byFunction().apply(list.get(0));
 //            set.stream().map(n->(ASTNode) n).forEach(n->System.out.println(n.getAttr()));
-            System.out.println(functions.byFunction());
+
             findTNodes(relation.arg2())
                     .stream()
-                    .map(functions.byFunction())
+                    .map(functions.function())
                     .forEach(result::addAll);
         }
         else if(returnValues.contains(relation.arg2())) {
             findTNodes(relation.arg1())
                     .stream()
-                    .map(functions.function())
+                    .map(functions.byFunction())
                     .forEach(result::addAll);
         }
         else if(solutionExists(relation.arg1(), relation.arg2(), functions.isFunction())) {
-            result.addAll(IAST.getNodesOfEntityTypes(returnValues.get(0).type()));
+            result.addAll(AST.getNodesOfEntityTypes(returnValues.get(0).type()));
         }
 
         return result;
@@ -120,7 +119,7 @@ public class Evaluator {
         }
         else {
             System.out.println("arg type");
-            tNodes.addAll(IAST.getNodesOfEntityTypes(arg.type()));
+            tNodes.addAll(AST.getNodesOfEntityTypes(arg.type()));
         }
         return tNodes;
     }
@@ -138,14 +137,13 @@ public class Evaluator {
     }
 
     private TNode findNodeByProgLine(int progLine) {
-        List<TNode> tNodes = IAST.getNodesOfEntityTypes(EntityType.STMT);
+        List<TNode> tNodes = AST.getNodesOfEntityTypes(EntityType.STMT);
 
         for(TNode tNode : tNodes) {
-            if(tNode instanceof ASTNode) {
-                if(((ASTNode) tNode).getAttr().getLine() == progLine) {
-                    return tNode;
-                }
+            if(AST.getAttr(tNode).getLine() == progLine) {
+                return tNode;
             }
+
         }
         return null;
     }
@@ -157,24 +155,24 @@ public class Evaluator {
 //        }
         name = name.replace("\"", "");
 
-        List<TNode> procedures = IAST.getNodesOfEntityTypes(EntityType.PROCEDURE);
+        List<TNode> procedures = AST.getNodesOfEntityTypes(EntityType.PROCEDURE);
 
         for(TNode tNode : procedures) {
-            if(tNode instanceof ASTNode) {
-                if(((ASTNode) tNode).getAttr().getProcName().equals(name)) {
+
+                if(AST.getAttr(tNode).getProcName().equals(name)) {
                     return tNode;
-                }
+
             }
         }
 
-        List<TNode> variables = IAST.getNodesOfEntityTypes(EntityType.VARIABLE);
+        List<TNode> variables = AST.getNodesOfEntityTypes(EntityType.VARIABLE);
 
         for(TNode tNode : variables) {
-            if(tNode instanceof ASTNode) {
-                if(((ASTNode) tNode).getAttr().getVarName().equals(name)) {
-                    return tNode;
-                }
+
+            if(AST.getAttr(tNode).getVarName().equals(name)) {
+                return tNode;
             }
+
         }
         return null;
     }
