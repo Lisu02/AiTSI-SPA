@@ -33,7 +33,7 @@ public class PreProcTest {
     static Stream<Arguments> queryProvider() throws IOException {
         return Files.lines(Path.of("src/test/resources/pql/invalid_query_list"))
                 .filter(line-> !line.isEmpty() && !line.startsWith("//"))
-                .map(line -> line.split("#", 2))
+                .map(line -> line.split("!", 2))
                 .map(parts -> Arguments.of(parts[0].trim(), parts[1].trim()));
     }
     @ParameterizedTest
