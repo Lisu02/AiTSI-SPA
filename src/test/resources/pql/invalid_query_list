@@ -46,3 +46,4 @@ stmt s1,s2,s3; procedure p; ! Missing Select
 stmt s; Boolean such that Parent*(s,3) ! Missing Select
 stmt s; Select ! Missing return values
 stmt s; Select such that Follows(1,2) ! Missing return values
+stmt s; Select s, s such that Follows(1,2) ! Return value: Argument[name=s, type=STMT] already exists
