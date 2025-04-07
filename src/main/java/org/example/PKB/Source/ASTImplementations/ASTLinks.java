@@ -23,7 +23,7 @@ public abstract class ASTLinks extends ASTCheckers {
             case Follows:
                 return getFollows(astNode1);
             case RightSibling:
-                return getFollows(astNode1);
+                return getFollowedBy(astNode1);
             case Parent:
                 return getParent(astNode1);
             default:

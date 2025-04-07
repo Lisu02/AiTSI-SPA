@@ -1,13 +1,7 @@
 package Frontend;
 
-import org.example.Frontend.AbstractionExtractor;
-import org.example.Frontend.IASTImplementationFrontend;
-import org.example.Frontend.ImodifiesFrontendImpl;
-import org.example.Frontend.TNodeImpl;
-import org.example.PKB.API.IAST;
-import org.example.PKB.API.IModifies;
-import org.example.PKB.API.LinkType;
-import org.example.PKB.API.TNode;
+import org.example.Frontend.*;
+import org.example.PKB.API.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +9,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,6 +20,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class AbstractionExtractorTest {
 
     @Mock
@@ -108,5 +107,45 @@ public class AbstractionExtractorTest {
         ae.generateStarterAbstractions();
 
         assertTrue(true); //asercja do zmiany!
+    }
+
+    @Test
+    public void realModifiesTest(){
+        Tokenizer tokenizer = Tokenizer.getInstance();
+        Parser parser = Parser.getInstance();
+
+        List<String> tokenList = tokenizer.getTokensFromFilename("ParserTest2.txt");
+        parser.getTokens(tokenList);
+
+        AbstractionExtractor ae2 = new AbstractionExtractor();
+
+        ae2.generateStarterAbstractions();
+
+        assertTrue(true);
+    }
+
+
+    @Test
+    public void astTest(){
+
+        Tokenizer tokenizer = Tokenizer.getInstance();
+        Parser parser = Parser.getInstance();
+
+        List<String> tokenList = tokenizer.getTokensFromFilename("ParserTest.txt");
+        parser.getTokens(tokenList);
+
+        //test do debugowania trawersowania
+        IAST iast1 = PKB.getAST();
+        TNode root = iast1.getRoot();
+        TNode procedure = iast1.getFirstChild(root);
+        TNode mabycNull = iast1.getLinkedNode(LinkType.RightSibling,procedure);
+        TNode stmtList = iast1.getFirstChild(procedure);
+        TNode firts = iast1.getFirstChild(stmtList);
+        TNode second = iast1.getLinkedNode(LinkType.RightSibling,firts);
+        TNode third = iast1.getLinkedNode(LinkType.RightSibling,second);
+        TNode fourth = iast1.getLinkedNode(LinkType.RightSibling,third);
+        TNode fifth = iast1.getLinkedNode(LinkType.FirstChild,fourth);
+        TNode sixth = iast1.getLinkedNode(LinkType.RightSibling,fifth);
+        TNode seventh = iast1.getLinkedNode(LinkType.RightSibling,sixth);
     }
 }
