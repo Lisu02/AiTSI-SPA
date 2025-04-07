@@ -84,7 +84,7 @@
                         right=iast.getLinkedNode(LinkType.RightSibling,right);
                         iterateUses(right,currentNode,stmtNode);
                         currentNode=iast.getLinkedNode(LinkType.RightSibling,currentNode);
-                    }while(iast.getLinkedNode(LinkType.RightSibling,stmtNode)!=null);
+                    }while(currentNode!=null);
                 }
                 else if(iast.getType(stmtNode)==EntityType.ASSIGN){
                     currentNode=iast.getFirstChild(stmtNode);
