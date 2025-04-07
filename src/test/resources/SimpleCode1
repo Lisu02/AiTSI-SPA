@@ -1,7 +1,7 @@
 procedure nazwa {
     zmienna1 = a + b + d +2 ;
-    zmienna2 = zmienna +2 ;
-    zmienna3 = zmienna + d +2 ;
+    zmienna2 = zmienna1 +2 ;
+    zmienna3 = zmienna1 + d +2 ;
     while zmienna1 {
     nowosc = 2 + 3 + 9;
     }

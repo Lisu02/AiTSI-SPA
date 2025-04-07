@@ -1,6 +1,8 @@
     package org.example.Frontend;
 
     import org.example.PKB.API.*;
+    import org.example.PKB.Source.ASTImplementations.ASTModifies;
+    import org.example.PKB.Source.ASTImplementations.ASTUses;
 
     import java.util.ArrayList;
     import java.util.List;
@@ -16,10 +18,10 @@
         private IUses iUses;
 
         public AbstractionExtractor(){
-            this(PKB.getAST(),new ImodifiesFrontendImpl(),new IUsesFrontendImpl());
+            this(PKB.getAST(),ASTModifies.getInstance(),ASTUses.getInstance());
         }
         public AbstractionExtractor(IAST iast){
-            this(iast,new ImodifiesFrontendImpl(),new IUsesFrontendImpl());
+            this(iast,ASTModifies.getInstance(),ASTUses.getInstance());
         }
         public AbstractionExtractor(IAST iast, IModifies iModifies,IUses iuses){
             this.iast = iast;

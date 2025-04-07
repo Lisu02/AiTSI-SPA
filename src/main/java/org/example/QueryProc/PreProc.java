@@ -84,12 +84,14 @@ public class PreProc {
 
         List<Argument> returnValues = new ArrayList<>();
         for (int i=1;i<returnElements.length;i++) {
-            if(synonyms.containsKey(returnElements[i])) {
-                returnValues.add(new Argument(returnElements[i], synonyms.get(returnElements[i])));
-            }
-            else {
+            if(!synonyms.containsKey(returnElements[i])) {
                 throw new InvalidQueryException("Not recognize synonym: " + returnElements[i]);
             }
+            Argument arg = new Argument(returnElements[i], synonyms.get(returnElements[i]));
+            if(returnValues.contains(arg)) {
+                throw new InvalidQueryException("Return value: " + arg + " already exists");
+            }
+            returnValues.add(arg);
         }
         return new ReturnDesc(false,returnValues);
     }
