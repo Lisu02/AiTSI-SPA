@@ -16,6 +16,7 @@ public abstract class ASTParents extends ASTSetters {
         ASTNode parent = astNode.getParent();
         if(parent != null)
         {
+            if(parent.getEntityType() == EntityType.STMTLIST)parent = parent.getParent();
             if(checkIfEntityIsWhileOrIf(parent))
             {
                 return parent;
@@ -26,37 +27,86 @@ public abstract class ASTParents extends ASTSetters {
     public List<TNode> getParentedBy(TNode p)
     {
         ASTNode astNode = (ASTNode) p;
-        if(checkIfEntityIsWhileOrIf(astNode))
+
+        switch(astNode.getEntityType())
         {
-            return astNode.getChildren().stream().map(child -> (TNode)child).collect(Collectors.toList());
+            case WHILE -> {
+                List<TNode> children = new ArrayList<>();
+                for(ASTNode child : astNode.getChildren())
+                {
+                    switch (child.getEntityType())
+                    {
+                        case STMTLIST -> {
+                            children.addAll(child.getChildren());
+                        }
+                        default -> {
+                            children.add(child);
+                        }
+                    }
+                }
+                return children;
+            }
+            default -> {
+                return Collections.emptyList();
+            }
         }
-        return Collections.emptyList();
+
+//        // Stare, jak dziala nodw to do usuniecia
+//        if(checkIfEntityIsWhileOrIf(astNode))
+//        {
+//            return astNode.getChildren().stream().map(child -> (TNode)child).collect(Collectors.toList());
+//        }
+//        return Collections.emptyList();
     }
 
     public List<TNode> getParentAstra(TNode c)
     {
         ASTNode astNode1 = (ASTNode) c;
         List<TNode> parents = new ArrayList<>();
-        ASTNode parent1 = astNode1.getParent();
-        if(parent1 != null)
+
+        ASTNode currentNode = astNode1;
+
+        while(currentNode != null)
         {
-            ASTNode parent2 = parent1.getParent();
-            if(checkIfEntityIsWhileOrIf(parent1))
+            ASTNode parent = currentNode.getParent();
+            if(parent == null)break;
+            switch (parent.getEntityType())
             {
-                //to jest pod liste
-                while (parent2 != null) {
-                    if (checkIfEntityIsWhileOrIf(parent2)) {
-                      parents.add(parent2);
-                    }
-                      else
-                      {
-                           break;
-                      }
-                    parent2 = parent2.getParent();
+                case STMTLIST -> {
+                    currentNode = parent;
+                }
+                case WHILE -> {
+                    parents.add(parent);
+                    currentNode = parent;
+                }
+                default -> {
+                    currentNode = null;
                 }
             }
         }
-    return parents;
+        return parents;
+
+//        // Stare, do wyrzucenia jak nowe dobre
+//        ASTNode parent1 = astNode1.getParent();
+//        if(parent1 != null)
+//        {
+//            ASTNode parent2 = parent1.getParent();
+//            if(checkIfEntityIsWhileOrIf(parent1))
+//            {
+//                //to jest pod liste
+//                while (parent2 != null) {
+//                    if (checkIfEntityIsWhileOrIf(parent2)) {
+//                      parents.add(parent2);
+//                    }
+//                      else
+//                      {
+//                           break;
+//                      }
+//                    parent2 = parent2.getParent();
+//                }
+//            }
+//        }
+//    return parents;
     }
 
     public List<TNode> getParentedAstraBy(TNode p)
@@ -75,16 +125,35 @@ public abstract class ASTParents extends ASTSetters {
         return nodesParentedBy;
     }
     private void addChildrenOfParent(ASTNode parent, List<TNode> nodesParentedBy) {
+        if(parent == null)return;
         for (ASTNode child : parent.getChildren()) {
-            nodesParentedBy.add(child);
-
-            if (checkIfEntityIsWhileOrIf(child)) {
-                addChildrenOfParent(child, nodesParentedBy);
+            switch (child.getEntityType())
+            {
+                case STMTLIST -> {
+                    addChildrenOfParent(child, nodesParentedBy);
+                }
+                default -> {
+                    if (checkIfEntityIsWhileOrIf(child)) {
+                        nodesParentedBy.add(child);
+                        addChildrenOfParent(child, nodesParentedBy);
+                    }
+                }
             }
+
+//            // Stare, jak nowe dziala to usunac
+//            nodesParentedBy.add(child);
+//
+//            if (checkIfEntityIsWhileOrIf(child)) {
+//                addChildrenOfParent(child, nodesParentedBy);
+//            }
         }
     }
     protected boolean checkIfEntityIsWhileOrIf(ASTNode n1)
     {
+        if(n1 == null)
+        {
+            return false;
+        }
         if(n1.getEntityType()== EntityType.WHILE || n1.getEntityType()==EntityType.IF)
         {
             return true;

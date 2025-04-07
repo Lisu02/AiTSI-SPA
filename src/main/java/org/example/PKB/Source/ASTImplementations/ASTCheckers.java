@@ -54,6 +54,13 @@ public abstract class ASTCheckers extends ASTFollows {
         {
             if(checkIfEntityIsWhileOrIf(astNode1))
             {
+                if(parent.getEntityType() == EntityType.STMTLIST)
+                {
+                    parent = parent.getParent();
+                    if(parent == null)
+                        return false;
+                }
+
                 if(astNode1==parent)
                 {
                     {
