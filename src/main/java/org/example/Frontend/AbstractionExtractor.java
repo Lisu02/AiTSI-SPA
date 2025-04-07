@@ -46,7 +46,7 @@
         System.out.println(procedureList);
         for(TNode procedureNode: procedureList){
             generateModifies(procedureNode,iast.getFirstChild(procedureNode));
-            //generateUses(procedureNode);
+            generateUses(procedureNode);
         }
     }
 
