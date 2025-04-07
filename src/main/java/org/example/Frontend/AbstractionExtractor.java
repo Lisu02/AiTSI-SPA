@@ -27,40 +27,27 @@
             this.iUses=iuses;
         }
 
-    //Root - program
-    //Procedure
-    //StmtList
-    //Stmt
-    //Stmt
-
-    //Generowanie Modifies ora Uses do PKB
+    //Generowanie Modifies oraz Uses do PKB
     public void generateStarterAbstractions(){
         TNode tNodeRoot = iast.getRoot();
         List<TNode> procedureList = new ArrayList<>();
 
-        //Listing procedures
+        //Listowanie procedur
         TNode firstProcedureNode = iast.getLinkedNode(LinkType.FirstChild,tNodeRoot);
         procedureList.add(firstProcedureNode);
         TNode currentNode = firstProcedureNode;
-        //todo: FIX 2 razy ta sama procedura jest zapisywana do listy procedur
-        log.severe("WCHODZENIEIEIEIEIE");
-        while (iast.getLinkedNode(LinkType.RightSibling,currentNode) != null){
 
+        while (iast.getLinkedNode(LinkType.RightSibling,currentNode) != null){
             currentNode = iast.getLinkedNode(LinkType.RightSibling,currentNode);
-            break;
-            //System.out.println("currentNode = " + currentNode);
-            //procedureList.add(currentNode);
+            System.out.println("currentNode = " + currentNode);
+            procedureList.add(currentNode);
         }
 
         System.out.println(procedureList);
         for(TNode procedureNode: procedureList){
             generateModifies(procedureNode,iast.getFirstChild(procedureNode));
-            generateUses(procedureNode);
+            //generateUses(procedureNode);
         }
-
-
-        //generateModifies(tNodeRoot);
-        //generateUses(tNodeRoot);
     }
 
     //rekurencja

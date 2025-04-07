@@ -5,6 +5,8 @@ procedure nazwa {
     czwartanowosc = zmienna3 + 2;
     while zmienna1 {
     nowosc = 2 + 3 + 9;
+    tutajblad = 1 + 2;
+    niemabledu = zmienna1 + 1 + 9;
     }
     trzecianowosc = zmienna1 + 9;
 }
