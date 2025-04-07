@@ -1,0 +1,10 @@
+procedure nazwa {
+    zmienna1 = a + b + d +2 ;
+    zmienna2 = zmienna +2 ;
+    zmienna3 = zmienna + d +2 ;
+    czwartanowosc = zmienna3 + 2;
+    while zmienna1 {
+    nowosc = 2 + 3 + 9;
+    }
+    trzecianowosc = zmienna1 + 9;
+}
