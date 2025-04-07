@@ -1,8 +1,8 @@
 package org.example.QueryProc.staticVal;
 
-import org.example.PKB.API.EntityType;
-import org.example.PKB.API.IAST;
-import org.example.PKB.API.PKB;
+import org.example.PKB.API.*;
+import org.example.PKB.Source.ASTImplementations.ASTModifies;
+import org.example.PKB.Source.ASTImplementations.ASTUses;
 import org.example.QueryProc.model.ArgumentDefinition;
 import org.example.QueryProc.model.RelationFunctions;
 
@@ -13,6 +13,8 @@ import java.util.Set;
 
 public class GrammarRules {
     private static IAST IAST = PKB.getAST();
+    private final static IModifies modifiesInterface = ASTModifies.getInstance();
+    private final static IUses usesInterface = ASTUses.getInstance();
     private static final List<String> STATEMENT_TYPES = List.of("stmt", "assign", "call", "while", "if", "blank", "integer", "prog_line");
     private static final List<String> PROCEDURE_TYPES = List.of("procedure", "blank", "string");
     private static final List<String> VARIABLE_TYPES = List.of("variable", "blank", "string");
@@ -38,10 +40,8 @@ public class GrammarRules {
             "Follows*", new RelationFunctions(IAST::getFollowedAstraBy,IAST::getFollowsAstra,IAST::isFollowedAstra),
             "Parent", new RelationFunctions(IAST::getParentedBy,ast -> safeList(IAST.getParent(ast)),IAST::isParent),
             "Parent*", new RelationFunctions(IAST::getParentedAstraBy,IAST::getParentAstra,IAST::isParentAstra),
-            "Modifies", new RelationFunctions(null,null,null),
-            "Modifies*", new RelationFunctions(null,null,null),
-            "Uses", new RelationFunctions(null,null,null),
-            "Uses*", new RelationFunctions(null,null,null));
+            "Modifies", new RelationFunctions(modifiesInterface::getModifies,modifiesInterface::getModifiesBy,modifiesInterface::isModifying),
+            "Uses", new RelationFunctions(usesInterface::getUses,usesInterface::getUsedBy,usesInterface::isUsing));
 
     public static final Set<EntityType> ENTITIES = Set.of(
             EntityType.PROCEDURE, EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.VARIABLE

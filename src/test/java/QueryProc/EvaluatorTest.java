@@ -1,6 +1,7 @@
 package QueryProc;
 
 import org.example.Exceptions.InvalidQueryException;
+import org.example.Frontend.AbstractionExtractor;
 import org.example.Frontend.Parser;
 import org.example.Frontend.Tokenizer;
 import org.example.QueryProc.Evaluator;
@@ -34,9 +35,9 @@ public class EvaluatorTest {
 
         parser.getTokens(tokenizer.getTokensFromFilename("SimpleCode1.txt"));
 
-//        AbstractionExtractor ae = new AbstractionExtractor();
-//
-//        ae.generateStarterAbstractions();
+        AbstractionExtractor ae = new AbstractionExtractor();
+
+        ae.generateStarterAbstractions();
     }
 
     static Stream<Arguments> queryProvider() throws IOException {

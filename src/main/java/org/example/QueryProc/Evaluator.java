@@ -86,6 +86,12 @@ public class Evaluator {
 //            List<TNode> set = functions.byFunction().apply(list.get(0));
 //            set.stream().map(n->(ASTNode) n).forEach(n->System.out.println(n.getAttr()));
 
+//            for (TNode node : findTNodes(relation.arg2())) {
+//                //System.out.println(functions.function().apply(node));
+//                result.addAll(functions.function().apply(node));
+//                //System.out.println("result: " + result);
+//            }
+
             findTNodes(relation.arg2())
                     .stream()
                     .map(functions.function())
