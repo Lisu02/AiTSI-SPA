@@ -55,8 +55,6 @@ public class Evaluator {
     private Set<TNode> evaluateWith(WithStatement withStatement) {
         Set<TNode> result = new HashSet<>();
 
-        System.out.println(withStatement.attribute());
-
         TNode tNode;
         if(withStatement.attribute().equals("stmt#") || withStatement.attribute().equals("value")) {
            tNode = findNodeByProgLine(Integer.parseInt(withStatement.constVal()));
@@ -112,7 +110,6 @@ public class Evaluator {
     private List<TNode> findTNodes(Argument arg) {
         List<TNode> tNodes = new ArrayList<>();
         if(arg.type().name().equals("INTEGER")) {
-            System.out.println("arg int");
             TNode tNode = findNodeByProgLine(Integer.parseInt(arg.name()));
             if(tNode != null) {
                 tNodes.add(tNode);
@@ -120,11 +117,9 @@ public class Evaluator {
 
         }
         else if(arg.type().name().equals("STRING")) {
-            System.out.println("arg string");
             tNodes.add(findNodeByName(arg.name()));
         }
         else {
-            System.out.println("arg type");
             tNodes.addAll(AST.getNodesOfEntityTypes(arg.type()));
         }
         return tNodes;
