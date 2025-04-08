@@ -94,14 +94,15 @@
                     iterateUses(currentNode,stmtNode,stmtNode);
                 }
                 stmtNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);
-            }while(iast.getLinkedNode(LinkType.RightSibling,stmtNode)!=null);
+            }while(stmtNode !=null ); //zly warunek wyjscia
             System.out.println("End of generateUses");
     }
     private void iterateUses(TNode test,TNode stmt,TNode parent){
+        System.out.println("Iterate uses");
             if(iast.getType(test)==EntityType.VARIABLE){
                 Attr add=iast.getAttr(test);
                 try{
-                    int name= Integer.parseInt(add.getVarName());
+                    int name= Integer.parseInt(add.getVarName()); //jezeli jest var to podstawiam do attr jego nazwe
                     add.setConstantValue(name);
                 }
                 catch(NumberFormatException e){
