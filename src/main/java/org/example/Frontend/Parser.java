@@ -141,13 +141,58 @@ public class Parser {
     }
 
     private TNode callStmt() {
-        log.severe("Call stmt not implemented");
-        return null;
+        TNode proc;
+        checkToken("call");
+        proc= iast.createTNode(EntityType.CALL);
+        checkToken("NAME");
+        Attr at=new Attr();
+        at.setLine(statementNumber);
+        at.setVarName(nextToken);
+        iast.setAttr(proc,at);
+        nextToken=tokenIterator.next();
+        checkToken(";");
+        return proc;
     }
 
     private TNode ifStmt() {
-        log.severe("If stmt not implemented!");
-        return null;
+        TNode ifNode, checkVar, ifStmt,elseStmt;
+        checkToken("if");
+        ifNode= iast.createTNode(EntityType.IF);
+        checkToken("NAME");
+        Attr at=new Attr();
+        at.setLine(statementNumber);
+        iast.setAttr(ifNode,at);
+        at.setVarName(nextToken);
+        checkVar=iast.createTNode(EntityType.VARIABLE);
+        iast.setAttr(checkVar, at);
+        nextToken=tokenIterator.next();
+        try {
+            iast.setParentChildLink(ifNode,checkVar);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken("then");
+        checkToken("{");
+        ifStmt=stmtLst();
+        try {
+            iast.setParentChildLink(ifNode,ifStmt);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken("}");
+        checkToken("else");
+        checkToken("{");
+        elseStmt=stmtLst();
+        try {
+            iast.setParentChildLink(ifNode,elseStmt);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken("}");
+        return ifNode;
     }
 
     /*
