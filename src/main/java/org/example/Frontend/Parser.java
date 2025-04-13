@@ -147,7 +147,7 @@ public class Parser {
         checkToken("NAME");
         Attr at=new Attr();
         at.setLine(statementNumber);
-        at.setVarName(nextToken);
+        at.setProcName(nextToken);
         iast.setAttr(proc,at);
         nextToken=tokenIterator.next();
         checkToken(";");
