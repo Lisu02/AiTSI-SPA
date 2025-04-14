@@ -6,6 +6,7 @@ import org.example.QueryProc.model.*;
 import org.example.QueryProc.staticVal.GrammarRules;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PreProc {
     public QueryTree parseQuery(String query) throws InvalidQueryException {
@@ -30,7 +31,11 @@ public class PreProc {
         List<Relation> relations = validateSuchThatStatements(bodyDesc.suchThatStatements,synonyms);
         List<WithStatement> withStatements = validateWithStatements(bodyDesc.withStatements,synonyms);
 
-        return new QueryTree(returnDesc.isBoolean,returnDesc.returnValues,relations,withStatements);
+        Set<Argument> synonymArg = synonyms.entrySet().stream()
+                .map(entry -> new Argument(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toSet());
+
+        return new QueryTree(synonymArg,returnDesc.isBoolean,returnDesc.returnValues,relations,withStatements);
     }
     private Map<String,EntityType> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
         Map<String,EntityType> synonyms = new HashMap<>();
@@ -196,7 +201,7 @@ public class PreProc {
             else if((statement[1].equals("value") || statement[1].equals("stmt#")) && !statement[2].matches("\\d+")) {
                 throw new InvalidQueryException("Incorrect type " + statement[2] + ". Type should be integer");
             }
-            result.add(new WithStatement(statement[0], type, statement[1], statement[2]));
+            result.add(new WithStatement(new Argument(statement[0], type), statement[1], statement[2]));
         }
         return result;
     }

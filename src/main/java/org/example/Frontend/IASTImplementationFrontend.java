@@ -4,6 +4,7 @@ import org.example.Exceptions.ASTBuildException;
 import org.example.PKB.API.*;
 
 import java.util.List;
+import java.util.Set;
 
 public class IASTImplementationFrontend implements IAST {
     @Override
@@ -118,7 +119,7 @@ public class IASTImplementationFrontend implements IAST {
     }
 
     @Override
-    public List<TNode> getNodesOfEntityTypes(EntityType et) {
-        return List.of();
+    public Set<TNode> getNodesOfEntityTypes(EntityType et) {
+        return Set.of();
     }
 }
