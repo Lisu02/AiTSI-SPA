@@ -5,11 +5,9 @@ import org.example.PKB.API.Attr;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.TNode;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 public abstract class ASTNode implements TNode {
     private final EntityType entityType;
     private ASTNode parent;
@@ -25,6 +23,7 @@ public abstract class ASTNode implements TNode {
     public EntityType getEntityType() {
         return entityType;
     }
+  
     public Set<EntityType> getAllEntityTypes()
     {
         return new HashSet<>();

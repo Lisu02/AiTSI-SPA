@@ -4,7 +4,6 @@ import org.example.PKB.API.Attr;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.TNode;
 import org.example.PKB.Source.ASTNode;
-
 import java.util.List;
 
 public abstract class ASTGetters extends ASTFactory {
@@ -29,5 +28,4 @@ public abstract class ASTGetters extends ASTFactory {
     {
         return entities.get(et);
     }
-
 }

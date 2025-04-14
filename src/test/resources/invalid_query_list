@@ -1,3 +1,0 @@
-stmt s1,s2; procedure p; Select p, s2 such that Modifies (s2, _) such that Cals (p, "Second") with p.procName = "Third"#Incorrect relation name: Cals
-stmt s1; Select s1 such that Uses (s1, _)#Incorrect relation name: Uses
-procedure p; Select p such that Calls (p, 2)#Incorrect argument type: 2 - integer in relation Calls

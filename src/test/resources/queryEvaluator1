@@ -1,0 +1,19 @@
+variable v; Select v with v.varName = "nowosc" ! VARIABLE nowosc
+stmt s,s2; Select s such that Follows(s,s2) ! ASSIGN 1, ASSIGN 2, ASSIGN 3
+stmt s; while w; Select s such that Follows(s,w) ! ASSIGN 3
+stmt s; while w; Select w such that Follows(s,w) ! WHILE 4
+stmt s; Select s such that Follows(_, _) ! ASSIGN 1, ASSIGN 2, ASSIGN 3, ASSIGN 5, WHILE 4
+stmt s; Select s such that Follows(s,2) ! ASSIGN 1
+stmt s; Select s such that Follows*(s,3) ! ASSIGN 1, ASSIGN 2
+stmt s; Select s such that Follows*(3,s) ! WHILE 4
+assign a; Select a such that Follows(_, _) ! ASSIGN 1, ASSIGN 2, ASSIGN 3, ASSIGN 5
+stmt s; while w; Select s such that Parent(_,s) ! ASSIGN 5
+stmt s; Select s with s.stmt# = 3 ! ASSIGN 3
+stmt s; variable v; Select v such that Modifies(3,v) ! VARIABLE zmienna3
+stmt s; variable v; Select v such that Modifies(s,v) ! VARIABLE nowosc, VARIABLE zmienna1, VARIABLE zmienna2, VARIABLE zmienna3
+stmt s; variable v; Select s such that Modifies(s,v) ! ASSIGN 1, ASSIGN 2, ASSIGN 3, ASSIGN 5
+stmt s; variable v; Select s such that Modifies(s,"zmienna2") ! ASSIGN 2
+stmt s; variable v; Select v such that Uses(1,v) !
+stmt s; variable v; Select v such that Uses(s,v) !
+stmt s; variable v; Select s such that Uses(s,v) !
+stmt s; variable v; Select s such that Uses(s,"zmienna3") !

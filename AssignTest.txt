@@ -1,0 +1,3 @@
+procedure name{
+    nowosc = 2 + 3 + 9;
+}

@@ -15,7 +15,9 @@ public abstract class ASTCheckers extends ASTFollows {
         {
             if(astNode1.getParent()==astNode2.getParent())
             {
+
                 if(astNode1.getId()==astNode2.getId()-1)
+
                 {
                     return true;
                 }
@@ -52,6 +54,13 @@ public abstract class ASTCheckers extends ASTFollows {
         {
             if(checkIfEntityIsWhileOrIf(astNode1))
             {
+                if(parent.getEntityType() == EntityType.STMTLIST)
+                {
+                    parent = parent.getParent();
+                    if(parent == null)
+                        return false;
+                }
+
                 if(astNode1==parent)
                 {
                     {

@@ -36,7 +36,7 @@ public class Parser {
         tokens = tokens_out;
         tokenIterator = tokens.iterator();
         nextToken = tokenIterator.next();
-        statementNumber = 0;
+        statementNumber = -1;
         program();
     }
 

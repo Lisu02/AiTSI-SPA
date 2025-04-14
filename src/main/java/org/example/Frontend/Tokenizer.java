@@ -1,5 +1,6 @@
 package org.example.Frontend;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -99,9 +100,10 @@ public class Tokenizer {
         try{
             fileScanner = new Scanner(new FileReader(filename));
         }catch (FileNotFoundException e){
-            log.warning("Provided filename was not found during tokenization process - loading" +
+            log.severe("Provided filename was not found during tokenization process - loading" +
                     " standard SimpleFirst.txt");
-            fileScanner = new Scanner(new FileReader("SimpleFirst.txt"));
+            throw new FileNotFoundException(e.getMessage());
+            //fileScanner = new Scanner(new FileReader("SimpleFirst.txt"));
         }
         return fileScanner;
     }
