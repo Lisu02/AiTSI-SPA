@@ -3,6 +3,7 @@ package org.example.PKB.API;
 import org.example.Exceptions.ASTBuildException;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * API interface for AST tree
@@ -177,7 +178,7 @@ public interface IAST {
      * @param et Type of nodes to find
      * @return A list of nodes or NULL, if no nodes o this type are in list.
      */
-    public List<TNode> getNodesOfEntityTypes(EntityType et);
+    public Set<TNode> getNodesOfEntityTypes(EntityType et);
 
 
 }

@@ -5,7 +5,7 @@ import org.example.PKB.API.TNode;
 import org.example.PKB.Source.ASTNode;
 import org.example.PKB.Source.NodeImplementations.*;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -46,7 +46,7 @@ public abstract class ASTFactory extends ASTEssential {
         {
             if(!entities.containsKey(entityType))
             {
-                entities.put(entityType, new ArrayList<>());
+                entities.put(entityType, new HashSet<>());
             }
             entities.get(entityType).add(node);
         }
