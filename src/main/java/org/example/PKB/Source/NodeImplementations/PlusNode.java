@@ -36,10 +36,12 @@ public class PlusNode extends ExprNode {
         if (leftOperand == null) {
             leftOperand = (ExprNode) child;
             child.setParent(this);
+            child.setId(0);
             return 0;
         } else if (rightOperand == null) {
             rightOperand = (ExprNode) child;
             child.setParent(this);
+            child.setId(1);
             return 1;
         } else {
             throw new ASTBuildException("PlusNode can only have two operands");
