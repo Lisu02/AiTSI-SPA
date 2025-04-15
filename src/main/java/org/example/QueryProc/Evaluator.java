@@ -9,14 +9,12 @@ import org.example.QueryProc.model.*;
 import org.example.QueryProc.staticVal.GrammarRules;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 public class Evaluator {
     private static final IAST AST = PKB.getAST();
-
     public Set<TNode> evaluateQuery(QueryTree queryTree) {
-//        Map<Argument, Set<TNode>> resultMap = new HashMap<>();
-//        queryTree.synonyms().forEach((name, type) -> resultMap.put(new Argument(name,type), new HashSet<>(AST.getNodesOfEntityTypes(type))));
         Set<Map<Argument,TNode>> resultMap = new HashSet<>();
 
         for( Relation relation : queryTree.relations()) {
@@ -29,18 +27,132 @@ public class Evaluator {
            evaluateWith(statement, resultMap);
         }
 
-        //return resultMap.get(queryTree.returnValues().get(0));
-        return resultMap.stream().map(r->r.get(queryTree.returnValues().get(0))).collect(Collectors.toSet());
+        return resultMap.stream()
+                .map(r->r.get(queryTree.returnValues().get(0)))
+                .collect(Collectors.toSet());
+    }
+    private boolean evaluateRelation(Relation relation,Set<Argument> synonyms, Set<Map<Argument,TNode>> resultMap) {
+        RelationFunctions functions = GrammarRules.RELATION_FUNCTIONS.get(relation.name());
+
+        Argument arg1 = relation.arg1();
+        Argument arg2 = relation.arg2();
+        boolean isArg1Synonym = synonyms.contains(arg1);
+        boolean isArg2Synonym = synonyms.contains(arg2);
+
+        Set<Map<Argument,TNode>> result = new HashSet<>();
+        if(isArg1Synonym && isArg2Synonym) {
+            Set<TNode> valuesArg1 = resultMap.stream()
+                    .map(row -> row.get(arg1))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.collectingAndThen(
+                            Collectors.toSet(),
+                            set -> set.isEmpty() ? AST.getNodesOfEntityTypes(arg1.type()) : set
+                    ));
+
+            for(TNode node : valuesArg1 ) {
+                functions.byFunction().apply(node).stream()
+                        .filter(n -> arg2.type().allows(AST.getType(n)))
+                        .map(n -> new HashMap<>(Map.of(arg1, node, arg2, n)))
+                        .forEach(result::add);
+            }
+        }
+        else if(isArg1Synonym) {
+            for(TNode node : findTNode(arg2)) {
+                functions.function().apply(node).stream()
+                        .filter(n->arg1.type().allows(AST.getType(n)))
+                        .map(n->new HashMap<>(Map.of(arg1,n)))
+                        .forEach(result::add);
+            }
+        }
+        else if(isArg2Synonym) {
+            for(TNode node : findTNode(arg1)) {
+                functions.byFunction().apply(node).stream()
+                        .filter(n->arg2.type().allows(AST.getType(n)))
+                        .map(n->new HashMap<>(Map.of(arg2,n)))
+                        .forEach(result::add);
+            }
+        }
+        else {
+            if(!doesSolutionExist(arg1,arg2,functions.isFunction())) {
+                return false;
+            }
+            if(arg1.name().equals("_") && arg2.name().equals("_") && resultMap.isEmpty()) {
+                Argument key = synonyms.iterator().next();
+                AST.getNodesOfEntityTypes(key.type()).stream()
+                        .map(n->new HashMap<>(Map.of(key,n)))
+                        .forEach(result::add);
+            }
+        }
+        addRows(result,resultMap);
+        //print(resultMap);
+        return true;
+    }
+    private void addRows(Set<Map<Argument, TNode>> newNodes, Set<Map<Argument,TNode>> result) {
+        if(result.size() == 0 || newNodes.isEmpty()) {
+            result.addAll(newNodes);
+            return;
+        }
+
+        Set<Argument> newKeys = newNodes.iterator().next().keySet();
+        Set<Argument> resultKeys = result.iterator().next().keySet();
+
+        if(resultKeys.containsAll(newKeys)) {
+            result.removeIf(row -> newNodes.stream()
+                    .noneMatch(newRow -> newKeys.stream()
+                            .allMatch(key -> newRow.get(key) == row.get(key))
+            ));
+        }
+        else if(!Collections.disjoint(resultKeys, newKeys)) {
+            List<Map<Argument, TNode>> toDelete = new ArrayList<>();
+            for (Map<Argument, TNode> row : result) {
+
+                for (Map<Argument, TNode> next : newNodes) {
+                    if (newKeys.stream().anyMatch(key -> next.get(key) == row.get(key))) {
+                        row.putAll(next);
+                    } else {
+                        toDelete.add(row);
+                    }
+                }
+            }
+            toDelete.forEach(result::remove);
+        }
+        else {
+            List<Map<Argument, TNode>> newRows = new ArrayList<>();
+            for (Map<Argument, TNode> row : result) {
+                Iterator<Map<Argument, TNode>> iterator = newNodes.iterator();
+                if (!iterator.hasNext()) continue;
+
+                Map<Argument, TNode> first = new HashMap<>(iterator.next());
+                row.putAll(first);
+
+                while (iterator.hasNext()) {
+                    Map<Argument, TNode> next = new HashMap<>(row);
+                    next.putAll(iterator.next());
+                    newRows.add(next);
+                }
+            }
+            result.addAll(newRows);
+        }
+    }
+    private boolean doesSolutionExist(Argument arg1, Argument arg2, BiPredicate<TNode, TNode> predicate) {
+        for(TNode node1 : findTNode(arg1)) {
+            for(TNode node2 : findTNode(arg2)) {
+                if(predicate.test(node1,node2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     private void evaluateWith(WithStatement withStatement,  Set<Map<Argument,TNode>> resultMap) {
-        Set<TNode> arguments1 = resultMap.stream().map(row->row.get(withStatement.arg1())).collect(Collectors.toSet());
-        if (arguments1.size() == 0 || arguments1.contains(null)) {
-            arguments1 = AST.getNodesOfEntityTypes(withStatement.arg1().type());
-        }
+//        Set<TNode> arguments1 = resultMap.stream().map(row->row.get(withStatement.arg1())).collect(Collectors.toSet());
+//        if (arguments1.size() == 0 || arguments1.contains(null)) {
+//            arguments1 = AST.getNodesOfEntityTypes(withStatement.arg1().type());
+//        }
 
         TNode tNode;
         if(withStatement.attribute().equals("stmt#") || withStatement.attribute().equals("value")) {
-           tNode = findNodeByProgLine(Integer.parseInt(withStatement.constVal()));
+            tNode = findNodeByProgLine(Integer.parseInt(withStatement.constVal()));
         }
         else if(withStatement.attribute().equals("procName") || withStatement.attribute().equals("varName")) {
             tNode = findNodeByName(withStatement.constVal());
@@ -60,193 +172,6 @@ public class Evaluator {
 
         toDelete.forEach(resultMap::remove);
     }
-    private boolean evaluateRelation(Relation relation,Set<Argument> synonyms, Set<Map<Argument,TNode>> resultMap) {
-        RelationFunctions functions = GrammarRules.RELATION_FUNCTIONS.get(relation.name());
-
-        Set<Map<Argument,TNode>> result = new HashSet<>();
-
-//        if(relation.arg1().name().equals("_") && relation.arg2().name().equals("_") && resultMap.isEmpty()) {
-//            for(TNode node1 : findTNode(relation.arg1())) {
-//                for(TNode node2 : findTNode(relation.arg2())) {
-//                    System.out.println(AST.getType(node1) + " " + AST.getAttr(node1).getLine() + " == " + AST.getType(node2) + " " + AST.getAttr(node2).getLine());
-//                    if(functions.isFunction().test(node1,node2)) {
-//                        System.out.println("!");
-//                        Argument key = synonyms.iterator().next();
-//                        TNode node = AST.getType(node1) == key.type() ? node1 : node2;
-//                        resultMap.add(new HashMap<>(Map.of(key, node)));
-//                    }
-//                }
-//            }
-//            return true;
-//        }
-        if(!synonyms.contains(relation.arg1()) && !synonyms.contains(relation.arg2())) {
-            for(TNode node1 : findTNode(relation.arg1())) {
-                for(TNode node2 : findTNode(relation.arg2())) {
-                    if(functions.isFunction().test(node1,node2)) {
-                        if(relation.arg1().name().equals("_") && relation.arg2().name().equals("_") && resultMap.isEmpty()) {
-                            Argument key = synonyms.iterator().next();
-                            resultMap.addAll(AST.getNodesOfEntityTypes(key.type()).stream().map(n->new HashMap<>(Map.of(key,n))).collect(Collectors.toSet()));
-                        }
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-        else if(!synonyms.contains(relation.arg1())) {
-            for(TNode node : findTNode(relation.arg1())) {
-//                arguments2.addAll(functions.byFunction().apply(node));
-//                result.add(new HashMap<>(Map.of(relation.arg2(), node)));
-                result.addAll(functions.byFunction().apply(node).stream()
-                        .filter(n->relation.arg2().type().allows(AST.getType(n)))
-                        .map(n->new HashMap<>(Map.of(relation.arg2(),n))).toList());
-            }
-//            addRows(arguments2,relation.arg2(),resultMap);
-        }
-        else if(!synonyms.contains(relation.arg2())) {
-            for(TNode node : findTNode(relation.arg2())) {
-//                arguments1.addAll(functions.function().apply(node));
-//                result.add(new HashMap<>(Map.of(relation.arg1(), node)));
-                result.addAll(functions.function().apply(node).stream()
-                        .filter(n->relation.arg1().type().allows(AST.getType(n)))
-                        .map(n->new HashMap<>(Map.of(relation.arg1(),n))).toList());
-                System.out.println(result);
-            }
-//            addRows(arguments1,relation.arg1(),resultMap);
-        }
-        else {
-            Set<TNode> arguments1 = resultMap.stream().map(row->row.get(relation.arg1())).collect(Collectors.toSet());
-            if (arguments1.size() == 0 || arguments1.contains(null)) {
-                arguments1 = AST.getNodesOfEntityTypes(relation.arg1().type());
-            }
-            System.out.println(arguments1 + " " + relation.arg1());
-            for(TNode valueArg1 : arguments1) {
-                var tmp = functions.byFunction().apply(valueArg1);
-                for(TNode valueArg2 : tmp) {
-                    if(relation.arg2().type().allows(AST.getType(valueArg2))) {
-                        result.add(new HashMap<>(Map.of(relation.arg1(), valueArg1, relation.arg2(), valueArg2)));
-                    }
-                }
-            }
-        }
-        addRows(result,resultMap);
-        for(Map<Argument, TNode> row : resultMap) {
-            for(Argument key : row.keySet()) {
-                TNode node = row.get(key);
-                String attribute = "";
-                Set<EntityType> stmtTypes = Set.of(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL);
-                if(stmtTypes.contains(AST.getType(node))) {
-                    attribute = AST.getAttr(node).getLine() + "";
-                }
-                else if(AST.getType(node) == EntityType.PROCEDURE) {
-                    attribute = AST.getAttr(node).getProcName();
-                }
-                else if(AST.getType(node) == EntityType.VARIABLE) {
-                    attribute = AST.getAttr(node).getVarName();
-                }
-
-               System.out.print("(" + key + " " + AST.getType(node) + " " + attribute + ") ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-        return true;
-    }
-    private void addRows(Set<Map<Argument, TNode>> newNodes, Set<Map<Argument,TNode>> result) {
-        if (newNodes.isEmpty()) {
-            return;
-        }
-
-        List<Argument> keys = newNodes.iterator().next().keySet().stream().toList();
-
-        if(result.size() == 0) {
-            result.addAll(newNodes);
-        }
-        else if(result.iterator().next().keySet().containsAll(newNodes.iterator().next().keySet())) {
-            List<Map<Argument, TNode>> toDelete = new ArrayList<>();
-            for(Map<Argument, TNode> row : result) {
-                for(Argument key : newNodes.iterator().next().keySet()) {
-                    if(newNodes.stream().map(r->r.get(key)).noneMatch(n-> n == row.get(key))) {
-                        toDelete.add(row);
-                    }
-                }
-            }
-            toDelete.forEach(result::remove);
-        }
-        else if(result.iterator().next().containsKey(keys.get(0)) || result.iterator().next().containsKey(keys.get(1))) {
-            List<Map<Argument, TNode>> toDelete = new ArrayList<>();
-
-            for (Map<Argument, TNode> row : result) {
-                Iterator<Map<Argument, TNode>> iterator = newNodes.iterator();
-                if (!iterator.hasNext()) continue;
-
-                while (iterator.hasNext()) {
-                    Map<Argument, TNode> next = iterator.next();
-                    if(next.get(keys.get(0)) == row.get(keys.get(0)) || next.get(keys.get(1)) == row.get(keys.get(1))) {
-                        row.putAll(next);
-                    }
-                    else {
-                        toDelete.add(row);
-                    }
-                }
-            }
-            toDelete.forEach(result::remove);
-        }
-        else {
-            List<Map<Argument, TNode>> newRows = new ArrayList<>();
-
-            for (Map<Argument, TNode> row : result) {
-                Iterator<Map<Argument, TNode>> iterator = newNodes.iterator();
-                if (!iterator.hasNext()) continue;
-
-                // Dodaj pierwszy element do istniejącej mapy
-                Map<Argument, TNode> first = iterator.next();
-
-                 //Każdy kolejny powoduje utworzenie nowej mapy
-                while (iterator.hasNext()) {
-                    Map<Argument, TNode> next = iterator.next();
-                    next.putAll(row);
-                    newRows.add(next);
-                }
-
-                for(Argument key : first.keySet()) {
-                    row.put(key, first.get(key));
-                }
-            }
-            result.addAll(newRows);
-        }
-    }
-//    private void addRows(Set<TNode> newNodes, Argument key, List<Map<Argument,TNode>> result) {
-//        if(result.size() == 0) {
-//            for (TNode node : newNodes) {
-//                result.add(new HashMap<>(Map.of(key, node)));
-//            }
-//        }
-//        else if(result.get(0).containsKey(key)) {
-//            result = result.stream().filter(r->newNodes.contains(r.get(key))).toList();
-//        }
-//        else {
-//            List<Map<Argument, TNode>> newRows = new ArrayList<>();
-//
-//            for (Map<Argument, TNode> row : result) {
-//                Iterator<TNode> iterator = newNodes.iterator();
-//                if (!iterator.hasNext()) continue;
-//
-//                // Dodaj pierwszy element do istniejącej mapy
-//                TNode first = iterator.next();
-//                row.put(key, first);
-//
-//                // Każdy kolejny powoduje utworzenie nowej mapy
-//                while (iterator.hasNext()) {
-//                    TNode next = iterator.next();
-//                    Map<Argument, TNode> newRow = new HashMap<>(row); // kopia z aktualnego row
-//                    newRow.put(key, next);
-//                    newRows.add(newRow);
-//                }
-//            }
-//            result.addAll(newRows);
-//        }
-//    }
     private Set<TNode> findTNode(Argument arg) {
         if(arg.type().name().equals("INTEGER")) {
             TNode node = findNodeByProgLine(Integer.parseInt(arg.name()));
@@ -290,5 +215,27 @@ public class Evaluator {
             }
         }
         return null;
+    }
+    private void print(Set<Map<Argument, TNode>> resultMap) {
+        for(Map<Argument, TNode> row : resultMap) {
+            for(Argument key : row.keySet()) {
+                TNode node = row.get(key);
+                String attribute = "";
+                Set<EntityType> stmtTypes = Set.of(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL);
+                if(stmtTypes.contains(AST.getType(node))) {
+                    attribute = AST.getAttr(node).getLine() + "";
+                }
+                else if(AST.getType(node) == EntityType.PROCEDURE) {
+                    attribute = AST.getAttr(node).getProcName();
+                }
+                else if(AST.getType(node) == EntityType.VARIABLE) {
+                    attribute = AST.getAttr(node).getVarName();
+                }
+
+                System.out.print("(" + key + " " + AST.getType(node) + " " + attribute + ") ");
+            }
+            System.out.println();
+        }
+        System.out.println();
     }
 }
