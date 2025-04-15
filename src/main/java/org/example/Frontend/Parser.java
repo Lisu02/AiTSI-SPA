@@ -240,9 +240,22 @@ public class Parser {
                 .line(statementNumber)
                 .build();
         iast.setAttr(assign, at);
-        leftVar=iast.createTNode(EntityType.VARIABLE);
-        at.setVarName(nextToken);
-        iast.setAttr(leftVar,at);
+        try{
+            int cons=Integer.parseInt(nextToken);
+            leftVar=iast.createTNode(EntityType.CONSTANT);
+            Attr as = Attr.builder()
+                    .line(statementNumber)
+                    .constantValue(cons)
+                .build();
+            iast.setAttr(leftVar,as);
+        }catch(NumberFormatException e){
+            leftVar=iast.createTNode(EntityType.VARIABLE);
+            Attr as = Attr.builder()
+                    .line(statementNumber)
+                    .varName(nextToken)
+                    .build();
+            iast.setAttr(leftVar,as);
+        }
         nextToken=tokenIterator.next();
         try {
             iast.setParentChildLink(assign,leftVar);
