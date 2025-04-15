@@ -295,9 +295,22 @@ public class Parser {
                     left=expr;
                     expr=iast.createTNode(EntityType.PLUS);
                     checkToken("NAME");
-                    right=iast.createTNode(EntityType.VARIABLE);
-                    at.setVarName(nextToken); //todo: zmienic referencje na na atrybut np new albo clone()
-                    iast.setAttr(right,at);
+                    try{
+                        int cons=Integer.parseInt(nextToken);
+                        right=iast.createTNode(EntityType.CONSTANT);
+                        Attr as = Attr.builder()
+                                .line(statementNumber)
+                                .constantValue(cons)
+                                .build();
+                        iast.setAttr(right,as);
+                    }catch(NumberFormatException e){
+                        right=iast.createTNode(EntityType.VARIABLE);
+                        Attr as = Attr.builder()
+                                .line(statementNumber)
+                                .varName(nextToken)
+                                .build();
+                        iast.setAttr(right,as);
+                    }
                     try {
                         iast.setParentChildLink(expr,left);
                     } catch (ASTBuildException e) {
