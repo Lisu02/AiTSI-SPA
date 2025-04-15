@@ -18,9 +18,22 @@ public class ASTUses implements IUses {
     public static IUses getInstance() {
         return astUses;
     }
+
+    @Override
+    public void setUses(TNode procedureTNode, List<TNode> tNodeList, String variableName) {
+        System.out.println(procedureTNode + ":" + tNodeList + ":" + variableName);
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public void setUses(TNode procedureTNode, List<TNode> tNodeList, TNode variableTNode) {
+        System.out.println(procedureTNode + ":" + tNodeList + ":" + variableTNode);
+        //throw new RuntimeException("Not implemented");
+    }
+
     @Override
     public void setUses(TNode node, String value) {
-        System.out.println("!!!!!!!!!!!!!!!!!!!");
+        System.out.println("setUses in ASTUses for: " +node + " and value " + value);
         if(!(node instanceof ProcedureNode) && !(node instanceof StmtNode)) {
             //throw new ASTBuildException("Invalid ndoe");
         }

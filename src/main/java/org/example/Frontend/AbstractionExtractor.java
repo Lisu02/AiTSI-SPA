@@ -6,7 +6,10 @@
 
     import java.util.ArrayList;
     import java.util.List;
+    import java.util.Stack;
     import java.util.logging.Logger;
+
+    import static org.example.PKB.API.EntityType.ASSIGN;
 
     public class AbstractionExtractor {
 
@@ -33,7 +36,6 @@
     public void generateStarterAbstractions(){
         TNode tNodeRoot = iast.getRoot();
         List<TNode> procedureList = new ArrayList<>();
-
         //Listowanie procedur
         TNode firstProcedureNode = iast.getLinkedNode(LinkType.FirstChild,tNodeRoot);
         procedureList.add(firstProcedureNode);
@@ -48,78 +50,111 @@
         System.out.println(procedureList);
         for(TNode procedureNode: procedureList){
             generateModifies(procedureNode,iast.getFirstChild(procedureNode));
-            generateUses(procedureNode);
+            generateUsesPoprawka(procedureNode,iast.getFirstChild(procedureNode),null);
+            //generateUses(procedureNode);
         }
     }
 
-    //rekurencja
+    //rekurencja 14 kwietnia update do IF-ELSE + switch case
     private void generateModifies(TNode tNodeProcedure,TNode stmtListTNode){
         TNode stmtNode = iast.getFirstChild(stmtListTNode);
         TNode variableNode;
 
         while(stmtNode != null){
-            if(iast.getType(stmtNode) == EntityType.ASSIGN){
-                variableNode = iast.getFirstChild(stmtNode);
-                iModifies.addModifies(tNodeProcedure,stmtNode,variableNode);
-            }else {
-                TNode tmp = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode));
-                generateModifies(tNodeProcedure,tmp);// while -> stmtList do metody
+            EntityType stmtType = iast.getType(stmtNode);
+            switch (stmtType){
+                case ASSIGN -> {
+                    variableNode = iast.getFirstChild(stmtNode);
+                    log.fine("Modifies line "+iast.getAttr(stmtNode).getLine()+" : " + variableNode.toString().substring(43,62) + " and " + stmtNode.toString().substring(43,60));
+                    iModifies.addModifies(tNodeProcedure,stmtNode,variableNode);
+                }
+                case WHILE -> {
+                    TNode tmp = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode)); // variable(warunek) -> stmt
+                    generateModifies(tNodeProcedure,tmp);// while -> stmtList do metody
+                }
+                case IF -> {
+                    TNode tmp = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode));
+                    generateModifies(tNodeProcedure,tmp); // for if stmtList
+                    tmp = iast.getLinkedNode(LinkType.RightSibling,tmp);
+                    generateModifies(tNodeProcedure,tmp); // for else stmtList
+                }
             }
             stmtNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);
         }
-        System.out.println("End of modifies");
     }
 
-    private void generateUses(TNode tNodeProcedure){
-            TNode stmtList = iast.getFirstChild(tNodeProcedure);
-            TNode currentNode = iast.getFirstChild(stmtList);
-            TNode stmtNode = currentNode;
-            do{
-                if(iast.getType(stmtNode)==EntityType.WHILE){
-                    currentNode=iast.getFirstChild(stmtNode);
-                    Attr add=iast.getAttr(currentNode);
-                    iUses.setUses(stmtNode, add.getVarName());
-                    currentNode=iast.getLinkedNode(LinkType.RightSibling,currentNode);
-                    currentNode=iast.getFirstChild(currentNode);
-                    do{
-                        TNode right=iast.getFirstChild(currentNode);
-                        right=iast.getLinkedNode(LinkType.RightSibling,right);
-                        iterateUses(right,currentNode,stmtNode);
-                        currentNode=iast.getLinkedNode(LinkType.RightSibling,currentNode);
-                    }while(currentNode!=null);
+    //todo: mozna przebudowac na stack z tNodeProcedure
+    public void generateUsesPoprawka(TNode tNodeProcedure,TNode stmtListTNode,Stack<TNode> tNodeStack){
+            //
+            // procedure -> *assign* -> while -> *assign* -> if -> if -> assign
+        //Stos<TNode> lista stmt'ow czyli while -> if -> if .... itd dla danego assign
+        //Jeżeli wychodzimy z danego stmtList to dajemy pop
+        if(tNodeStack == null){
+            tNodeStack = new Stack<>();
+        }
+        if(stmtListTNode == null){
+            stmtListTNode = iast.getFirstChild(tNodeProcedure);
+        }
+        TNode currentTNode = iast.getFirstChild(stmtListTNode); //pierwszy tnode w stmtList
+        while (currentTNode != null){
+            EntityType currentType = iast.getType(currentTNode);
+            switch (currentType){
+                case ASSIGN -> {
+                    tNodeStack.push(currentTNode); //assign node
+                    TNode leftVarNode = iast.getFirstChild(currentTNode);
+                    leftVarNode = iast.getLinkedNode(LinkType.RightSibling,leftVarNode);
+                    traverseAssignForUses(tNodeProcedure,leftVarNode,(Stack<TNode>) tNodeStack.clone());
+                    tNodeStack.pop();
                 }
-                else if(iast.getType(stmtNode)==EntityType.ASSIGN){
-                    currentNode=iast.getFirstChild(stmtNode);
-                    currentNode=iast.getLinkedNode(LinkType.RightSibling,currentNode);
-                    iterateUses(currentNode,stmtNode,stmtNode);
+                case WHILE -> {
+                    tNodeStack.push(currentTNode);
+
+                    TNode variableTNode = iast.getFirstChild(currentTNode);
+                    iUses.setUses(tNodeProcedure,tNodeStack,variableTNode);
+
+                    TNode whileStmtList = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(currentTNode));
+                    generateUsesPoprawka(tNodeProcedure,whileStmtList,tNodeStack);
+                    tNodeStack.pop(); //zdjęcie while ze stosu ponieważ idziemy dalej
                 }
-                stmtNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);
-            }while(stmtNode !=null ); //zly warunek wyjscia
-            System.out.println("End of generateUses");
+                case IF -> log.warning("IF nie ma implementacji USES");
+                case CALL -> log.warning("CALL nie ma implementacji USES");
+            }
+
+            currentTNode = iast.getLinkedNode(LinkType.RightSibling,currentTNode);
+        }
     }
-    private void iterateUses(TNode test,TNode stmt,TNode parent){
-        System.out.println("Iterate uses");
-            if(iast.getType(test)==EntityType.VARIABLE){
-                Attr add=iast.getAttr(test);
+    //Problem tNodeProcedure czy wrzucic do tNodeStack + przechodzenie po nod'ach procedur i dodawanie kilka razy uses?
+    //w sytuacji kiedy istnieje call możemy przejść kilka razy tą samą procedurę na innym callStack'u (tNodeStack)
+    // good enough +
+    //Przechodzenie po wszystkich nazwach TNode'ow aby dodac je do relacji uses
+        /*
+        * EntityType.CONSTANT nie jest uzywane nawet x = 2; [2] dostaje variable tnode oraz entityType.variable
+        * Uses chyba zlicza również po zmienną po lewej stronie
+        * */
+    public void traverseAssignForUses(TNode tNodeProcedure,TNode leftVarNode,Stack<TNode> tNodeStack){
+        TNode currentTNode = iast.getFirstChild(leftVarNode);
+        if(currentTNode == null){
+            if(iast.getType(leftVarNode) == EntityType.VARIABLE){
                 try{
-                    int name= Integer.parseInt(add.getVarName()); //jezeli jest var to podstawiam do attr jego nazwe
-                    add.setConstantValue(name);
-                }
-                catch(NumberFormatException e){
-                    if(stmt!=parent){
-                        iUses.setUses(stmt, add.getVarName());
-                        iUses.setUses(parent, add.getVarName());
-                    }
-                    else{
-                        iUses.setUses(stmt, add.getVarName());
-                    }
+                    Integer.parseInt(iast.getAttr(leftVarNode).getVarName());
+                }catch (NumberFormatException e) {
+                    iUses.setUses(tNodeProcedure,tNodeStack,leftVarNode); // Adding right side variable node
+                    log.info("Mam nazwe zmiennej nie liczba git!");
                 }
             }
-            else{
-                TNode children=iast.getFirstChild(test);
-                iterateUses(children,stmt,parent);
-                children=iast.getLinkedNode(LinkType.RightSibling,children);
-                iterateUses(children,stmt,parent);
+        }
+        while (currentTNode != null){
+            if(iast.getType(currentTNode) == EntityType.VARIABLE){
+                try{
+                    Integer.parseInt(iast.getAttr(currentTNode).getVarName());
+                }catch (NumberFormatException e) {
+                    iUses.setUses(tNodeProcedure,tNodeStack,currentTNode); // Adding right side variable node
+                    log.info("Mam nazwe zmiennej nie liczba git!");
+                }
+            }else {
+                traverseAssignForUses(tNodeProcedure,currentTNode,tNodeStack);
             }
+            currentTNode = iast.getLinkedNode(LinkType.RightSibling,currentTNode);
+        }
     }
 }
