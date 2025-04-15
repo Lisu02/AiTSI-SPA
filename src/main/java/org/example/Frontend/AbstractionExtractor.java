@@ -1,6 +1,8 @@
     package org.example.Frontend;
 
     import org.example.PKB.API.*;
+    import org.example.PKB.Source.ASTImplementations.ASTModifies;
+    import org.example.PKB.Source.ASTImplementations.ASTUses;
 
     import java.util.ArrayList;
     import java.util.List;
@@ -16,10 +18,10 @@
         private IUses iUses;
 
         public AbstractionExtractor(){
-            this(PKB.getAST(),new ImodifiesFrontendImpl(),new IUsesFrontendImpl());
+            this(PKB.getAST(),ASTModifies.getInstance(),ASTUses.getInstance());
         }
         public AbstractionExtractor(IAST iast){
-            this(iast,new ImodifiesFrontendImpl(),new IUsesFrontendImpl());
+            this(iast,ASTModifies.getInstance(),ASTUses.getInstance());
         }
         public AbstractionExtractor(IAST iast, IModifies iModifies,IUses iuses){
             this.iast = iast;
@@ -27,60 +29,47 @@
             this.iUses=iuses;
         }
 
-    //Root - program
-    //Procedure
-    //StmtList
-    //Stmt
-    //Stmt
-
-    //Generowanie Modifies ora Uses do PKB
+    //Generowanie Modifies oraz Uses do PKB
     public void generateStarterAbstractions(){
         TNode tNodeRoot = iast.getRoot();
         List<TNode> procedureList = new ArrayList<>();
 
-        //Listing procedures
+        //Listowanie procedur
         TNode firstProcedureNode = iast.getLinkedNode(LinkType.FirstChild,tNodeRoot);
         procedureList.add(firstProcedureNode);
         TNode currentNode = firstProcedureNode;
-        //todo: dodatkowe logowanie + jest blad z przechodzeniem po TNode'ach
+
         while (iast.getLinkedNode(LinkType.RightSibling,currentNode) != null){
             currentNode = iast.getLinkedNode(LinkType.RightSibling,currentNode);
             System.out.println("currentNode = " + currentNode);
             procedureList.add(currentNode);
-            break;
         }
 
+        System.out.println(procedureList);
         for(TNode procedureNode: procedureList){
-            System.out.println("procedureNode = " + procedureNode);
-
-            generateModifies(procedureNode);
+            generateModifies(procedureNode,iast.getFirstChild(procedureNode));
             generateUses(procedureNode);
         }
-
-
-
-
-
-        //generateModifies(tNodeRoot);
-        //generateUses(tNodeRoot);
     }
 
-    private void generateModifies(TNode tNodeProcedure){
-        TNode stmtList = iast.getFirstChild(tNodeProcedure);
-        TNode currentNode = iast.getFirstChild(stmtList);
-        TNode stmtNode = currentNode;
-        System.out.println("currentNode in modifies -> " + currentNode); //todo: jest blad z petla do while
-        do{
-            if(iast.getType(currentNode) == EntityType.ASSIGN){
-                currentNode = iast.getFirstChild(currentNode);
-                iModifies.addModifies(tNodeProcedure,stmtNode,currentNode);
+    //rekurencja
+    private void generateModifies(TNode tNodeProcedure,TNode stmtListTNode){
+        TNode stmtNode = iast.getFirstChild(stmtListTNode);
+        TNode variableNode;
+
+        while(stmtNode != null){
+            if(iast.getType(stmtNode) == EntityType.ASSIGN){
+                variableNode = iast.getFirstChild(stmtNode);
+                iModifies.addModifies(tNodeProcedure,stmtNode,variableNode);
+            }else {
+                TNode tmp = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode));
+                generateModifies(tNodeProcedure,tmp);// while -> stmtList do metody
             }
-            System.out.println("currentNode in modifies -> " + currentNode);
-            currentNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);
-        }while (iast.getLinkedNode(LinkType.RightSibling,currentNode) != null);
-
-        System.out.println("End of generateModifies");
+            stmtNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);
+        }
+        System.out.println("End of modifies");
     }
+
     private void generateUses(TNode tNodeProcedure){
             TNode stmtList = iast.getFirstChild(tNodeProcedure);
             TNode currentNode = iast.getFirstChild(stmtList);
@@ -97,7 +86,7 @@
                         right=iast.getLinkedNode(LinkType.RightSibling,right);
                         iterateUses(right,currentNode,stmtNode);
                         currentNode=iast.getLinkedNode(LinkType.RightSibling,currentNode);
-                    }while(iast.getLinkedNode(LinkType.RightSibling,stmtNode)!=null);
+                    }while(currentNode!=null);
                 }
                 else if(iast.getType(stmtNode)==EntityType.ASSIGN){
                     currentNode=iast.getFirstChild(stmtNode);
@@ -105,14 +94,15 @@
                     iterateUses(currentNode,stmtNode,stmtNode);
                 }
                 stmtNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);
-            }while(iast.getLinkedNode(LinkType.RightSibling,stmtNode)!=null);
+            }while(stmtNode !=null ); //zly warunek wyjscia
             System.out.println("End of generateUses");
     }
     private void iterateUses(TNode test,TNode stmt,TNode parent){
+        System.out.println("Iterate uses");
             if(iast.getType(test)==EntityType.VARIABLE){
                 Attr add=iast.getAttr(test);
                 try{
-                    int name= Integer.parseInt(add.getVarName());
+                    int name= Integer.parseInt(add.getVarName()); //jezeli jest var to podstawiam do attr jego nazwe
                     add.setConstantValue(name);
                 }
                 catch(NumberFormatException e){

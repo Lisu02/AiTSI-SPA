@@ -59,6 +59,9 @@ public class EvaluatorTest {
         Collections.sort(expectedResult);
         Collections.sort(result);
 
+        System.out.println(query);
+        System.out.println(result);
+
         assertEquals(expectedResult,result);
     }
 

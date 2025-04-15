@@ -25,6 +25,7 @@ public class ProgramNode extends ASTNode {
             throw new ASTBuildException("Next child of ProgramNode must be a ProcedureNode!");
         children.add((ProcedureNode) child);
         child.setParent(this);
+        child.setId(children.size() - 1);
         return children.size() - 1;
     }
 
