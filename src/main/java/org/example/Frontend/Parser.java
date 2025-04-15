@@ -283,7 +283,7 @@ public class Parser {
                     expr=iast.createTNode(EntityType.PLUS);
                     checkToken("NAME");
                     right=iast.createTNode(EntityType.VARIABLE);
-                    at.setVarName(nextToken);
+                    at.setVarName(nextToken); //todo: zmienic referencje na na atrybut np new albo clone()
                     iast.setAttr(right,at);
                     try {
                         iast.setParentChildLink(expr,left);
