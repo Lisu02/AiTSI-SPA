@@ -277,13 +277,23 @@ public class Parser {
 
     TNode expr(){
         TNode expr,left,right;
-        expr=iast.createTNode(EntityType.VARIABLE);
         checkToken("NAME"); //[2] + 5 ;
-        Attr at = Attr.builder()
-                .varName(nextToken)
-                .line(statementNumber)
-                .build();
-        iast.setAttr(expr,at);
+        try{
+            int cons=Integer.parseInt(nextToken);
+            expr=iast.createTNode(EntityType.CONSTANT);
+            Attr as = Attr.builder()
+                    .line(statementNumber)
+                    .constantValue(cons)
+                    .build();
+            iast.setAttr(expr,as);
+        }catch(NumberFormatException e){
+            expr=iast.createTNode(EntityType.VARIABLE);
+            Attr as = Attr.builder()
+                    .line(statementNumber)
+                    .varName(nextToken)
+                    .build();
+            iast.setAttr(expr,as);
+        }
         nextToken=tokenIterator.next(); // + 5;
         log.info("next token przed whilem ze znakiem ';' -> " + nextToken);
 
