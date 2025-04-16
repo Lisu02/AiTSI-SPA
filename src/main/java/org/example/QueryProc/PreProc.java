@@ -175,34 +175,111 @@ public class PreProc {
         return relations;
     }
 
+//    private List<WithStatement> validateWithStatements(List<String[]> withStatements, Map<String,EntityType> synonyms) throws InvalidQueryException {
+//        List<WithStatement> result = new ArrayList<>();
+//        for(String[] statement : withStatements) {
+//            if(statement.length != 3 && statement.length != 4) {
+//                throw new InvalidQueryException("Invalid number of arguments: " + statement.length + ". In statement: " + Arrays.toString(statement));
+//            }
+//
+//            EntityType firstArgType = synonyms.get(statement[0]);
+//            EntityType secondArgType = synonyms.get(statement[2]);
+//
+//            if(firstArgType == null) {
+//                throw new InvalidQueryException("There is no such synonym as : " + statement[0]);
+//            }
+//            if(secondArgType != null && statement.length != 4) {
+//                throw new InvalidQueryException(statement[2] + "is missing an attribute");
+//            }
+//            if(!GrammarRules.ATTRIBUTES.containsKey(statement[1])) {
+//                throw new InvalidQueryException("Invalid attribute: " + statement[1] + ". In statement: " + Arrays.toString(statement));
+//            }
+//            if(secondArgType != null && !GrammarRules.ATTRIBUTES.containsKey(statement[3])) {
+//                throw new InvalidQueryException("Invalid attribute: " + statement[3] + ". In statement: " + Arrays.toString(statement));
+//            }
+//            if(!GrammarRules.ATTRIBUTES.get(statement[1]).contains(firstArgType)) {
+//                throw new InvalidQueryException("Synonym " + statement[0] + " does not have attribute " + statement[1]);
+//            }
+//            if(secondArgType != null  && !GrammarRules.ATTRIBUTES.get(statement[3]).contains(secondArgType)) {
+//                throw new InvalidQueryException("Synonym " + statement[2] + " does not have attribute " + statement[3]);
+//            }
+//            if(secondArgType != null && !statement[1].equals(statement[3])) {
+//                throw new InvalidQueryException("Attribute " + statement[1] + " and attribute " + statement[3] + " must be the same");
+//            }
+//
+//            if(statement[1].equals("procName") || statement[1].equals("varName")) {
+//                if(statement[2].charAt(0) == '"' && statement[2].charAt(statement[2].length()-1) == '"') {
+//                    secondArgType = EntityType.STRING;
+//                }
+//                else if (secondArgType == null) {
+//                    throw new InvalidQueryException("Incorrect value " + statement[2] + ". " + statement[1] + " value should be of type string");
+//                }
+//            }
+//            else if(statement[1].equals("value") || statement[1].equals("stmt#")) {
+//                if(statement[2].matches("\\d+")) {
+//                    secondArgType = EntityType.INTEGER;
+//                }
+//                else if (secondArgType == null) {
+//                    throw new InvalidQueryException("Incorrect type " + statement[2] + ". Type should be integer");
+//                }
+//            }
+//            result.add(new WithStatement(new Argument(statement[0], firstArgType), statement[1], new Argument(statement[2], secondArgType)));
+//        }
+//        return result;
+//    }
+
     private List<WithStatement> validateWithStatements(List<String[]> withStatements, Map<String,EntityType> synonyms) throws InvalidQueryException {
         List<WithStatement> result = new ArrayList<>();
         for(String[] statement : withStatements) {
-            EntityType type = synonyms.get(statement[0]);
-            EntityType valType;
-            if(type == null) {
-                throw new InvalidQueryException("There is no such synonym as : " + statement[0]);
-            }
+
             if(statement.length != 3 && statement.length != 4) {
                 throw new InvalidQueryException("Invalid number of arguments: " + statement.length + ". In statement: " + Arrays.toString(statement));
             }
 
-            if(!GrammarRules.ATTRIBUTES.containsKey(statement[1])) {
-                throw new InvalidQueryException("Invalid attribute: " + statement[1] + ". In statement: " + Arrays.toString(statement));
-            }
-            if(!GrammarRules.ATTRIBUTES.get(statement[1]).contains(type)) {
-                throw new InvalidQueryException("Synonym " + statement[0] + " does not have attribute " + statement[1]);
-            }
-            if((statement[1].equals("procName") || statement[1].equals("varName")) &&
-                    (statement[2].charAt(0) != '"' || statement[2].charAt(statement[2].length()-1) != '"')) {
+            String name1 = statement[0];
+            EntityType type1 = synonyms.get(name1);
+            String attribute1 = statement[1];
 
-                throw new InvalidQueryException("Incorrect value " + statement[2] + ". " + statement[1] + " value should be of type string");
+            String name2 = statement[2];
+            EntityType type2 = synonyms.get(name2);
+            String attribute2 = statement.length == 4 ? statement[3] : null;
+
+            if(type1 == null) {
+                throw new InvalidQueryException("There is no such synonym as : " + name1);
             }
-            else if((statement[1].equals("value") || statement[1].equals("stmt#")) && !statement[2].matches("\\d+")) {
-                throw new InvalidQueryException("Incorrect type " + statement[2] + ". Type should be integer");
+            if(type2 == null) {
+                type2 = inferLiteralType(name2);
+                attribute2 = attribute1;
             }
-            result.add(new WithStatement(new Argument(statement[0], type), statement[1], statement[2]));
+
+            validateArgument(name1, type1, attribute1);
+            validateArgument(name2, type2, attribute2);
+
+            if(!attribute1.equals(attribute2)) {
+                throw new InvalidQueryException("First attribute: " +attribute1 + " and second attribute: " + attribute2 + " must be the same");
+            }
+
+            result.add(new WithStatement(new Argument(name1, type1), attribute1, new Argument(name2, type2)));
         }
         return result;
+    }
+    private EntityType inferLiteralType(String name) throws InvalidQueryException {
+        if(name.startsWith("\"") && name.endsWith("\"")) {
+            return EntityType.STRING;
+        }
+        else if(name.matches("\\d+")) {
+            return EntityType.INTEGER;
+        }
+        else {
+            throw new InvalidQueryException("Incorrect value " + name);
+        }
+    }
+    private void validateArgument(String name, EntityType type, String attribute) throws InvalidQueryException {
+        if(!GrammarRules.ATTRIBUTES.containsKey(attribute)) {
+            throw new InvalidQueryException("Invalid attribute: " + attribute);
+        }
+        if(!GrammarRules.ATTRIBUTES.get(attribute).contains(type)) {
+            throw new InvalidQueryException("Synonym " + name + " does not have attribute " + attribute);
+        }
     }
 }
