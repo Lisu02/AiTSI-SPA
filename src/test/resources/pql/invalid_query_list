@@ -31,6 +31,7 @@ stmt s; variable v; Select s such that Modifies(s,v) with s.stmt = "stmt" ! Inva
 stmt s; variable v; Select s such that Uses(s, v) with v.varName=="x" ! Invalid number of =: 2 In statement: with v.varName=="x"
 stmt s; variable v; Select s such that Modifies(s,v) with v.stmt#="x" ! Synonym v does not have attribute stmt#
 stmt s; variable v; Select s such that Modifies(s,v) with v.procName="x" ! Synonym v does not have attribute procName
+stmt s; variable v; Select s such that Modifies(s,v) with v.valName= v2.valName ! Incorrect value v2
 
 // Wrong synonym
 Select s such that Uses(s, v) ! Not recognize synonym: s

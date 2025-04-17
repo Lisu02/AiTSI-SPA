@@ -21,12 +21,10 @@ public class PreProc {
 
         Map<String,EntityType> synonyms = separateSynonyms(args);
 
-        String[] bodyElements = Arrays.stream(body.split("(?=\\b(such that|with)\\b)"))
-                .filter(e->!e.isBlank())
-                .toArray(String[]::new);
+        List<String> bodyElements =  separateBody( body.trim().split(" "));
 
-        ReturnDesc returnDesc = determineReturnValues(bodyElements[0],synonyms);
-        BodyDesc bodyDesc = determineQueryBody(Arrays.copyOfRange(bodyElements,1,bodyElements.length));
+        ReturnDesc returnDesc = determineReturnValues(bodyElements.get(0),synonyms);
+        BodyDesc bodyDesc = determineQueryBody(bodyElements.subList(1,bodyElements.size()));
 
         List<Relation> relations = validateSuchThatStatements(bodyDesc.suchThatStatements,synonyms);
         List<WithStatement> withStatements = validateWithStatements(bodyDesc.withStatements,synonyms);
@@ -36,6 +34,29 @@ public class PreProc {
                 .collect(Collectors.toSet());
 
         return new QueryTree(synonymArg,returnDesc.isBoolean,returnDesc.returnValues,relations,withStatements);
+    }
+    private List<String> separateBody(String[] body) {
+        List<String> bodyElements = new ArrayList<>();
+        String prefix = "";
+        String currentClause = body[0];
+
+        for (int i = 1; i < body.length; i++) {
+            if (body[i].equals("such") && i < body.length - 1 && body[i + 1].equals("that")) {
+                prefix = "such that";
+                i++;
+            } else if (body[i].equals("with") || body[i].equals("pattern")) {
+                prefix = body[i];
+            } else if (!body[i].equals("and")) {
+                currentClause += " " + body[i];
+                continue;
+            }
+
+            bodyElements.add(currentClause);
+            currentClause = prefix;
+        }
+
+        bodyElements.add(currentClause);
+        return bodyElements;
     }
     private Map<String,EntityType> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
         Map<String,EntityType> synonyms = new HashMap<>();
@@ -102,7 +123,7 @@ public class PreProc {
     }
   
     private record BodyDesc(List<String[]> suchThatStatements, List<String[]> withStatements) {}
-    private BodyDesc determineQueryBody(String[] queryBody) throws InvalidQueryException {
+    private BodyDesc determineQueryBody(List<String> queryBody) throws InvalidQueryException {
         List<String[]> suchThatStatements = new ArrayList<>();
         List<String[]> withStatements = new ArrayList<>();
 
@@ -174,60 +195,6 @@ public class PreProc {
         }
         return relations;
     }
-
-//    private List<WithStatement> validateWithStatements(List<String[]> withStatements, Map<String,EntityType> synonyms) throws InvalidQueryException {
-//        List<WithStatement> result = new ArrayList<>();
-//        for(String[] statement : withStatements) {
-//            if(statement.length != 3 && statement.length != 4) {
-//                throw new InvalidQueryException("Invalid number of arguments: " + statement.length + ". In statement: " + Arrays.toString(statement));
-//            }
-//
-//            EntityType firstArgType = synonyms.get(statement[0]);
-//            EntityType secondArgType = synonyms.get(statement[2]);
-//
-//            if(firstArgType == null) {
-//                throw new InvalidQueryException("There is no such synonym as : " + statement[0]);
-//            }
-//            if(secondArgType != null && statement.length != 4) {
-//                throw new InvalidQueryException(statement[2] + "is missing an attribute");
-//            }
-//            if(!GrammarRules.ATTRIBUTES.containsKey(statement[1])) {
-//                throw new InvalidQueryException("Invalid attribute: " + statement[1] + ". In statement: " + Arrays.toString(statement));
-//            }
-//            if(secondArgType != null && !GrammarRules.ATTRIBUTES.containsKey(statement[3])) {
-//                throw new InvalidQueryException("Invalid attribute: " + statement[3] + ". In statement: " + Arrays.toString(statement));
-//            }
-//            if(!GrammarRules.ATTRIBUTES.get(statement[1]).contains(firstArgType)) {
-//                throw new InvalidQueryException("Synonym " + statement[0] + " does not have attribute " + statement[1]);
-//            }
-//            if(secondArgType != null  && !GrammarRules.ATTRIBUTES.get(statement[3]).contains(secondArgType)) {
-//                throw new InvalidQueryException("Synonym " + statement[2] + " does not have attribute " + statement[3]);
-//            }
-//            if(secondArgType != null && !statement[1].equals(statement[3])) {
-//                throw new InvalidQueryException("Attribute " + statement[1] + " and attribute " + statement[3] + " must be the same");
-//            }
-//
-//            if(statement[1].equals("procName") || statement[1].equals("varName")) {
-//                if(statement[2].charAt(0) == '"' && statement[2].charAt(statement[2].length()-1) == '"') {
-//                    secondArgType = EntityType.STRING;
-//                }
-//                else if (secondArgType == null) {
-//                    throw new InvalidQueryException("Incorrect value " + statement[2] + ". " + statement[1] + " value should be of type string");
-//                }
-//            }
-//            else if(statement[1].equals("value") || statement[1].equals("stmt#")) {
-//                if(statement[2].matches("\\d+")) {
-//                    secondArgType = EntityType.INTEGER;
-//                }
-//                else if (secondArgType == null) {
-//                    throw new InvalidQueryException("Incorrect type " + statement[2] + ". Type should be integer");
-//                }
-//            }
-//            result.add(new WithStatement(new Argument(statement[0], firstArgType), statement[1], new Argument(statement[2], secondArgType)));
-//        }
-//        return result;
-//    }
-
     private List<WithStatement> validateWithStatements(List<String[]> withStatements, Map<String,EntityType> synonyms) throws InvalidQueryException {
         List<WithStatement> result = new ArrayList<>();
         for(String[] statement : withStatements) {
