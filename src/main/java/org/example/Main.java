@@ -48,7 +48,7 @@ public class Main {
 //            queryTree = preProc.parseQuery("stmt s,s2; Select s such that Follows*(s,s2) with s.stmt# = 4");
 //            queryTree = preProc.parseQuery("stmt s; while w; variable v; Select v such that Modifies(s,v) such that Parent(4,s)");
 //            queryTree = preProc.parseQuery("stmt s; while w; variable v; Select v with s.stmt# = 1 such that Modifies(s,v)");
-            queryTree = preProc.parseQuery("stmt s; Select s such that Follows(_, _)");
+            queryTree = preProc.parseQuery("stmt s1, s2; Select s1 with s1.stmt# = s2.stmt#");
         } catch (InvalidQueryException e) {
             System.out.println(e.getMessage());
         }
