@@ -36,6 +36,9 @@ public abstract class ASTFactory extends ASTEssential {
             case PLUS -> {
                 node = new PlusNode();
             }
+            case TIMES -> {
+                node = new TimesNode();
+            }
             default -> {
             return null;
             }
