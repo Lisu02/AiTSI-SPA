@@ -36,6 +36,18 @@ public abstract class ASTFactory extends ASTEssential {
             case PLUS -> {
                 node = new PlusNode();
             }
+            case TIMES -> {
+                node = new TimesNode();
+            }
+            case MINUS -> {
+                node = new MinusNode();
+            }
+            case CONSTANT -> {
+                node = new ConstantNode();
+            }
+            case IF -> {
+                node = new IfNode();
+            }
             default -> {
             return null;
             }
