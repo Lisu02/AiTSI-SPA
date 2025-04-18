@@ -8,7 +8,7 @@ stmt s; Select s Follows(1,2) ! Not recognize synonym: Follows(1
 stmt s; Select s such that ! Empty such that statement
 stmt s; Select s such that Follows(1,2) Follows(2,3) ! Incorrect number of arguments in relation Follows: 5
 stmt s; Select s such that Uses(s, "x") with ! Invalid number of =: 0 In statement: with
-stmt s; variable v; Select s such that Uses(s, v) with v.varName="x ! Incorrect value "x. varName value should be of type string
+stmt s; variable v; Select s such that Uses(s, v) with v.varName="x ! Incorrect value "x
 
 // Wrong such that statement
 procedure p; Select p such that Calls (p, 2) ! Incorrect argument type: 2 - INTEGER in relation Calls
@@ -24,12 +24,14 @@ stmt s; procedure p; Select s such that Parent(s, p) ! Incorrect argument type: 
 variable v; stmt s; Select v such that Modifies(v, s) ! Incorrect argument type: v - VARIABLE in relation Modifies
 
 // Wrong with statement
-stmt s; variable v; Select s such that Modifies(s,v) with v.varName=5 ! Incorrect value 5. varName value should be of type string
+stmt s; variable v; Select s such that Modifies(s,v) with v.varName=5 ! Synonym 5 does not have attribute varName
 stmt s; variable v; Select s such that Modifies(s,v) with s = "stmt" ! Invalid number of arguments: 2. In statement: [s, "stmt"]
-stmt s; variable v; Select s such that Modifies(s,v) with s.stmt = "stmt" ! Invalid attribute: stmt. In statement: [s, stmt, "stmt"]
+stmt s; variable v; Select s such that Modifies(s,v) with 1 = s.stmt# ! There is no such synonym as : 1
+stmt s; variable v; Select s such that Modifies(s,v) with s.stmt = "stmt" ! Invalid attribute: stmt
 stmt s; variable v; Select s such that Uses(s, v) with v.varName=="x" ! Invalid number of =: 2 In statement: with v.varName=="x"
 stmt s; variable v; Select s such that Modifies(s,v) with v.stmt#="x" ! Synonym v does not have attribute stmt#
 stmt s; variable v; Select s such that Modifies(s,v) with v.procName="x" ! Synonym v does not have attribute procName
+stmt s; variable v; Select s such that Modifies(s,v) with v.valName= v2.valName ! Incorrect value v2
 
 // Wrong synonym
 Select s such that Uses(s, v) ! Not recognize synonym: s

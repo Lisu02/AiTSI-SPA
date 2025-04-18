@@ -1,6 +1,5 @@
 package org.example.QueryProc;
 
-import org.example.Exceptions.NotImplementedRuntimeException;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.IAST;
 import org.example.PKB.API.PKB;
@@ -14,24 +13,27 @@ import java.util.stream.Collectors;
 
 public class Evaluator {
     private static final IAST AST = PKB.getAST();
+    private final Set<Map<Argument,TNode>> finalResult = new HashSet<>();
     public Set<TNode> evaluateQuery(QueryTree queryTree) {
-        Set<Map<Argument,TNode>> resultMap = new HashSet<>();
+        //Set<Map<Argument,TNode>> finalResult = new HashSet<>();
+        finalResult.clear();
 
         for( Relation relation : queryTree.relations()) {
-            if(!evaluateRelation(relation,queryTree.synonyms(),resultMap)) {
+            if(!evaluateRelation(relation,queryTree.synonyms())) {
                 return Set.of();
             }
         }
 
         for( WithStatement statement : queryTree.withStatements()) {
-           evaluateWith(statement, resultMap);
+           evaluateWith(statement, finalResult);
         }
 
-        return resultMap.stream()
+        return finalResult.stream()
                 .map(r->r.get(queryTree.returnValues().get(0)))
                 .collect(Collectors.toSet());
+        //return finalResult;
     }
-    private boolean evaluateRelation(Relation relation,Set<Argument> synonyms, Set<Map<Argument,TNode>> resultMap) {
+    private boolean evaluateRelation(Relation relation,Set<Argument> synonyms) {
         RelationFunctions functions = GrammarRules.RELATION_FUNCTIONS.get(relation.name());
 
         Argument arg1 = relation.arg1();
@@ -41,15 +43,7 @@ public class Evaluator {
 
         Set<Map<Argument,TNode>> result = new HashSet<>();
         if(isArg1Synonym && isArg2Synonym) {
-            Set<TNode> valuesArg1 = resultMap.stream()
-                    .map(row -> row.get(arg1))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.collectingAndThen(
-                            Collectors.toSet(),
-                            set -> set.isEmpty() ? AST.getNodesOfEntityTypes(arg1.type()) : set
-                    ));
-
-            for(TNode node : valuesArg1 ) {
+            for(TNode node : findTNode(arg1) ) {
                 functions.byFunction().apply(node).stream()
                         .filter(n -> arg2.type().allows(AST.getType(n)))
                         .map(n -> new HashMap<>(Map.of(arg1, node, arg2, n)))
@@ -76,35 +70,35 @@ public class Evaluator {
             if(!doesSolutionExist(arg1,arg2,functions.isFunction())) {
                 return false;
             }
-            if(arg1.name().equals("_") && arg2.name().equals("_") && resultMap.isEmpty()) {
+            if(arg1.name().equals("_") && arg2.name().equals("_") && finalResult.isEmpty()) {
                 Argument key = synonyms.iterator().next();
                 AST.getNodesOfEntityTypes(key.type()).stream()
                         .map(n->new HashMap<>(Map.of(key,n)))
                         .forEach(result::add);
             }
         }
-        addRows(result,resultMap);
+        mergeResults(result);
         //print(resultMap);
         return true;
     }
-    private void addRows(Set<Map<Argument, TNode>> newNodes, Set<Map<Argument,TNode>> result) {
-        if(result.size() == 0 || newNodes.isEmpty()) {
-            result.addAll(newNodes);
+    private void mergeResults(Set<Map<Argument, TNode>> newNodes) {
+        if(finalResult.size() == 0 || newNodes.isEmpty()) {
+            finalResult.addAll(newNodes);
             return;
         }
 
         Set<Argument> newKeys = newNodes.iterator().next().keySet();
-        Set<Argument> resultKeys = result.iterator().next().keySet();
+        Set<Argument> resultKeys = finalResult.iterator().next().keySet();
 
         if(resultKeys.containsAll(newKeys)) {
-            result.removeIf(row -> newNodes.stream()
+            finalResult.removeIf(row -> newNodes.stream()
                     .noneMatch(newRow -> newKeys.stream()
                             .allMatch(key -> newRow.get(key) == row.get(key))
             ));
         }
         else if(!Collections.disjoint(resultKeys, newKeys)) {
-            List<Map<Argument, TNode>> toDelete = new ArrayList<>();
-            for (Map<Argument, TNode> row : result) {
+            Set<Map<Argument, TNode>> toDelete = new HashSet<>();
+            for (Map<Argument, TNode> row : finalResult) {
 
                 for (Map<Argument, TNode> next : newNodes) {
                     if (newKeys.stream().anyMatch(key -> next.get(key) == row.get(key))) {
@@ -114,11 +108,11 @@ public class Evaluator {
                     }
                 }
             }
-            toDelete.forEach(result::remove);
+            toDelete.forEach(finalResult::remove);
         }
         else {
-            List<Map<Argument, TNode>> newRows = new ArrayList<>();
-            for (Map<Argument, TNode> row : result) {
+            Set<Map<Argument, TNode>> newRows = new HashSet<>();
+            for (Map<Argument, TNode> row : finalResult) {
                 Iterator<Map<Argument, TNode>> iterator = newNodes.iterator();
                 if (!iterator.hasNext()) continue;
 
@@ -131,9 +125,10 @@ public class Evaluator {
                     newRows.add(next);
                 }
             }
-            result.addAll(newRows);
+            finalResult.addAll(newRows);
         }
     }
+
     private boolean doesSolutionExist(Argument arg1, Argument arg2, BiPredicate<TNode, TNode> predicate) {
         for(TNode node1 : findTNode(arg1)) {
             for(TNode node2 : findTNode(arg2)) {
@@ -145,32 +140,22 @@ public class Evaluator {
         return false;
     }
     private void evaluateWith(WithStatement withStatement,  Set<Map<Argument,TNode>> resultMap) {
-//        Set<TNode> arguments1 = resultMap.stream().map(row->row.get(withStatement.arg1())).collect(Collectors.toSet());
-//        if (arguments1.size() == 0 || arguments1.contains(null)) {
-//            arguments1 = AST.getNodesOfEntityTypes(withStatement.arg1().type());
-//        }
+        Argument arg1 = withStatement.arg1();
+        Argument arg2 = withStatement.arg2();
+        Set<TNode> arguments2 = findTNode(arg2);
 
-        TNode tNode;
-        if(withStatement.attribute().equals("stmt#") || withStatement.attribute().equals("value")) {
-            tNode = findNodeByProgLine(Integer.parseInt(withStatement.constVal()));
-        }
-        else if(withStatement.attribute().equals("procName") || withStatement.attribute().equals("varName")) {
-            tNode = findNodeByName(withStatement.constVal());
+        if(resultMap.isEmpty()) {
+            arguments2.stream()
+                    .map(node->new HashMap<>(Map.of(arg1, node, arg2, node)))
+                    .forEach(finalResult::add);
         }
         else {
-            throw new NotImplementedRuntimeException("query evaluator","with statement with two synonyms hasn't been implemented yet");
-        }
-        if(tNode != null) {
-            //resultMap.get(withStatement.arg1()).retainAll(Set.of(tNode));
-        }
-        if(resultMap.isEmpty() && tNode != null) {
-            resultMap.add(new HashMap<>(Map.of(withStatement.arg1(),tNode)));
-        }
-        List<Map<Argument, TNode>> toDelete = resultMap.stream()
-                .filter(row -> row.get(withStatement.arg1()) != tNode)
-                .toList();
+            List<Map<Argument, TNode>> toDelete = resultMap.stream()
+                    .filter(row -> !arguments2.contains(row.get(arg1)))
+                    .toList();
 
-        toDelete.forEach(resultMap::remove);
+            toDelete.forEach(resultMap::remove);
+        }
     }
     private Set<TNode> findTNode(Argument arg) {
         if(arg.type().name().equals("INTEGER")) {
@@ -181,20 +166,21 @@ public class Evaluator {
             TNode node = findNodeByName(arg.name());
             return node == null ? Set.of() : Set.of(node);
         }
-        else if(arg.name().equals("_")) {
-            return AST.getNodesOfEntityTypes(arg.type());
+        else {
+            return finalResult.stream()
+                    .map(row -> row.get(arg))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.collectingAndThen(
+                            Collectors.toSet(),
+                            set -> set.isEmpty() ? AST.getNodesOfEntityTypes(arg.type()) : set
+                    ));
         }
-        return Set.of();
     }
     private TNode findNodeByProgLine(int progLine) {
-        Set<TNode> tNodes = AST.getNodesOfEntityTypes(EntityType.STMT);
-
-        for(TNode tNode : tNodes) {
-            if(AST.getAttr(tNode).getLine() == progLine) {
-                return tNode;
-            }
-        }
-        return null;
+        return AST.getNodesOfEntityTypes(EntityType.STMT).stream()
+                .filter(node -> AST.getAttr(node).getLine() == progLine)
+                .findFirst()
+                .orElse(null);
     }
     private TNode findNodeByName(String name) {
         name = name.replace("\"", "");
