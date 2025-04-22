@@ -9,28 +9,28 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
-public class PlusNode extends ExprNode {
+public class MinusNode extends ExprNode {
     private ExprNode leftOperand;
     private ExprNode rightOperand;
 
-    public PlusNode() {
-        super(EntityType.PLUS);
+    public MinusNode() {
+        super(EntityType.MINUS);
     }
 
     @Override
     public Set<EntityType> getAllEntityTypes() {
         Set<EntityType> set = super.getAllEntityTypes();
-        set.add(EntityType.PLUS);
+        set.add(EntityType.MINUS);
         return set;
     }
 
     @Override
     public int setNextChild(ASTNode child) throws ASTBuildException {
         if (child == null) {
-            throw new ASTBuildException("Can't add null child to PlusNode");
+            throw new ASTBuildException("Can't add null child to MinusNode");
         }
         if (!(child instanceof ExprNode)) {
-            throw new ASTBuildException("PlusNode can only have ExprNodes as children");
+            throw new ASTBuildException("MinusNode can only have ExprNodes as children");
         }
 
         if (leftOperand == null) {
@@ -44,7 +44,7 @@ public class PlusNode extends ExprNode {
             child.setId(1);
             return 1;
         } else {
-            throw new ASTBuildException("PlusNode can only have two operands");
+            throw new ASTBuildException("MinusNode can only have two operands");
         }
     }
 
@@ -84,7 +84,7 @@ public class PlusNode extends ExprNode {
 
     @Override
     public String toString() {
-        return "PlusNode{" +
+        return "MinusNode{" +
                 "left=" + leftOperand +
                 ", right=" + rightOperand +
                 '}';

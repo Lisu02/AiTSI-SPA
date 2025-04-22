@@ -47,9 +47,9 @@ public class GrammarRules {
             EntityType.PROCEDURE, EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.VARIABLE
     );
     public static final Map<String, Set<EntityType>> ATTRIBUTES = Map.of(
-            "procName", Set.of(EntityType.PROCEDURE, EntityType.CALL),
-            "varName", Set.of(EntityType.VARIABLE),
-            "value", Set.of(EntityType.CONSTANT),
-            "stmt#", Set.of(EntityType.STMT, EntityType.ASSIGN, EntityType.WHILE, EntityType.IF, EntityType.CALL)
+            "procName", Set.of(EntityType.PROCEDURE, EntityType.CALL, EntityType.STRING),
+            "varName", Set.of(EntityType.VARIABLE, EntityType.STRING),
+            "value", Set.of(EntityType.CONSTANT, EntityType.PROG_LINE, EntityType.INTEGER),
+            "stmt#", Set.of(EntityType.STMT, EntityType.ASSIGN, EntityType.WHILE, EntityType.IF, EntityType.CALL, EntityType.PROG_LINE, EntityType.INTEGER)
     );
 }

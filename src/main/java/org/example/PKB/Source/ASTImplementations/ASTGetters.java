@@ -4,7 +4,8 @@ import org.example.PKB.API.Attr;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.TNode;
 import org.example.PKB.Source.ASTNode;
-import java.util.List;
+
+import java.util.Set;
 
 public abstract class ASTGetters extends ASTFactory {
     public TNode getRoot()
@@ -24,7 +25,7 @@ public abstract class ASTGetters extends ASTFactory {
         return astNode.getAttr();
     }
 
-    public List<TNode> getNodesOfEntityTypes(EntityType et)
+    public Set<TNode> getNodesOfEntityTypes(EntityType et)
     {
         return entities.get(et);
     }
