@@ -10,6 +10,10 @@ import java.util.logging.LogManager;
 public class MainPipeTester {
     public static void main(String[] args) throws Exception {
 
+        //Aby uruchomić prawidłowo MainPipeTester trzeba dodać program arguments
+        //do edit configuration i tam podać ścieżke do pliku z kodem do parsowania
+        //np ParserTest.txt
+
         //Usuwamy loggera do działającego programu aby nie dawał na stdout komunikatów
         LogManager.getLogManager().readConfiguration(
                 Main.class.getClassLoader().getResourceAsStream("logging_pipetester.properties")
