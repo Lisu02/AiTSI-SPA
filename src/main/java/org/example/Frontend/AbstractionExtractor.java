@@ -43,11 +43,12 @@
 
         while (iast.getLinkedNode(LinkType.RightSibling,currentNode) != null){
             currentNode = iast.getLinkedNode(LinkType.RightSibling,currentNode);
-            System.out.println("currentNode = " + currentNode);
+            log.fine("currentNode = " + currentNode);
             procedureList.add(currentNode);
         }
 
-        System.out.println(procedureList);
+        //System.out.println(procedureList);
+        log.info(procedureList.toString());
         for(TNode procedureNode: procedureList){
             generateModifies(procedureNode,iast.getFirstChild(procedureNode));
             generateUsesPoprawka(procedureNode,iast.getFirstChild(procedureNode),null);

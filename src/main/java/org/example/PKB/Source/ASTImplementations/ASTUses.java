@@ -6,8 +6,10 @@ import org.example.PKB.Source.NodeImplementations.StmtNode;
 import org.example.PKB.Source.NodeImplementations.VariableNode;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class ASTUses implements IUses {
+    private static final Logger log = Logger.getLogger(ASTUses.class.getName());
     private final IAST AST = PKB.getAST();
     private Map<TNode, List<TNode>> variableMap = new HashMap<>();
     private Map<TNode, List<TNode>> nodeMap = new HashMap<>();
@@ -21,13 +23,13 @@ public class ASTUses implements IUses {
 
     @Override
     public void setUses(TNode procedureTNode, List<TNode> tNodeList, String variableName) {
-        System.out.println(procedureTNode + ":" + tNodeList + ":" + variableName);
+        log.info(procedureTNode + ":" + tNodeList + ":" + variableName);
         throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void setUses(TNode procedureTNode, List<TNode> tNodeList, TNode variableTNode) {
-        System.out.println(procedureTNode + ":" + tNodeList + ":" + variableTNode);
+        log.info(procedureTNode + ":" + tNodeList + ":" + variableTNode);
         //throw new RuntimeException("Not implemented");
     }
 
