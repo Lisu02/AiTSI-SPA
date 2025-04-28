@@ -1,10 +1,12 @@
 package org.example.QueryProc;
 
+import org.example.Exceptions.InvalidQueryException;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.IAST;
 import org.example.PKB.API.PKB;
 import org.example.PKB.API.TNode;
 import org.example.QueryProc.model.Argument;
+import org.example.QueryProc.model.QueryTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,22 @@ import java.util.Set;
 
 public class ResultProjector {
     private final IAST AST = PKB.getAST();
+    public String convertStreamInToPQL(String pqlQuery1, String pqlQuery2) {
+        String pqlQuery = pqlQuery1+pqlQuery2;
+        System.out.println(pqlQuery);
+        QueryTree queryTree = null;
+        PreProc preProc = new PreProc();
+        Evaluator evaluator = new Evaluator();
+        try {
+            queryTree = preProc.parseQuery(pqlQuery);
+        } catch (InvalidQueryException e) {
+            System.err.println("#" + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        Set<TNode> result = evaluator.evaluateQuery(queryTree);
+        System.out.println(convertToString(result));
+        return pqlQuery;
+    }
     public List<String> convertToString(Set<TNode> tNodes) {
         List<String> result = new ArrayList<>();
         for(TNode tNode : tNodes) {

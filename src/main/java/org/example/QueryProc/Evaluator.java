@@ -4,6 +4,8 @@ import org.example.PKB.API.EntityType;
 import org.example.PKB.API.IAST;
 import org.example.PKB.API.PKB;
 import org.example.PKB.API.TNode;
+import org.example.PKB.Source.ASTImplementations.ASTGetters;
+import org.example.PKB.Source.ASTImplementations.ASTModifies;
 import org.example.QueryProc.model.*;
 import org.example.QueryProc.staticVal.GrammarRules;
 
@@ -27,7 +29,29 @@ public class Evaluator {
         for( WithStatement statement : queryTree.withStatements()) {
            evaluateWith(statement, finalResult);
         }
+        List<Argument> returnValues = queryTree.returnValues();
+        Set<String> results = new HashSet<>();
 
+        for (Map<Argument, TNode> mapping : finalResult) {
+            boolean allPresent = returnValues.stream().allMatch(mapping::containsKey);
+            if (!allPresent) {
+                continue;
+            }
+
+            StringBuilder resultLine = new StringBuilder();
+            for (int i = 0; i < returnValues.size(); i++) {
+                Argument arg = returnValues.get(i);
+                TNode node = mapping.get(arg);
+
+                resultLine.append(AST.getAttr(node).getLine());
+
+                if (i < returnValues.size() - 1) {
+                    resultLine.append(" ");
+                }
+            }
+            results.add(resultLine.toString());
+        }
+        System.out.println(results);
         return finalResult.stream()
                 .map(r->r.get(queryTree.returnValues().get(0)))
                 .collect(Collectors.toSet());
