@@ -16,4 +16,8 @@ stmt s; variable v; Select s such that Modifies(s,"zmienna2") ! ASSIGN 2
 stmt s; variable v; Select v such that Uses(1,v) !
 stmt s; variable v; Select v such that Uses(s,v) !
 stmt s; variable v; Select s such that Uses(s,v) !
-stmt s; variable v; Select s such that Uses(s,"zmienna3") !
+stmt s; while w; variable v; Select v such that Parent(w,s) such that Modifies(s,v) ! VARIABLE nowosc
+stmt s; while w; variable v; Select v such that Modifies(s,v) such that Parent(w,s) ! VARIABLE nowosc
+stmt s; while w; variable v; Select v with s.stmt# = 1 such that Modifies(s,v) ! VARIABLE zmienna1
+stmt s; while w; variable v; Select v with s.stmt# = 1 such that Modifies(s,v) such that Follows(_,_) ! VARIABLE zmienna1
+stmt s1, s2; Select s1 with s1.stmt# = s2.stmt# ! ASSIGN 1, ASSIGN 2, ASSIGN 3, ASSIGN 5, WHILE 4

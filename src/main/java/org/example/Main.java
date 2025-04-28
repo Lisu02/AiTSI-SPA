@@ -38,6 +38,7 @@ public class Main {
 
         QueryTree queryTree = null;
         PreProc preProc = new PreProc();
+
         Evaluator evaluator = new Evaluator();
         ResultProjector resultProjector = new ResultProjector();
         try {
@@ -45,8 +46,9 @@ public class Main {
 //            queryTree = preProc.parseQuery("stmt s1,s2,s3; procedure p; Select p, s3 such that Follows (s1,s2) such that Calls (p, \"Second\") with p.procName = \"Third\"");
 //            queryTree = preProc.parseQuery("Boolean such that Follows (5,6)");
 //            queryTree = preProc.parseQuery("stmt s,s2; Select s such that Follows*(s,s2) with s.stmt# = 4");
-            queryTree = preProc.parseQuery("stmt s; variable v; Select v such that Uses(3,v)");
-//            queryTree = preProc.parseQuery("variable v; Select v with v.varName = \"nowosc\"");
+//            queryTree = preProc.parseQuery("stmt s; while w; variable v; Select v such that Modifies(s,v) such that Parent(4,s)");
+//            queryTree = preProc.parseQuery("stmt s; while w; variable v; Select v with s.stmt# = 1 such that Modifies(s,v)");
+            queryTree = preProc.parseQuery("stmt s1, s2; Select s1 with s1.stmt# = s2.stmt#");
         } catch (InvalidQueryException e) {
             System.out.println(e.getMessage());
         }

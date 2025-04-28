@@ -1,5 +1,7 @@
 package org.example.PKB.API;
 
+import java.util.Set;
+
 public enum EntityType {
     PROGRAM,
     PROCEDURE,
@@ -19,5 +21,9 @@ public enum EntityType {
     INTEGER,
     STRING,
     BLANK,
-    PROG_LINE
+    PROG_LINE;
+    private static final Set<EntityType> STMT_TYPES = Set.of(EntityType.IF, EntityType.ASSIGN, EntityType.WHILE);
+    public boolean allows(EntityType type) {
+        return this == type || (this == EntityType.STMT && STMT_TYPES.contains(type));
+    }
 }
