@@ -1,6 +1,7 @@
 package org.example.QueryProc;
 
 import org.example.Exceptions.InvalidQueryException;
+import org.example.Exceptions.SolutionDoesNotExist;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.IAST;
 import org.example.PKB.API.PKB;
@@ -25,6 +26,12 @@ public class ResultProjector {
             evaluator.evaluateQueryPipeTester(queryTree);
         } catch (InvalidQueryException e) {
             System.err.println("#" + e.getMessage());
+        }catch (SolutionDoesNotExist ex)
+        {
+            if(queryTree.isBoolean())
+                System.out.println("false");
+            else
+             System.err.println("#" + ex.getMessage());
         }
     }
     public List<String> convertToString(Set<TNode> tNodes) {

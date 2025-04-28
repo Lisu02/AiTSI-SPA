@@ -1,5 +1,6 @@
 package org.example.QueryProc;
 
+import org.example.Exceptions.SolutionDoesNotExist;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.IAST;
 import org.example.PKB.API.PKB;
@@ -35,14 +36,13 @@ public class Evaluator {
                 .collect(Collectors.toSet());
         //return finalResult;
     }
-    public void evaluateQueryPipeTester(QueryTree queryTree) {
+    public void evaluateQueryPipeTester(QueryTree queryTree) throws SolutionDoesNotExist {
         //Set<Map<Argument,TNode>> finalResult = new HashSet<>();
         finalResult.clear();
 
         for( Relation relation : queryTree.relations()) {
             if(!evaluateRelation(relation,queryTree.synonyms())) {
-                //Ja bym dal jakis wyjatek?
-               // return Set.of();
+              throw new SolutionDoesNotExist();
             }
         }
 
@@ -51,26 +51,33 @@ public class Evaluator {
         }
         List<Argument> returnValues = queryTree.returnValues();
         Set<String> results = new HashSet<>();
-
-        for (Map<Argument, TNode> mapping : finalResult) {
-            boolean allPresent = returnValues.stream().allMatch(mapping::containsKey);
-            if (!allPresent) {
-                continue;
-            }
-
-            StringBuilder resultLine = new StringBuilder();
-            for (int i = 0; i < returnValues.size(); i++) {
-                Argument arg = returnValues.get(i);
-                TNode node = mapping.get(arg);
-
-                resultLine.append(AST.getAttr(node).getLine());
-
-                if (i < returnValues.size() - 1) {
-                    resultLine.append(" ");
+        if(queryTree.isBoolean()==false)
+        {
+            for (Map<Argument, TNode> mapping : finalResult) {
+                boolean allPresent = returnValues.stream().allMatch(mapping::containsKey);
+                if (!allPresent) {
+                    continue;
                 }
+
+                StringBuilder resultLine = new StringBuilder();
+                for (int i = 0; i < returnValues.size(); i++) {
+                    Argument arg = returnValues.get(i);
+                    TNode node = mapping.get(arg);
+
+                    resultLine.append(AST.getAttr(node).getLine());
+
+                    if (i < returnValues.size() - 1) {
+                        resultLine.append(" ");
+                    }
+                }
+                results.add(resultLine.toString());
             }
-            results.add(resultLine.toString());
         }
+        else
+        {
+            System.out.println("True");
+        }
+
         System.out.println(String.join(",", results));
 
     }
