@@ -39,13 +39,13 @@ public class MainPipeTester {
         ResultProjector resultProjector = new ResultProjector();
         while(true) {
             BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Podaj pierwszą linię zapytania PQL (np. 'stmt s;'):");
+            //System.out.println("Podaj pierwszą linię zapytania PQL (np. 'stmt s;'):");
             String pqlQuery1 = userInput.readLine();  // Pierwsza linia zapytania (deklaracja)
             if(pqlQuery1.equals("1")) { //wpisz 1 w pierwszej linijce aby zabic program
                 break;
             }
 
-            System.out.println("Podaj drugą linię zapytania PQL (np. 'Select s such that Modifies(s, \"x\")'):");
+           // System.out.println("Podaj drugą linię zapytania PQL (np. 'Select s such that Modifies(s, \"x\")'):");
             String pqlQuery2 = userInput.readLine();
             if (pqlQuery2 == null || pqlQuery2.trim().isEmpty()) {
                 System.err.println("#Query missing SELECT part");
