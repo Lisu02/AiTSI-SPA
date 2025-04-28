@@ -21,7 +21,7 @@ public abstract class ASTFactory extends ASTEssential {
             case WHILE -> {
                 node = new WhileNode();
             }
-            case VARIABLE,CONSTANT -> {
+            case VARIABLE -> {
                 node = new VariableNode();
             }
             case ASSIGN -> {
