@@ -72,13 +72,13 @@ public class Evaluator {
                 }
                 results.add(resultLine.toString());
             }
+            System.out.println(String.join(",", results));
         }
         else
         {
             System.out.println("True");
         }
 
-        System.out.println(String.join(",", results));
 
     }
     private boolean evaluateRelation(Relation relation,Set<Argument> synonyms) {
