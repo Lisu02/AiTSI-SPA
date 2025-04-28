@@ -27,6 +27,26 @@ public class Evaluator {
         }
 
         for( WithStatement statement : queryTree.withStatements()) {
+            evaluateWith(statement, finalResult);
+        }
+
+        return finalResult.stream()
+                .map(r->r.get(queryTree.returnValues().get(0)))
+                .collect(Collectors.toSet());
+        //return finalResult;
+    }
+    public void evaluateQueryPipeTester(QueryTree queryTree) {
+        //Set<Map<Argument,TNode>> finalResult = new HashSet<>();
+        finalResult.clear();
+
+        for( Relation relation : queryTree.relations()) {
+            if(!evaluateRelation(relation,queryTree.synonyms())) {
+                //Ja bym dal jakis wyjatek?
+               // return Set.of();
+            }
+        }
+
+        for( WithStatement statement : queryTree.withStatements()) {
            evaluateWith(statement, finalResult);
         }
         List<Argument> returnValues = queryTree.returnValues();
@@ -51,11 +71,8 @@ public class Evaluator {
             }
             results.add(resultLine.toString());
         }
-        System.out.println(results);
-        return finalResult.stream()
-                .map(r->r.get(queryTree.returnValues().get(0)))
-                .collect(Collectors.toSet());
-        //return finalResult;
+        System.out.println(String.join(",", results));
+
     }
     private boolean evaluateRelation(Relation relation,Set<Argument> synonyms) {
         RelationFunctions functions = GrammarRules.RELATION_FUNCTIONS.get(relation.name());

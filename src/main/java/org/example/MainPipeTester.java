@@ -3,7 +3,10 @@ package org.example;
 import org.example.Frontend.AbstractionExtractor;
 import org.example.Frontend.Parser;
 import org.example.Frontend.Tokenizer;
+import org.example.QueryProc.ResultProjector;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.logging.LogManager;
 
@@ -32,7 +35,25 @@ public class MainPipeTester {
 
         ae.generateStarterAbstractions();
 
-        System.out.println("READY"); //informacja do Pipetester'a że program jest gotowy do przyjęcia poleceń PQL
+        System.out.println("READY");
+        ResultProjector resultProjector = new ResultProjector();
+        while(true) {
+            BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Podaj pierwszą linię zapytania PQL (np. 'stmt s;'):");
+            String pqlQuery1 = userInput.readLine();  // Pierwsza linia zapytania (deklaracja)
+            if(pqlQuery1.equals("1")) { //wpisz 1 w pierwszej linijce aby zabic program
+                break;
+            }
+
+            System.out.println("Podaj drugą linię zapytania PQL (np. 'Select s such that Modifies(s, \"x\")'):");
+            String pqlQuery2 = userInput.readLine();
+            if (pqlQuery2 == null || pqlQuery2.trim().isEmpty()) {
+                System.err.println("#Query missing SELECT part");
+                continue;
+            }
+            resultProjector.exePqlQueryFromPipeTester(pqlQuery1,pqlQuery2);
+        }
+
 
 
 
