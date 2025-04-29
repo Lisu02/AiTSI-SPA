@@ -6,9 +6,13 @@ import org.example.Frontend.Tokenizer;
 import org.example.QueryProc.ResultProjector;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class MainPipeTester {
     public static void main(String[] args) throws Exception {
@@ -18,9 +22,33 @@ public class MainPipeTester {
         //np ParserTest.txt
 
         //Usuwamy loggera do działającego programu aby nie dawał na stdout komunikatów
-        LogManager.getLogManager().readConfiguration(
-                Main.class.getClassLoader().getResourceAsStream("logging_pipetester.properties")
-        );
+        InputStream config = MainPipeTester.class.getClassLoader().getResourceAsStream("logging.properties");
+        if (config != null) {
+            LogManager.getLogManager().readConfiguration(config);
+        } else {
+            System.err.println("Nie znaleziono logging.properties w classpath!");
+            // Ustawienie poziomu logowania na OFF
+            Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+            logger.setLevel(Level.OFF);  // Wyłącza logowanie na poziomie globalnym
+
+            // Usuwanie wszystkich handlerów z głównego loggera
+            for (java.util.logging.Handler handler : logger.getHandlers()) {
+                logger.removeHandler(handler);
+            }
+
+            // Jeżeli są inne logery, usuwamy także ich handlery
+            Logger exampleLogger = Logger.getLogger("org.example");
+            exampleLogger.setLevel(Level.OFF);  // Wyłącza logowanie dla tej klasy
+            for (java.util.logging.Handler handler : exampleLogger.getHandlers()) {
+                exampleLogger.removeHandler(handler);
+            }
+
+            // Jeżeli chcesz całkowicie usunąć handler ConsoleHandler (który może logować na konsolę)
+            ConsoleHandler consoleHandler = new ConsoleHandler();
+            consoleHandler.setLevel(Level.OFF);
+            logger.addHandler(consoleHandler);
+        }
+
 
         String fileName = args[0];
 
