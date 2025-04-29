@@ -303,8 +303,14 @@ public class Parser {
         nextToken=tokenIterator.next(); // + 5;
         log.info("next token przed whilem ze znakiem ';' -> " + nextToken);
 
-        while(!Objects.equals(nextToken, ";")){
+        while(!Objects.equals(nextToken, ";") && !Objects.equals(nextToken,")")){
             switch(nextToken){ //[+]5
+                case "(":
+                    nextToken=tokenIterator.next();
+                    TNode par=expr();
+                    values.push(par);
+                    checkToken(")");
+                    break;
                 case "-":
                     if(operator.peek().equals("First") || operator.peek().equals("+")){
                         operator.push(nextToken);
@@ -438,7 +444,7 @@ public class Parser {
                     }
                     break;
                 default:
-//                    log.severe("Symbol w linii " + statementNumber + " nie jest prawidłowy.");
+ //                   log.severe("Symbol w linii " + statementNumber + " nie jest prawidłowy.");
 //                    throw new RuntimeException();
                     checkToken("NAME");
                     try{
