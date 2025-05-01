@@ -6,8 +6,10 @@ import org.example.PKB.Source.NodeImplementations.StmtNode;
 import org.example.PKB.Source.NodeImplementations.VariableNode;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class ASTUses implements IUses {
+    private static final Logger log = Logger.getLogger(ASTUses.class.getName());
     private final IAST AST = PKB.getAST();
     private Map<TNode, List<TNode>> variableMap = new HashMap<>();
     private Map<TNode, List<TNode>> nodeMap = new HashMap<>();
@@ -18,9 +20,22 @@ public class ASTUses implements IUses {
     public static IUses getInstance() {
         return astUses;
     }
+
+    @Override
+    public void setUses(TNode procedureTNode, List<TNode> tNodeList, String variableName) {
+        log.info(procedureTNode + ":" + tNodeList + ":" + variableName);
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public void setUses(TNode procedureTNode, List<TNode> tNodeList, TNode variableTNode) {
+        log.info(procedureTNode + ":" + tNodeList + ":" + variableTNode);
+        //throw new RuntimeException("Not implemented");
+    }
+
     @Override
     public void setUses(TNode node, String value) {
-        System.out.println("!!!!!!!!!!!!!!!!!!!");
+        System.out.println("setUses in ASTUses for: " +node + " and value " + value);
         if(!(node instanceof ProcedureNode) && !(node instanceof StmtNode)) {
             //throw new ASTBuildException("Invalid ndoe");
         }
