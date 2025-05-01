@@ -1,6 +1,7 @@
 package org.example.PKB.API;
 
 import org.example.PKB.Source.AST;
+import org.example.PKB.Source.Relations.Calls;
 import org.example.PKB.Source.VarTable;
 
 
@@ -8,7 +9,7 @@ public class PKB {
 
     private static IVarTable varTable = new VarTable();
     private static IAST ast = new AST();
-    private static ICalls calls;
+    private static ICalls calls = new Calls();
     private static IModifies modifies;
     public static IVarTable getVarTable()
     {

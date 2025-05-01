@@ -48,6 +48,9 @@ public abstract class ASTFactory extends ASTEssential {
             case IF -> {
                 node = new IfNode();
             }
+            case CALL -> {
+                node = new CallNode();
+            }
             default -> {
             return null;
             }
