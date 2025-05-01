@@ -141,13 +141,58 @@ public class Parser {
     }
 
     private TNode callStmt() {
-        log.severe("Call stmt not implemented");
-        return null;
+        TNode proc;
+        checkToken("call");
+        proc= iast.createTNode(EntityType.CALL);
+        checkToken("NAME");
+        Attr at=new Attr();
+        at.setLine(statementNumber);
+        at.setProcName(nextToken);
+        iast.setAttr(proc,at);
+        nextToken=tokenIterator.next();
+        checkToken(";");
+        return proc;
     }
 
     private TNode ifStmt() {
-        log.severe("If stmt not implemented!");
-        return null;
+        TNode ifNode, checkVar, ifStmt,elseStmt;
+        checkToken("if");
+        ifNode= iast.createTNode(EntityType.IF);
+        checkToken("NAME");
+        Attr at=new Attr();
+        at.setLine(statementNumber);
+        iast.setAttr(ifNode,at);
+        at.setVarName(nextToken);
+        checkVar=iast.createTNode(EntityType.VARIABLE);
+        iast.setAttr(checkVar, at);
+        nextToken=tokenIterator.next();
+        try {
+            iast.setParentChildLink(ifNode,checkVar);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken("then");
+        checkToken("{");
+        ifStmt=stmtLst();
+        try {
+            iast.setParentChildLink(ifNode,ifStmt);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken("}");
+        checkToken("else");
+        checkToken("{");
+        elseStmt=stmtLst();
+        try {
+            iast.setParentChildLink(ifNode,elseStmt);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        checkToken("}");
+        return ifNode;
     }
 
     /*
@@ -195,9 +240,22 @@ public class Parser {
                 .line(statementNumber)
                 .build();
         iast.setAttr(assign, at);
-        leftVar=iast.createTNode(EntityType.VARIABLE);
-        at.setVarName(nextToken);
-        iast.setAttr(leftVar,at);
+        try{
+            int cons=Integer.parseInt(nextToken);
+            leftVar=iast.createTNode(EntityType.CONSTANT);
+            Attr as = Attr.builder()
+                    .line(statementNumber)
+                    .constantValue(cons)
+                .build();
+            iast.setAttr(leftVar,as);
+        }catch(NumberFormatException e){
+            leftVar=iast.createTNode(EntityType.VARIABLE);
+            Attr as = Attr.builder()
+                    .line(statementNumber)
+                    .varName(nextToken)
+                    .build();
+            iast.setAttr(leftVar,as);
+        }
         nextToken=tokenIterator.next();
         try {
             iast.setParentChildLink(assign,leftVar);
@@ -219,13 +277,23 @@ public class Parser {
 
     TNode expr(){
         TNode expr,left,right;
-        expr=iast.createTNode(EntityType.VARIABLE);
         checkToken("NAME"); //[2] + 5 ;
-        Attr at = Attr.builder()
-                .varName(nextToken)
-                .line(statementNumber)
-                .build();
-        iast.setAttr(expr,at);
+        try{
+            int cons=Integer.parseInt(nextToken);
+            expr=iast.createTNode(EntityType.CONSTANT);
+            Attr as = Attr.builder()
+                    .line(statementNumber)
+                    .constantValue(cons)
+                    .build();
+            iast.setAttr(expr,as);
+        }catch(NumberFormatException e){
+            expr=iast.createTNode(EntityType.VARIABLE);
+            Attr as = Attr.builder()
+                    .line(statementNumber)
+                    .varName(nextToken)
+                    .build();
+            iast.setAttr(expr,as);
+        }
         nextToken=tokenIterator.next(); // + 5;
         log.info("next token przed whilem ze znakiem ';' -> " + nextToken);
 
@@ -237,9 +305,22 @@ public class Parser {
                     left=expr;
                     expr=iast.createTNode(EntityType.PLUS);
                     checkToken("NAME");
-                    right=iast.createTNode(EntityType.VARIABLE);
-                    at.setVarName(nextToken);
-                    iast.setAttr(right,at);
+                    try{
+                        int cons=Integer.parseInt(nextToken);
+                        right=iast.createTNode(EntityType.CONSTANT);
+                        Attr as = Attr.builder()
+                                .line(statementNumber)
+                                .constantValue(cons)
+                                .build();
+                        iast.setAttr(right,as);
+                    }catch(NumberFormatException e){
+                        right=iast.createTNode(EntityType.VARIABLE);
+                        Attr as = Attr.builder()
+                                .line(statementNumber)
+                                .varName(nextToken)
+                                .build();
+                        iast.setAttr(right,as);
+                    }
                     try {
                         iast.setParentChildLink(expr,left);
                     } catch (ASTBuildException e) {

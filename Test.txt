@@ -1,5 +1,7 @@
 procedure nazwa {
+    x = 1;
+    x = x;
     while zmienna1 {
-        nowosc = 2 + 3 + 9;
+        nowosc = 2 + x;
         }
 }

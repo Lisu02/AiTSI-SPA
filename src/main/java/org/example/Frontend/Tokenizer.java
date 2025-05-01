@@ -46,8 +46,9 @@ public class Tokenizer {
             }
 
         }
+        log.fine("Tokenizer list:\n");
         for (String token : tokenArrayList) {
-            System.out.printf(token + "<-\n");
+            log.fine(token + "\n");
         }
         return tokenArrayList;
     }

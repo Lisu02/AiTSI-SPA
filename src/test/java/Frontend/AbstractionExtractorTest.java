@@ -1,7 +1,10 @@
 package Frontend;
 
+import lombok.extern.java.Log;
 import org.example.Frontend.*;
+import org.example.Main;
 import org.example.PKB.API.*;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.LogManager;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,6 +34,10 @@ public class AbstractionExtractorTest {
     @InjectMocks
     AbstractionExtractor ae;
 
+    @BeforeAll
+    public static void config() throws IOException {
+        LogManager.getLogManager().readConfiguration(Main.class.getClassLoader().getResourceAsStream("logging.properties"));
+    }
 
     //Tutaj odbywa sie budowa drzewa AST
     @BeforeEach
@@ -114,7 +123,7 @@ public class AbstractionExtractorTest {
         Tokenizer tokenizer = Tokenizer.getInstance();
         Parser parser = Parser.getInstance();
 
-        List<String> tokenList = tokenizer.getTokensFromFilename("ParserTest2.txt");
+        List<String> tokenList = tokenizer.getTokensFromFilename("ParserTest.txt");
         parser.getTokens(tokenList);
 
         AbstractionExtractor ae2 = new AbstractionExtractor();
@@ -147,5 +156,6 @@ public class AbstractionExtractorTest {
         TNode fifth = iast1.getLinkedNode(LinkType.FirstChild,fourth);
         TNode sixth = iast1.getLinkedNode(LinkType.RightSibling,fifth);
         TNode seventh = iast1.getLinkedNode(LinkType.RightSibling,sixth);
+        System.out.println(fourth);
     }
 }
