@@ -7,6 +7,7 @@ import org.example.Frontend.Tokenizer;
 import org.example.QueryProc.Evaluator;
 import org.example.QueryProc.PreProc;
 import org.example.QueryProc.ResultProjector;
+import org.example.QueryProc.model.QueryTree;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,13 +55,14 @@ public class EvaluatorTest {
     @ParameterizedTest
     @MethodSource("queryProvider")
     void evaluateQuery(String query, List<String> expectedResult) throws InvalidQueryException {
-        List<String> result = resultProjector.convertToString(evaluator.evaluateQuery(preProc.parseQuery(query)));
+        QueryTree queryTree = preProc.parseQuery(query);
+        List<String> result = resultProjector.convertToString(evaluator.evaluateQuery(queryTree), queryTree.returnValues());
 
         Collections.sort(expectedResult);
         Collections.sort(result);
 
         System.out.println(query);
-        System.out.println(preProc.parseQuery(query));
+        System.out.println(queryTree);
         System.out.println(result);
 
         assertEquals(expectedResult,result);

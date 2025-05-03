@@ -34,31 +34,31 @@ public class ResultProjector {
              System.err.println("#" + ex.getMessage());
         }
     }
-    public List<String> convertToString(Set<TNode> tNodes) {
-        List<String> result = new ArrayList<>();
-        for(TNode tNode : tNodes) {
-
-            String attribute = "";
-            Set<EntityType> stmtTypes = Set.of(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL);
-            if(stmtTypes.contains(AST.getType(tNode))) {
-                attribute = AST.getAttr(tNode).getLine() + "";
-            }
-            else if(AST.getType(tNode) == EntityType.PROCEDURE) {
-                attribute = AST.getAttr(tNode).getProcName();
-            }
-            else if(AST.getType(tNode) == EntityType.VARIABLE) {
-                attribute = AST.getAttr(tNode).getVarName();
-            }
-
-           result.add(AST.getType(tNode) + " " + attribute);
-        }
-        return result;
-    }
-    public List<String> convertToString2(Set<Map<Argument,TNode>> tNodes) {
+//    public List<String> convertToString(Set<TNode> tNodes) {
+//        List<String> result = new ArrayList<>();
+//        for(TNode tNode : tNodes) {
+//
+//            String attribute = "";
+//            Set<EntityType> stmtTypes = Set.of(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL);
+//            if(stmtTypes.contains(AST.getType(tNode))) {
+//                attribute = AST.getAttr(tNode).getLine() + "";
+//            }
+//            else if(AST.getType(tNode) == EntityType.PROCEDURE) {
+//                attribute = AST.getAttr(tNode).getProcName();
+//            }
+//            else if(AST.getType(tNode) == EntityType.VARIABLE) {
+//                attribute = AST.getAttr(tNode).getVarName();
+//            }
+//
+//           result.add(AST.getType(tNode) + " " + attribute);
+//        }
+//        return result;
+//    }
+    public List<String> convertToString(Set<Map<Argument,TNode>> tNodes, List<Argument> returnValues) {
         List<String> result = new ArrayList<>();
         for(Map<Argument, TNode> row : tNodes) {
             String line = "";
-            for(Argument key : row.keySet()) {
+            for(Argument key : returnValues) {
                 String attribute = "";
                 TNode tNode = row.get(key);
                 Set<EntityType> stmtTypes = Set.of(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL);
@@ -71,10 +71,10 @@ public class ResultProjector {
                 else if(AST.getType(tNode) == EntityType.VARIABLE) {
                     attribute = AST.getAttr(tNode).getVarName();
                 }
-                line += AST.getType(tNode) + " " + attribute;
+                line += AST.getType(tNode) + " " + attribute + " ";
 
             }
-            result.add(line);
+            result.add(line.strip());
         }
         return result;
     }
