@@ -15,9 +15,6 @@
 
         //Na razie testowo imodifies
         private IAST iast;
-        private IModifies iModifies;
-        private IUses iUses;
-        private ICalls iCalls;
         private ModifiesExtractor modifiesExtractor;
         private UsesExtractor usesExtractor;
         private CallsExtractor callsExtractor;
@@ -28,10 +25,8 @@
         public AbstractionExtractor(IAST iast){
             this(iast,ASTModifies.getInstance(),ASTUses.getInstance(),null);
         }
-        public AbstractionExtractor(IAST iast, IModifies iModifies,IUses iuses, ICalls iCalls){
+        public AbstractionExtractor(IAST iast, IModifies iModifies,IUses iUses, ICalls iCalls){
             this.iast = iast;
-            this.iModifies = iModifies;
-            this.iUses=iuses;
             this.modifiesExtractor = new ModifiesExtractor(iast,iModifies);
             this.usesExtractor = new UsesExtractor(iast,iUses);
             this.callsExtractor = new CallsExtractor(iast,iCalls);
