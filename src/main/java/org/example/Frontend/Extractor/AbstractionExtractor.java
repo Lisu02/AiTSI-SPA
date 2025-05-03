@@ -23,7 +23,7 @@
         private CallsExtractor callsExtractor;
 
         public AbstractionExtractor(){
-            this(PKB.getAST(),ASTModifies.getInstance(),ASTUses.getInstance(),null);
+            this(PKB.getAST(),ASTModifies.getInstance(),ASTUses.getInstance(),null); //temporary null for calls implementation
         }
         public AbstractionExtractor(IAST iast){
             this(iast,ASTModifies.getInstance(),ASTUses.getInstance(),null);
