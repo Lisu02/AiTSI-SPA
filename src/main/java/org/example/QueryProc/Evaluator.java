@@ -5,8 +5,6 @@ import org.example.PKB.API.EntityType;
 import org.example.PKB.API.IAST;
 import org.example.PKB.API.PKB;
 import org.example.PKB.API.TNode;
-import org.example.PKB.Source.ASTImplementations.ASTGetters;
-import org.example.PKB.Source.ASTImplementations.ASTModifies;
 import org.example.QueryProc.model.*;
 import org.example.QueryProc.staticVal.GrammarRules;
 
@@ -17,7 +15,7 @@ import java.util.stream.Collectors;
 public class Evaluator {
     private static final IAST AST = PKB.getAST();
     private final Set<Map<Argument,TNode>> finalResult = new HashSet<>();
-    public Set<TNode> evaluateQuery(QueryTree queryTree) {
+    public Set<Map<Argument,TNode>> evaluateQuery(QueryTree queryTree) {
         //Set<Map<Argument,TNode>> finalResult = new HashSet<>();
         finalResult.clear();
 
@@ -31,10 +29,14 @@ public class Evaluator {
             evaluateWith(statement, finalResult);
         }
 
-        return finalResult.stream()
-                .map(r->r.get(queryTree.returnValues().get(0)))
-                .collect(Collectors.toSet());
-        //return finalResult;
+//        System.out.println(finalResult.size());
+//
+//        System.out.println(finalResult);
+
+//        return finalResult.stream()
+//                .map(r->r.get(queryTree.returnValues().get(0)))
+//                .collect(Collectors.toSet());
+        return finalResult;
     }
     public void evaluateQueryPipeTester(QueryTree queryTree) throws SolutionDoesNotExist {
         //Set<Map<Argument,TNode>> finalResult = new HashSet<>();
