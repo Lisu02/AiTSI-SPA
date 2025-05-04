@@ -1,7 +1,7 @@
 package QueryProc;
 
 import org.example.Exceptions.InvalidQueryException;
-import org.example.Frontend.AbstractionExtractor;
+import org.example.Frontend.Extractor.AbstractionExtractor;
 import org.example.Frontend.Parser;
 import org.example.Frontend.Tokenizer;
 import org.example.QueryProc.Evaluator;

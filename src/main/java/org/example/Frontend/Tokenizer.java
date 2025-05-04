@@ -68,7 +68,8 @@ public class Tokenizer {
             if(!isOperator(c)){
                 wordBuilder.append(c);
             } else if (isOperator(c) && wordBuilder.length() > 0) {
-                slicedWord.add(wordBuilder.toString());
+                slicedWord.add(wordBuilder.toString().trim());
+
                 slicedWord.add(Character.toString(c));
                 wordBuilder.delete(0,wordBuilder.length());
             } else {
@@ -78,6 +79,11 @@ public class Tokenizer {
 //            if(!wordBuilder.isEmpty()){
 //                slicedWord.add(wordBuilder.toString());
 //            }
+        }
+        if(!wordBuilder.isEmpty()){
+
+            slicedWord.add(wordBuilder.toString().trim());
+            wordBuilder.delete(0,wordBuilder.length());
         }
         return slicedWord;
     }

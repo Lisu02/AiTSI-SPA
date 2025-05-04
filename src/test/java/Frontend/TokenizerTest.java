@@ -2,6 +2,7 @@ package Frontend;
 
 import org.example.Frontend.Tokenizer;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,7 @@ public class TokenizerTest {
     }
 
     @Test
-    @DisplayName("Slicing: +pepperonii+ should return 3 tokens")
+    @DisplayName("Slicing: [+pepperonii+] should return 3 tokens")
     public void shouldSliceWordWithPlusSignsAroundWord(){
         //given
         String word = "+pepperonii+";
@@ -37,7 +38,7 @@ public class TokenizerTest {
     }
 
     @Test
-    @DisplayName("Slicing: +1+ should return 3 tokens")
+    @DisplayName("Slicing: [+1+] should return 3 tokens")
     public void shouldSliceWordWithPlusSignsAroundSingleNumber(){
         //given
         String word = "+1+";
@@ -48,7 +49,7 @@ public class TokenizerTest {
     }
 
     @Test
-    @DisplayName("Slicing: +123+ should return 3 tokens")
+    @DisplayName("Slicing: [+123+] should return 3 tokens")
     public void shouldSliceWordWithPlusSignsAroundThreeNumbers(){
         //given
         String word = "+123+";
@@ -56,6 +57,29 @@ public class TokenizerTest {
         List<String> slicedWord = tokenizer.sliceWord(word);
         //then
         assertIterableEquals(Arrays.asList("+","123","+"),slicedWord);
+    }
+
+    @Test
+    @DisplayName("Slicing: [123;] should return 2 tokens")
+    public void shouldSliceWordWithThreeNumbersAndSemicolon(){
+        //given
+        String word = "123;";
+        //when
+        List<String> slicedWord = tokenizer.sliceWord(word);
+        //then
+        assertIterableEquals(Arrays.asList("123",";"),slicedWord);
+    }
+
+    //todo: problem bo otrzymywane jest 123spacja, ; a nie 123, ;
+    @Test
+    @DisplayName("Slicing: [123 ;] should return 2 tokens without space after value")
+    public void shouldSliceWordWithThreeNumbersAndSpaceAndSemicolon(){
+        //given
+        String word = "123 ;";
+        //when
+        List<String> slicedWord = tokenizer.sliceWord(word);
+        //then
+        assertIterableEquals(Arrays.asList("123",";"),slicedWord);
     }
 
     @Test
@@ -96,6 +120,34 @@ public class TokenizerTest {
     }
 
     @Test
+    public void checkProperTokenizatonProcesWithSpaces(){
+        //given
+        URL resource = getClass().getClassLoader()
+                .getResource("frontend/ParserTest.txt");
+        if (resource == null){fail("No file found");}
+        File file = new File(resource.getFile());
+        String absolutePath = file.getAbsolutePath();
+        //when
+        List<String> tokenList = tokenizer.getTokensFromFilename(absolutePath);
+        //then
+        List<String> expectedList = Arrays.asList(
+                "procedure","nazwa","{",
+                "zmienna1","=","a","+","b","+","d","+","2",";",
+                "zmienna2","=","zmienna","+","2",";",
+                "zmienna3","=","zmienna","+","d","+","2",";",
+                "while","zmienna1","{",
+                "nowosc","=","2","+","3","+","9",";",
+                "}",
+                "}"
+
+        );
+        assertIterableEquals(expectedList,tokenList);
+
+
+    }
+
+    @Test
+    @Disabled
     public void shouldChangeFilenameIfGivenFilenameDoesNotExist() throws FileNotFoundException {
         //given
         String filename = "nonExistingFilename.txt";

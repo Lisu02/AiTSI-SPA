@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.Frontend.AbstractionExtractor;
+import org.example.Frontend.Extractor.AbstractionExtractor;
 import org.example.Frontend.Parser;
 import org.example.Frontend.Tokenizer;
 import org.example.QueryProc.ResultProjector;
