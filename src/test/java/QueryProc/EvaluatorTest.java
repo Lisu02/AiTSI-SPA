@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +42,7 @@ public class EvaluatorTest {
     }
 
     static Stream<Arguments> queryProvider() throws IOException {
-        return Files.lines(Path.of("src/test/resources/queryEvaluator1"))
+        return Files.lines(Paths.get("src/test/resources/queryEvaluator1"))
                 //.filter(line-> !line.isEmpty() && !line.startsWith("//"))
                 .map(line -> line.split("!", 2))
                 .map(parts ->
@@ -56,7 +56,7 @@ public class EvaluatorTest {
     @MethodSource("queryProvider")
     void evaluateQuery(String query, List<String> expectedResult) throws InvalidQueryException {
         QueryTree queryTree = preProc.parseQuery(query);
-        List<String> result = resultProjector.convertToString(evaluator.evaluateQuery(queryTree), queryTree.returnValues());
+        List<String> result = resultProjector.convertToString(evaluator.evaluateQuery(queryTree), queryTree.getReturnValues());
 
         Collections.sort(expectedResult);
         Collections.sort(result);

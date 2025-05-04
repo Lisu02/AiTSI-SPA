@@ -3,6 +3,7 @@ package org.example.Frontend;
 import org.example.Exceptions.ASTBuildException;
 import org.example.PKB.API.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public class IASTImplementationFrontend implements IAST {
 
     @Override
     public List<TNode> getParentedBy(TNode p) {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override
@@ -75,7 +76,7 @@ public class IASTImplementationFrontend implements IAST {
 
     @Override
     public List<TNode> getParentedAstraBy(TNode p) {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override
@@ -85,7 +86,7 @@ public class IASTImplementationFrontend implements IAST {
 
     @Override
     public List<TNode> getFollowsAstra(TNode n) {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override
@@ -95,7 +96,7 @@ public class IASTImplementationFrontend implements IAST {
 
     @Override
     public List<TNode> getFollowedAstraBy(TNode n) {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override
@@ -120,6 +121,6 @@ public class IASTImplementationFrontend implements IAST {
 
     @Override
     public Set<TNode> getNodesOfEntityTypes(EntityType et) {
-        return Set.of();
+        return Collections.emptySet();
     }
 }

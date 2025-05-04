@@ -1,18 +1,15 @@
 package org.example.Frontend;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class Tokenizer {
 
     private static final Logger log = Logger.getLogger(Tokenizer.class.getName());
     private static Tokenizer tokenizerInstance = null;
+    private static Set<Character> SIGNS = new HashSet<>(Arrays.asList('+', '=', '*', ';'));
 
     private Tokenizer() {}
 
@@ -70,8 +67,9 @@ public class Tokenizer {
         for(Character c : word.toCharArray()){
             if(!isOperator(c)){
                 wordBuilder.append(c);
-            } else if (isOperator(c) && !wordBuilder.isEmpty()) {
+            } else if (isOperator(c) && wordBuilder.length() > 0) {
                 slicedWord.add(wordBuilder.toString().trim());
+
                 slicedWord.add(Character.toString(c));
                 wordBuilder.delete(0,wordBuilder.length());
             } else {
@@ -92,10 +90,11 @@ public class Tokenizer {
 
 
     private boolean isOperator(Character sign){
-        return switch (sign) {
-            case '+', '=', '*', ';' -> true; //usuniecie srednika ';'
-            default -> false;
-        };
+//        return switch (sign) {
+//            case '+', '=', '*', ';' -> true; //usuniecie srednika ';'
+//            default -> false;
+//        };
+        return SIGNS.contains(sign);
     }
 
     //Sprawdzenie czy jest to assign

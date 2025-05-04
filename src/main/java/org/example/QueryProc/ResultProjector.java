@@ -9,10 +9,7 @@ import org.example.PKB.API.TNode;
 import org.example.QueryProc.model.Argument;
 import org.example.QueryProc.model.QueryTree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ResultProjector {
     private final IAST AST = PKB.getAST();
@@ -61,7 +58,7 @@ public class ResultProjector {
             for(Argument key : returnValues) {
                 String attribute = "";
                 TNode tNode = row.get(key);
-                Set<EntityType> stmtTypes = Set.of(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL);
+                Set<EntityType> stmtTypes = new HashSet<>(Arrays.asList(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL));
                 if(stmtTypes.contains(AST.getType(tNode))) {
                     attribute = AST.getAttr(tNode).getLine() + "";
                 }
@@ -74,7 +71,7 @@ public class ResultProjector {
                 line += AST.getType(tNode) + " " + attribute + " ";
 
             }
-            result.add(line.strip());
+            result.add(line.trim());
         }
         return result;
     }

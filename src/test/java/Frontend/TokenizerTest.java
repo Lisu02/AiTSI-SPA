@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -165,7 +164,7 @@ public class TokenizerTest {
         String code = "x=2+y+3+p+5";
 
         List<String> slicedWord = tokenizer.sliceWord(code);
-        List<String> expectedTokens = List.of(
+        List<String> expectedTokens = Arrays.asList(
                 "x", "=", "2", "+", "y", "+","3", "+", "p", "+", "5");
         assertEquals(expectedTokens,slicedWord);
         System.out.println(" Passed");
@@ -176,7 +175,7 @@ public class TokenizerTest {
     {
         List<String> tokenList = tokenizer.getTokensFromFilename("ParserTest.txt");
 
-        List<String> expectedTokens = List.of(
+        List<String> expectedTokens = Arrays.asList(
                 "procedure", "nazwa", "{",
                 "zmienna1", "=", "a", "+", "b", "+", "d", "+", "2", ";",
                 "zmienna2", "=", "zmienna", "+", "2", ";",

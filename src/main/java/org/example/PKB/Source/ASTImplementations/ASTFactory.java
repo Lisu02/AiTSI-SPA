@@ -15,44 +15,56 @@ public abstract class ASTFactory extends ASTEssential {
         ASTNode node;
         switch (et)
         {
-            case STMTLIST ->{
+            case STMTLIST: {
                 node = new StmtListNode();
+                break;
             }
-            case WHILE -> {
+            case WHILE: {
                 node = new WhileNode();
+                break;
             }
-            case VARIABLE -> {
+            case VARIABLE: {
                 node = new VariableNode();
+                break;
             }
-            case ASSIGN -> {
+            case ASSIGN: {
                 node = new AssignNode();
+                break;
             }
-            case PROCEDURE -> {
+            case PROCEDURE: {
                 node = new ProcedureNode();
+                break;
             }
-            case PROGRAM -> {
+            case PROGRAM: {
                 node = new ProgramNode();
+                break;
             }
-            case PLUS -> {
+            case PLUS: {
                 node = new PlusNode();
+                break;
             }
-            case TIMES -> {
+            case TIMES: {
                 node = new TimesNode();
+                break;
             }
-            case MINUS -> {
+            case MINUS: {
                 node = new MinusNode();
+                break;
             }
-            case CONSTANT -> {
+            case CONSTANT: {
                 node = new ConstantNode();
+                break;
             }
-            case IF -> {
+            case IF: {
                 node = new IfNode();
+                break;
             }
-            case CALL -> {
+            case CALL: {
                 node = new CallNode();
+                break;
             }
-            default -> {
-            return null;
+            default: {
+                return null;
             }
         }
 

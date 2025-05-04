@@ -4,10 +4,10 @@ import org.example.Exceptions.ASTBuildException;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.Source.ASTNode;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 
 public class PlusNode extends ExprNode {
     private ExprNode leftOperand;
@@ -56,16 +56,16 @@ public class PlusNode extends ExprNode {
         if (rightOperand == null) {
             return Collections.singletonList(leftOperand);
         }
-        return List.of(leftOperand, rightOperand);
+        return  Arrays.asList(leftOperand, rightOperand);
     }
 
     @Override
     public ASTNode getChild(int num) {
-        return switch (num) {
-            case 0 -> leftOperand;
-            case 1 -> rightOperand;
-            default -> null;
-        };
+        switch (num) {
+            case 0: return leftOperand;
+            case 1: return rightOperand;
+            default: return null;
+        }
     }
 
     @Override
