@@ -80,7 +80,7 @@ public class Tokenizer {
 //                slicedWord.add(wordBuilder.toString());
 //            }
         }
-        if(!wordBuilder.isEmpty()){
+        if(wordBuilder.length() > 0){
 
             slicedWord.add(wordBuilder.toString().trim());
             wordBuilder.delete(0,wordBuilder.length());

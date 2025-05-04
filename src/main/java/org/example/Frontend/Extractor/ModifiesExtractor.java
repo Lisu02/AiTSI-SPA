@@ -22,20 +22,23 @@ public class ModifiesExtractor {
         while(stmtNode != null){
             EntityType stmtType = iast.getType(stmtNode);
             switch (stmtType){
-                case ASSIGN -> {
+                case ASSIGN: {
                     variableNode = iast.getFirstChild(stmtNode);
                     log.fine("Modifies line "+iast.getAttr(stmtNode).getLine()+" : " + variableNode.toString().substring(43,62) + " and " + stmtNode.toString().substring(43,60));
                     iModifies.addModifies(tNodeProcedure,stmtNode,variableNode);
+                    break;
                 }
-                case WHILE -> {
+                case WHILE: {
                     TNode tmp = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode)); // variable(warunek) -> stmt
                     extract(tNodeProcedure,tmp);// while -> stmtList do metody
+                    break;
                 }
-                case IF -> {
+                case IF: {
                     TNode tmp = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode));
                     extract(tNodeProcedure,tmp); // for if stmtList
                     tmp = iast.getLinkedNode(LinkType.RightSibling,tmp);
                     extract(tNodeProcedure,tmp); // for else stmtList
+                    break;
                 }
             }
             stmtNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);

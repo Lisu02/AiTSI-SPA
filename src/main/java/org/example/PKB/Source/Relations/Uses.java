@@ -6,10 +6,7 @@ import org.example.PKB.Source.NodeImplementations.ProcedureNode;
 import org.example.PKB.Source.NodeImplementations.StmtNode;
 import org.example.PKB.Source.NodeImplementations.VariableNode;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Uses implements IUses {
 
@@ -58,12 +55,12 @@ public class Uses implements IUses {
 
     @Override
     public List<TNode> getUses(TNode node) {
-        return uses.get(node).stream().toList();
+        return new ArrayList<>(uses.get(node));
     }
 
     @Override
     public List<TNode> getUsedBy(TNode var) {
-        return usedBy.get(var).stream().toList();
+        return new ArrayList<>(usedBy.get(var));
     }
 
     @Override

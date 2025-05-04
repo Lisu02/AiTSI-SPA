@@ -27,14 +27,15 @@ public class UsesExtractor {
         while (currentTNode != null){
             EntityType currentType = iast.getType(currentTNode);
             switch (currentType){
-                case ASSIGN -> {
+                case ASSIGN: {
                     tNodeStack.push(currentTNode); //assign node
                     TNode leftVarNode = iast.getFirstChild(currentTNode);
                     leftVarNode = iast.getLinkedNode(LinkType.RightSibling,leftVarNode);
                     traverseAssignForUses(tNodeProcedure,leftVarNode,(Stack<TNode>) tNodeStack.clone());
                     tNodeStack.pop();
+                    break;
                 }
-                case WHILE -> {
+                case WHILE: {
                     tNodeStack.push(currentTNode);
 
                     TNode variableTNode = iast.getFirstChild(currentTNode);
@@ -43,9 +44,14 @@ public class UsesExtractor {
                     TNode whileStmtList = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(currentTNode));
                     extract(tNodeProcedure,whileStmtList,tNodeStack);
                     tNodeStack.pop(); //zdjęcie while ze stosu ponieważ idziemy dalej
+                    break;
                 }
-                case IF -> log.warning("IF nie ma implementacji USES");
-                case CALL -> log.warning("CALL nie ma implementacji USES");
+                case IF:
+                    log.warning("IF nie ma implementacji USES");
+                    break;
+                case CALL:
+                    log.warning("CALL nie ma implementacji USES");
+                    break;
             }
 
             currentTNode = iast.getLinkedNode(LinkType.RightSibling,currentTNode);
