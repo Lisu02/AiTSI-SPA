@@ -82,6 +82,10 @@ public class Tokenizer {
 //                slicedWord.add(wordBuilder.toString());
 //            }
         }
+        if(!wordBuilder.isEmpty()){
+            slicedWord.add(wordBuilder.toString());
+            wordBuilder.delete(0,wordBuilder.length());
+        }
         return slicedWord;
     }
 

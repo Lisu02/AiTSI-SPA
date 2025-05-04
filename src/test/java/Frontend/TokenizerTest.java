@@ -97,6 +97,33 @@ public class TokenizerTest {
     }
 
     @Test
+    public void checkProperTokenizatonProcesWithSpaces(){
+        //given
+        URL resource = getClass().getClassLoader()
+                .getResource("frontend/ParserTest.txt");
+        if (resource == null){fail("No file found");}
+        File file = new File(resource.getFile());
+        String absolutePath = file.getAbsolutePath();
+        //when
+        List<String> tokenList = tokenizer.getTokensFromFilename(absolutePath);
+        //then
+        List<String> expectedList = Arrays.asList(
+                "procedure","nazwa","{",
+                "zmienna1","=","a","+","b","+","d","+","2",";",
+                "zmienna2","=","zmienna","+","2",";",
+                "zmienna3","=","zmienna","+","d","+","2",";",
+                "while","zmienna1","{",
+                "nowosc","=","2","+","3","+","9",";",
+                "}",
+                "}"
+
+        );
+        assertIterableEquals(expectedList,tokenList);
+
+
+    }
+
+    @Test
     public void shouldChangeFilenameIfGivenFilenameDoesNotExist() throws FileNotFoundException {
         //given
         String filename = "nonExistingFilename.txt";
