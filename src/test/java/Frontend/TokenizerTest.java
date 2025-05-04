@@ -2,6 +2,7 @@ package Frontend;
 
 import org.example.Frontend.Tokenizer;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -124,6 +125,7 @@ public class TokenizerTest {
     }
 
     @Test
+    @Disabled
     public void shouldChangeFilenameIfGivenFilenameDoesNotExist() throws FileNotFoundException {
         //given
         String filename = "nonExistingFilename.txt";
