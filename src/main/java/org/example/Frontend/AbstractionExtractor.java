@@ -9,13 +9,10 @@
     import java.util.Stack;
     import java.util.logging.Logger;
 
-    import static org.example.PKB.API.EntityType.ASSIGN;
-
     public class AbstractionExtractor {
 
         private static final Logger log = Logger.getLogger(AbstractionExtractor.class.getName());
 
-        //Na razie testowo imodifies
         private IAST iast;
         private IModifies iModifies;
         private IUses iUses;
@@ -47,12 +44,10 @@
             procedureList.add(currentNode);
         }
 
-        //System.out.println(procedureList);
         log.info(procedureList.toString());
         for(TNode procedureNode: procedureList){
             generateModifies(procedureNode,iast.getFirstChild(procedureNode));
             generateUsesPoprawka(procedureNode,iast.getFirstChild(procedureNode),null);
-            //generateUses(procedureNode);
         }
     }
 

@@ -37,7 +37,7 @@ public class Calls implements ICalls {
         {
             nodes = this.calls.get(node);
         }
-        if(nodes.contains(calls))throw new RelationException("Relation already exists");
+        if(nodes.contains(calls))return;
         nodes.add(calls);
 
         if(!this.calledBy.containsKey(calls))
@@ -66,7 +66,7 @@ public class Calls implements ICalls {
         {
             nodes = this.callsAstra.get(node);
         }
-        if(nodes.contains(calls))throw new RelationException("Relation already exists");
+        if(nodes.contains(calls))return;
         nodes.add(calls);
 
         if(!this.calledByAstra.containsKey(calls))

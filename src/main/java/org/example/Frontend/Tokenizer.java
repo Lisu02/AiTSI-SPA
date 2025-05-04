@@ -35,20 +35,28 @@ public class Tokenizer {
         String word;
         int statmentNumber = 1; //todo: do rozwazenia liczenie statementow
         ArrayList<String> tokenArrayList = new ArrayList<>();
-
+        boolean isCalls = false;
         while(fileScanner.hasNext()){
             word = fileScanner.next();
-            if(word.length() > 1 && isGluedAssign(word)){
+            if(word.length() > 1 && isGluedAssign(word) && !isCalls){  // sprawdzic czy poprzedni token to nie call
                 List<String> slicedWords = sliceWord(word);
                 tokenArrayList.addAll(slicedWords);
-            }else {
+            } else if (isCalls && word.lastIndexOf(';') != -1) {
+                tokenArrayList.add(word.replace(";",""));
+                tokenArrayList.add(";");
+            } else {
                 tokenArrayList.add(word);
+            }
+            isCalls = false;
+            if(word.equals("call")){
+                isCalls = true;
+                log.info("CALLS APPEARED \n");
             }
 
         }
         log.fine("Tokenizer list:\n");
         for (String token : tokenArrayList) {
-            log.fine(token + "\n");
+            log.info(token + "\n");
         }
         return tokenArrayList;
     }
@@ -62,13 +70,17 @@ public class Tokenizer {
         for(Character c : word.toCharArray()){
             if(!isOperator(c)){
                 wordBuilder.append(c);
-            }else {
+            } else if (isOperator(c) && !wordBuilder.isEmpty()) {
+                slicedWord.add(wordBuilder.toString());
+                slicedWord.add(Character.toString(c));
+                wordBuilder.delete(0,wordBuilder.length());
+            } else {
                 slicedWord.add(Character.toString(c)); // Adding operator
                 wordBuilder.delete(0, wordBuilder.length()); // Clearing
             }
-            if(!wordBuilder.isEmpty()){
-                slicedWord.add(wordBuilder.toString());
-            }
+//            if(!wordBuilder.isEmpty()){
+//                slicedWord.add(wordBuilder.toString());
+//            }
         }
         return slicedWord;
     }
@@ -76,7 +88,7 @@ public class Tokenizer {
 
     private boolean isOperator(Character sign){
         return switch (sign) {
-            case '+', '=', '*', ';' -> true;
+            case '+', '=', '*', ';' -> true; //usuniecie srednika ';'
             default -> false;
         };
     }

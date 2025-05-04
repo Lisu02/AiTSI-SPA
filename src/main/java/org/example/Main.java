@@ -8,9 +8,11 @@ import org.example.PKB.API.TNode;
 import org.example.QueryProc.Evaluator;
 import org.example.QueryProc.PreProc;
 import org.example.QueryProc.ResultProjector;
+import org.example.QueryProc.model.Argument;
 import org.example.QueryProc.model.QueryTree;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.LogManager;
 
@@ -48,11 +50,11 @@ public class Main {
 //            queryTree = preProc.parseQuery("stmt s,s2; Select s such that Follows*(s,s2) with s.stmt# = 4");
 //            queryTree = preProc.parseQuery("stmt s; while w; variable v; Select v such that Modifies(s,v) such that Parent(4,s)");
 //            queryTree = preProc.parseQuery("stmt s; while w; variable v; Select v with s.stmt# = 1 such that Modifies(s,v)");
-            queryTree = preProc.parseQuery("stmt s1, s2; Select s1 with s1.stmt# = s2.stmt#");
+            queryTree = preProc.parseQuery("stmt s1,s2; Select s1 such that Follows(s1,s2)");
         } catch (InvalidQueryException e) {
             System.out.println(e.getMessage());
         }
-        Set<TNode> result = evaluator.evaluateQuery(queryTree);
-        System.out.println(resultProjector.convertToString(result));
+        Set<Map<Argument,TNode>> result = evaluator.evaluateQuery(queryTree);
+        System.out.println(resultProjector.convertToString(result, queryTree.returnValues()));
     }
 }

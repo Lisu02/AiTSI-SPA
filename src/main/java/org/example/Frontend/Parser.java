@@ -321,13 +321,9 @@ public class Parser {
                                 .build();
                         iast.setAttr(right,as);
                     }
+
                     try {
                         iast.setParentChildLink(expr,left);
-                    } catch (ASTBuildException e) {
-                        log.severe("Setting parent-child link failed: " + e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                    try {
                         iast.setParentChildLink(expr,right);
                     } catch (ASTBuildException e) {
                         log.severe("Setting parent-child link failed: " + e.getMessage());
@@ -337,7 +333,7 @@ public class Parser {
                     log.info("Dolny next token -> " + nextToken);
                     break;
                 default:
-                    log.severe("Symbol w linii " + statementNumber + " nie jest prawidłowy.");
+                    log.severe("Symbol " + nextToken + " w linii " + statementNumber + " nie jest prawidłowy.");
                     throw new RuntimeException();
             }
         }
