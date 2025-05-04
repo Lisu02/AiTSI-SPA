@@ -1,7 +1,7 @@
 package Frontend;
 
-import lombok.extern.java.Log;
 import org.example.Frontend.*;
+import org.example.Frontend.Extractor.AbstractionExtractor;
 import org.example.Main;
 import org.example.PKB.API.*;
 import org.junit.jupiter.api.BeforeAll;
