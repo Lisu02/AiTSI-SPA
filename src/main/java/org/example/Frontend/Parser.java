@@ -132,12 +132,16 @@ public class Parser {
 
     TNode stmt(){
         statementNumber++;
-        return switch (nextToken){
-            case "while" -> whileStmt();
-            case "if" -> ifStmt();
-            case "call" -> callStmt();
-            default -> assignStmt();
-        };
+        switch (nextToken){
+            case "while":
+                return whileStmt();
+            case "if":
+                return ifStmt();
+            case "call":
+                return callStmt();
+            default:
+                return assignStmt();
+        }
     }
 
     private TNode callStmt() {

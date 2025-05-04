@@ -7,7 +7,6 @@ import org.example.PKB.Source.ASTNode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class ASTParents extends ASTSetters {
     public TNode getParent(TNode c)
@@ -28,27 +27,44 @@ public abstract class ASTParents extends ASTSetters {
     {
         ASTNode astNode = (ASTNode) p;
 
-        switch(astNode.getEntityType())
-        {
-            case WHILE -> {
-                List<TNode> children = new ArrayList<>();
-                for(ASTNode child : astNode.getChildren())
-                {
-                    switch (child.getEntityType())
-                    {
-                        case STMTLIST -> {
-                            children.addAll(child.getChildren());
-                        }
-                        default -> {
-                            children.add(child);
-                        }
-                    }
+//        switch(astNode.getEntityType())
+//        {
+//            case WHILE -> {
+//                List<TNode> children = new ArrayList<>();
+//                for(ASTNode child : astNode.getChildren())
+//                {
+//                    switch (child.getEntityType())
+//                    {
+//                        case STMTLIST -> {
+//                            children.addAll(child.getChildren());
+//                        }
+//                        default -> {
+//                            children.add(child);
+//                        }
+//                    }
+//                }
+//                return children;
+//            }
+//            default -> {
+//                return Collections.emptyList();
+//            }
+//        }
+
+        if(astNode.getEntityType() == EntityType.WHILE) {
+            List<TNode> children = new ArrayList<>();
+            for(ASTNode child : astNode.getChildren())
+            {
+                if(child.getEntityType() == EntityType.STMTLIST) {
+                    children.addAll(child.getChildren());
                 }
-                return children;
+                else {
+                    children.add(child);
+                }
             }
-            default -> {
-                return Collections.emptyList();
-            }
+            return children;
+        }
+        else {
+            return Collections.emptyList();
         }
 
 //        // Stare, jak dziala nodw to do usuniecia
@@ -70,18 +86,29 @@ public abstract class ASTParents extends ASTSetters {
         {
             ASTNode parent = currentNode.getParent();
             if(parent == null)break;
-            switch (parent.getEntityType())
-            {
-                case STMTLIST -> {
-                    currentNode = parent;
-                }
-                case WHILE -> {
-                    parents.add(parent);
-                    currentNode = parent;
-                }
-                default -> {
-                    currentNode = null;
-                }
+//            switch (parent.getEntityType())
+//            {
+//                case STMTLIST -> {
+//                    currentNode = parent;
+//                }
+//                case WHILE -> {
+//                    parents.add(parent);
+//                    currentNode = parent;
+//                }
+//                default -> {
+//                    currentNode = null;
+//                }
+//            }
+            EntityType entityType = parent.getEntityType();
+            if(entityType == EntityType.STMTLIST) {
+                currentNode = parent;
+            }
+            else if(entityType == EntityType.WHILE) {
+                parents.add(parent);
+                currentNode = parent;
+            }
+            else {
+                currentNode = null;
             }
         }
         return parents;
@@ -127,17 +154,24 @@ public abstract class ASTParents extends ASTSetters {
     private void addChildrenOfParent(ASTNode parent, List<TNode> nodesParentedBy) {
         if(parent == null)return;
         for (ASTNode child : parent.getChildren()) {
-            switch (child.getEntityType())
-            {
-                case STMTLIST -> {
-                    addChildrenOfParent(child, nodesParentedBy);
-                }
-                default -> {
-                    if (checkIfEntityIsWhileOrIf(child)) {
-                        nodesParentedBy.add(child);
-                        addChildrenOfParent(child, nodesParentedBy);
-                    }
-                }
+//            switch (child.getEntityType())
+//            {
+//                case STMTLIST -> {
+//                    addChildrenOfParent(child, nodesParentedBy);
+//                }
+//                default -> {
+//                    if (checkIfEntityIsWhileOrIf(child)) {
+//                        nodesParentedBy.add(child);
+//                        addChildrenOfParent(child, nodesParentedBy);
+//                    }
+//                }
+//            }
+            if(child.getEntityType() == EntityType.STMTLIST) {
+                addChildrenOfParent(child, nodesParentedBy);
+            }
+            else if(checkIfEntityIsWhileOrIf(child)){
+                nodesParentedBy.add(child);
+                addChildrenOfParent(child, nodesParentedBy);
             }
 
 //            // Stare, jak nowe dziala to usunac

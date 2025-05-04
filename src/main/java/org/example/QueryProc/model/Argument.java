@@ -1,9 +1,15 @@
 package org.example.QueryProc.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.example.PKB.API.EntityType;
-import java.util.Objects;
 
-public record Argument(String name, EntityType type) {
+import java.util.Objects;
+@Data
+@AllArgsConstructor
+public class Argument {
+    private String name;
+    private EntityType type;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -13,5 +19,9 @@ public record Argument(String name, EntityType type) {
 
         if (!Objects.equals(name, argument.name)) return false;
         return Objects.equals(type, argument.type);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type);
     }
 }

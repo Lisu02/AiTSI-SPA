@@ -3,6 +3,7 @@ package org.example.PKB.Source.Relations;
 import org.example.PKB.API.IModifies;
 import org.example.PKB.API.TNode;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +26,12 @@ public class Modifies implements IModifies {
 
     @Override
     public List<TNode> getModifies(TNode node) {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override
     public List<TNode> getModifiesBy(TNode var) {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override

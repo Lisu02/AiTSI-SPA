@@ -42,7 +42,7 @@ public class ASTModifies implements IModifies {
             map.get(keyNode).add(valueNode);
         }
         else {
-            map.put(keyNode,new ArrayList<>(List.of(valueNode)));
+            map.put(keyNode,new ArrayList<>(Collections.singletonList(valueNode)));
         }
     }
 

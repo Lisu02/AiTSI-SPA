@@ -5,6 +5,7 @@ import org.example.PKB.API.EntityType;
 import org.example.PKB.Source.ASTNode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -51,7 +52,7 @@ public class WhileNode extends StmtNode{
     @Override
     public List<ASTNode> getChildren() {
         if (variableChild == null) {
-            return List.of();
+            return Collections.emptyList();
         }
 
         List<ASTNode> children = new ArrayList<>();

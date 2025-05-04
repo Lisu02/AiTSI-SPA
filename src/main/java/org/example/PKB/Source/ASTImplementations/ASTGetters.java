@@ -15,6 +15,7 @@ public abstract class ASTGetters extends ASTFactory {
 
     public EntityType getType(TNode node)
     {
+//        System.out.println(node);
         ASTNode astNode = (ASTNode) node;
         return astNode.getEntityType();
     }

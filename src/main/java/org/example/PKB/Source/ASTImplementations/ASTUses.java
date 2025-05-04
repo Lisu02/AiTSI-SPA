@@ -44,9 +44,10 @@ public class ASTUses implements IUses {
                 .findFirst()
                 .orElse(null);
 
-        if(tmp instanceof VariableNode variable) {
-            add(variable,node,variableMap);
-            add(node,variable,nodeMap);
+        if (tmp instanceof VariableNode) {
+            VariableNode variable = (VariableNode) tmp;
+            add(variable, node, variableMap);
+            add(node, variable, nodeMap);
         }
         else {
             //throw new ASTBuildException("Variable doesn't exist");
@@ -57,7 +58,7 @@ public class ASTUses implements IUses {
             map.get(keyNode).add(valueNode);
         }
         else {
-            map.put(keyNode,new ArrayList<>(List.of(valueNode)));
+            map.put(keyNode, new ArrayList<>(Collections.singletonList(valueNode)));
         }
     }
 

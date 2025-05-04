@@ -4,6 +4,7 @@ import org.example.Exceptions.ASTBuildException;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.Source.ASTNode;
 
+import java.util.Collections;
 import java.util.List;
 
 public class CallNode extends ASTNode {
@@ -26,7 +27,7 @@ public class CallNode extends ASTNode {
 
     @Override
     public List<ASTNode> getChildren() {
-        return List.of(procedure);
+        return Collections.singletonList(procedure);
     }
 
     @Override
