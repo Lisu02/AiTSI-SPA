@@ -24,7 +24,7 @@ public class ModifiesExtractor {
             switch (stmtType){
                 case ASSIGN: {
                     variableNode = iast.getFirstChild(stmtNode);
-                    log.fine("Modifies line "+iast.getAttr(stmtNode).getLine()+" : " + variableNode.toString().substring(43,62) + " and " + stmtNode.toString().substring(43,60));
+                    //log.fine("Modifies line "+iast.getAttr(stmtNode).getLine()+" : " + variableNode.toString().substring(43,62) + " and " + stmtNode.toString().substring(43,60));
                     iModifies.addModifies(tNodeProcedure,stmtNode,variableNode);
                     break;
                 }
