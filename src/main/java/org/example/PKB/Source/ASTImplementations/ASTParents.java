@@ -173,9 +173,11 @@ public abstract class ASTParents extends ASTSetters {
             if(child.getEntityType() == EntityType.STMTLIST) {
                 addChildrenOfParent(child, nodesParentedBy);
             }
-            else if(checkIfEntityIsWhileOrIf(child)){
+            else{
                 nodesParentedBy.add(child);
-                addChildrenOfParent(child, nodesParentedBy);
+                if(checkIfEntityIsWhileOrIf(child)) {
+                    addChildrenOfParent(child, nodesParentedBy);
+                }
             }
 
 //            // Stare, jak nowe dziala to usunac
