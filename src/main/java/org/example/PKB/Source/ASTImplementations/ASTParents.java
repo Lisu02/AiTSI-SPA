@@ -50,7 +50,7 @@ public abstract class ASTParents extends ASTSetters {
 //            }
 //        }
 
-        if(astNode.getEntityType() == EntityType.WHILE) {
+        if(astNode.getEntityType() == EntityType.WHILE || astNode.getEntityType() == EntityType.IF) {
             List<TNode> children = new ArrayList<>();
             for(ASTNode child : astNode.getChildren())
             {
@@ -104,6 +104,10 @@ public abstract class ASTParents extends ASTSetters {
                 currentNode = parent;
             }
             else if(entityType == EntityType.WHILE) {
+                parents.add(parent);
+                currentNode = parent;
+            }
+            else if(entityType == EntityType.IF) {
                 parents.add(parent);
                 currentNode = parent;
             }
