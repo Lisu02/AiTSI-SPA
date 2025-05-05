@@ -6,13 +6,21 @@ import org.example.PKB.Source.ASTNode;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-public class CallNode extends ASTNode {
+public class CallNode extends StmtNode {
 
     ProcedureNode procedure;
 
     public CallNode() {
         super(EntityType.CALL);
+    }
+
+    @Override
+    public Set<EntityType> getAllEntityTypes() {
+        Set<EntityType> set = super.getAllEntityTypes();
+        set.add(EntityType.CALL);
+        return set;
     }
 
     @Override
