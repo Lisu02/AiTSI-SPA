@@ -26,7 +26,7 @@ public class Calls implements ICalls {
 
     @Override
     public void setCalls(TNode node, TNode calls) throws RelationException {
-        if(!(node instanceof CallNode) || !(calls instanceof ProcedureNode))
+        if(!(node instanceof ProcedureNode) || !(calls instanceof ProcedureNode))
             throw new RelationException("Incorrect nodes for Calls relation");
         Set<TNode> nodes;
         if(!this.calls.containsKey(node))
@@ -55,7 +55,7 @@ public class Calls implements ICalls {
 
     @Override
     public void setCallsAstra(TNode node, TNode calls) throws RelationException {
-        if(!(node instanceof CallNode) || !(calls instanceof ProcedureNode))
+        if(!(node instanceof ProcedureNode) || !(calls instanceof ProcedureNode))
             throw new RelationException("Incorrect nodes for Calls relation");
         Set<TNode> nodes;
         if(!this.callsAstra.containsKey(node))
