@@ -47,7 +47,16 @@ public class UsesExtractor {
                     break;
                 }
                 case IF:
-                    log.warning("IF nie ma implementacji USES");
+                    tNodeStack.push(currentTNode);
+
+                    TNode variableTNode = iast.getFirstChild(currentTNode);
+                    iUses.setUses(tNodeProcedure,tNodeStack,variableTNode);
+
+                    TNode ifStmtList = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(currentTNode));
+                    extract(tNodeProcedure,ifStmtList,tNodeStack);
+                    TNode elseStmtList = iast.getLinkedNode(LinkType.RightSibling,ifStmtList);
+                    extract(tNodeProcedure,elseStmtList,tNodeStack);
+                    tNodeStack.pop();
                     break;
                 case CALL:
                     log.warning("CALL nie ma implementacji USES");

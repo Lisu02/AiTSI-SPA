@@ -221,13 +221,8 @@ public class Parser {
         nextToken=tokenIterator.next();
         try {
             iast.setParentChildLink(whil,checkVar);
-        } catch (ASTBuildException e) {
-            log.severe("Setting parent-child link failed: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
-        checkToken("{");
-        stmtList=stmtLst();
-        try {
+            checkToken("{");
+            stmtList=stmtLst();
             iast.setParentChildLink(whil,stmtList);
         } catch (ASTBuildException e) {
             log.severe("Setting parent-child link failed: " + e.getMessage());
@@ -264,13 +259,8 @@ public class Parser {
         nextToken=tokenIterator.next();
         try {
             iast.setParentChildLink(assign,leftVar);
-        } catch (ASTBuildException e) {
-            log.severe("Setting parent-child link failed: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
-        checkToken("="); // zmienna [=] 2 + 5 ;
-        expr=expr();
-        try {
+            checkToken("="); // zmienna [=] 2 + 5 ;
+            expr=expr();
             iast.setParentChildLink(assign,expr);
         } catch (ASTBuildException e) {
             log.severe("Setting parent-child link failed: " + e.getMessage());
@@ -336,11 +326,6 @@ public class Parser {
                         }
                         try {
                             iast.setParentChildLink(expr,left);
-                        } catch (ASTBuildException e) {
-                            log.severe("Setting parent-child link failed: " + e.getMessage());
-                            throw new RuntimeException(e);
-                        }
-                        try {
                             iast.setParentChildLink(expr,right);
                         } catch (ASTBuildException e) {
                             log.severe("Setting parent-child link failed: " + e.getMessage());
@@ -357,11 +342,6 @@ public class Parser {
                         expr=iast.createTNode(EntityType.TIMES);
                         try {
                             iast.setParentChildLink(expr,left);
-                        } catch (ASTBuildException e) {
-                            log.severe("Setting parent-child link failed: " + e.getMessage());
-                            throw new RuntimeException(e);
-                        }
-                        try {
                             iast.setParentChildLink(expr,right);
                         } catch (ASTBuildException e) {
                             log.severe("Setting parent-child link failed: " + e.getMessage());
@@ -434,11 +414,6 @@ public class Parser {
                         }
                         try {
                             iast.setParentChildLink(expr,left);
-                        } catch (ASTBuildException e) {
-                            log.severe("Setting parent-child link failed: " + e.getMessage());
-                            throw new RuntimeException(e);
-                        }
-                        try {
                             iast.setParentChildLink(expr,right);
                         } catch (ASTBuildException e) {
                             log.severe("Setting parent-child link failed: " + e.getMessage());
@@ -492,11 +467,6 @@ public class Parser {
             }
             try {
                 iast.setParentChildLink(expr,left);
-            } catch (ASTBuildException e) {
-                log.severe("Setting parent-child link failed: " + e.getMessage());
-                throw new RuntimeException(e);
-            }
-            try {
                 iast.setParentChildLink(expr,right);
             } catch (ASTBuildException e) {
                 log.severe("Setting parent-child link failed: " + e.getMessage());
