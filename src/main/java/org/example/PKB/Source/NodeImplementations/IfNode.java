@@ -12,6 +12,7 @@ import java.util.Set;
 public class IfNode extends StmtNode{
     private VariableNode variableChild;
     private StmtListNode stmtChildren;
+    private StmtListNode stmtElseChildren;
 
     public IfNode() {
         super(EntityType.IF);
@@ -46,6 +47,14 @@ public class IfNode extends StmtNode{
             stmtChildren.setParent(this);
             return 1;
         }
+        if(stmtElseChildren == null) {
+            if (!(child instanceof StmtListNode))
+                throw new ASTBuildException("Next child of IFNode must be a StmtListNode!");
+            stmtElseChildren = (StmtListNode) child;
+            stmtElseChildren.setId(2);
+            stmtElseChildren.setParent(this);
+            return 2;
+        }
         throw new ASTBuildException("No more children can be assigned to a IFNode!");
     }
 
@@ -58,6 +67,7 @@ public class IfNode extends StmtNode{
         List<ASTNode> children = new ArrayList<>();
         children.add(variableChild);
         children.add(stmtChildren);
+        children.add(stmtElseChildren);
         return children;
     }
 
@@ -65,14 +75,16 @@ public class IfNode extends StmtNode{
     @Override
     public ASTNode getChild(int num) {
         if(num == 0)return variableChild;
-        if (num == 1)return stmtChildren;
+        if(num == 1)return stmtChildren;
+        if(num == 2)return stmtElseChildren;
         return null;
     }
 
     @Override
     public int getChildCount() {
         if(variableChild == null)return 0;
-        if (stmtChildren == null)return 1;
-        return 2;
+        if(stmtChildren == null)return 1;
+        if(stmtElseChildren == null)return 2;
+        return 3;
     }
 }
