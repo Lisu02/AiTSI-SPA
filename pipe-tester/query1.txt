@@ -1,0 +1,84 @@
+stmt s;
+Select s such that Follows (1, s)
+2
+stmt s;
+Select s such that Follows (s, 4)
+3
+stmt s;
+Select s such that Follows (4, s)
+6
+stmt s;
+Select s such that Follows* (1, s)
+2,3,4,6,7,8,13,14
+stmt s;
+Select s such that Follows* (s, 10)
+9
+stmt s;
+Select s such that Parent (4, s)
+5
+stmt s;
+Select s such that Parent* (4, s)
+5
+stmt s;
+Select s such that Parent* (10, s)
+
+stmt s;
+Select s such that Parent* (14, s)
+15,16,17,18,19
+stmt s;
+Select s such that Modifies (s, "a")
+1
+stmt s;
+Select s such that Modifies (s, "k")
+13,16,17
+stmt s;
+Select s such that Modifies (s, "d")
+5
+variable v;
+Select v such that Modifies (6, v)
+e
+variable v;
+Select v such that Modifies (10, v)
+h
+stmt s;
+Select s such that Uses (s, "b")
+5,13
+variable v;
+Select v such that Uses (4, v)
+a
+stmt s;
+Select s such that Uses (s, "e")
+7,16
+variable v;
+Select v such that Uses (7, v)
+e, c
+variable v;
+Select v such that Uses (1, v)
+none
+
+Select BOOLEAN such that Follows (12, 13)
+false
+
+Select BOOLEAN such that Follows* (15, 16)
+false
+
+Select BOOLEAN such that Parent (10, 11)
+false
+
+Select BOOLEAN such that Parent (10, 12)
+false
+
+Select BOOLEAN such that Parent (15, 16)
+true
+
+Select BOOLEAN such that Follows (_, 10)
+true
+stmt s;
+Select BOOLEAN such that Follows* (s, 10)
+true
+stmt s;
+Select BOOLEAN such that Follows* (10, s)
+false
+stmt s1, s2;
+Select s1 such that Parent* (14, s1) and Follows(s2,s1) with s2.stmt# = 15
+18

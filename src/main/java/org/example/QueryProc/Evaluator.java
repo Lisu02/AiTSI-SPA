@@ -22,9 +22,11 @@ public class Evaluator {
         IAST AST2 = PKB.getAST();
 
         for(Relation relation : queryTree.getRelations()) {
-            if(!evaluateRelation(relation,queryTree.getSynonyms())) {
+            if(!evaluateRelation(relation,queryTree.getSynonyms()) || (queryTree.isBoolean() && finalResult.size() == 0)) {
+                System.out.println(false);
                 return new HashSet<>();
             }
+            System.out.println(true);
         }
 
         for( WithStatement statement : queryTree.getWithStatements()) {
@@ -80,7 +82,7 @@ public class Evaluator {
         }
         else
         {
-            System.out.println("True");
+            System.out.println("true");
         }
 
 
@@ -224,11 +226,22 @@ public class Evaluator {
                     .forEach(finalResult::add);
         }
         else {
-            Set<Map<Argument, TNode>> toDelete = resultMap.stream()
-                    .filter(row -> !arguments2.contains(row.get(arg1)))
-                    .collect(Collectors.toSet());
+//            Set<Map<Argument, TNode>> toDelete = finalResult.stream()
+//                    .filter(row -> !arguments2.contains(row.get(arg1)))
+//                    .collect(Collectors.toSet());
+//
+//            System.out.println("TO_DELETE: " + toDelete);
+//            System.out.println(finalResult);
 
-            toDelete.forEach(resultMap::remove);
+            Iterator<Map<Argument, TNode>> iterator = finalResult.iterator();
+            while (iterator.hasNext()) {
+                Map<Argument, TNode> row = iterator.next();
+                if (!arguments2.contains(row.get(arg1))) {
+                    iterator.remove();
+                }
+            }
+
+//            toDelete.forEach(finalResult::remove);
         }
     }
     private Set<TNode> findTNode(Argument arg) {
