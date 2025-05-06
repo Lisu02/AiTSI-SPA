@@ -67,8 +67,13 @@ public class Evaluator {
                 for (int i = 0; i < returnValues.size(); i++) {
                     Argument arg = returnValues.get(i);
                     TNode node = mapping.get(arg);
-
-                    resultLine.append(AST.getAttr(node).getLine());
+                    if(AST.getType(node)==EntityType.VARIABLE)
+                    {
+                        resultLine.append(AST.getAttr(node).getVarName());
+                    }
+                    else {
+                        resultLine.append(AST.getAttr(node).getLine());
+                    }
 
                     if (i < returnValues.size() - 1) {
                         resultLine.append(" ");
@@ -80,7 +85,7 @@ public class Evaluator {
         }
         else
         {
-            System.out.println("True");
+            System.out.println("true");
         }
 
 
