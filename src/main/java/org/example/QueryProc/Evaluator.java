@@ -16,50 +16,42 @@ public class Evaluator {
     private static final IAST AST = PKB.getAST();
     private final Set<Map<Argument, TNode>> finalResult = new HashSet<>();
     public Set<Map<Argument,TNode>> evaluateQuery(QueryTree queryTree) {
+        //Set<Map<Argument,TNode>> finalResult = new HashSet<>();
         finalResult.clear();
 
+        IAST AST2 = PKB.getAST();
+
         for(Relation relation : queryTree.getRelations()) {
-            if(!evaluateRelation(relation,queryTree.getSynonyms(), queryTree.getReturnValues())) {
+            if(!evaluateRelation(relation,queryTree.getSynonyms())) {
                 return new HashSet<>();
             }
         }
 
         for( WithStatement statement : queryTree.getWithStatements()) {
-            if(!evaluateWith(statement)) {
-                return new HashSet<>();
-            }
+            evaluateWith(statement, finalResult);
         }
 
+//        System.out.println(finalResult.size());
+//
+//        System.out.println(finalResult);
+
+//        return finalResult.stream()
+//                .map(r->r.get(queryTree.returnValues().get(0)))
+//                .collect(Collectors.toSet());
         return finalResult;
-    }
-    public Boolean evaluateBooleanQuery(QueryTree queryTree) {
-        finalResult.clear();
-
-        for(Relation relation : queryTree.getRelations()) {
-            if(!evaluateRelation(relation,queryTree.getSynonyms(),queryTree.getReturnValues())) {
-                return false;
-            }
-        }
-
-        for( WithStatement statement : queryTree.getWithStatements()) {
-            if(!evaluateWith(statement)) {
-                return false;
-            }
-        }
-        return true;
     }
     public void evaluateQueryPipeTester(QueryTree queryTree) throws SolutionDoesNotExist {
         //Set<Map<Argument,TNode>> finalResult = new HashSet<>();
         finalResult.clear();
 
         for(Relation relation : queryTree.getRelations()) {
-//            if(!evaluateRelation(relation,queryTree.getSynonyms())) {
-//              throw new SolutionDoesNotExist();
-//            }
+            if(!evaluateRelation(relation,queryTree.getSynonyms())) {
+              throw new SolutionDoesNotExist();
+            }
         }
 
         for( WithStatement statement : queryTree.getWithStatements()) {
-           evaluateWith(statement);
+           evaluateWith(statement, finalResult);
         }
         List<Argument> returnValues = queryTree.getReturnValues();
         Set<String> results = new HashSet<>();
@@ -75,13 +67,8 @@ public class Evaluator {
                 for (int i = 0; i < returnValues.size(); i++) {
                     Argument arg = returnValues.get(i);
                     TNode node = mapping.get(arg);
-                    if(AST.getType(node)==EntityType.VARIABLE)
-                    {
-                        resultLine.append(AST.getAttr(node).getVarName());
-                    }
-                    else {
-                        resultLine.append(AST.getAttr(node).getLine());
-                    }
+
+                    resultLine.append(AST.getAttr(node).getLine());
 
                     if (i < returnValues.size() - 1) {
                         resultLine.append(" ");
@@ -93,12 +80,12 @@ public class Evaluator {
         }
         else
         {
-            System.out.println("true");
+            System.out.println("True");
         }
 
 
     }
-    private boolean evaluateRelation(Relation relation, Set<Argument> synonyms, List<Argument> returnValues) {
+    private boolean evaluateRelation(Relation relation,Set<Argument> synonyms) {
         RelationFunctions functions = GrammarRules.RELATION_FUNCTIONS.get(relation.getName());
 
         Argument arg1 = relation.getArg1();
@@ -119,7 +106,6 @@ public class Evaluator {
                         })
                         .forEach(result::add);
             }
-            if(result.isEmpty()) return false;
         }
         else if(isArg1Synonym) {
             for(TNode node : findTNode(arg2)) {
@@ -132,7 +118,6 @@ public class Evaluator {
                         })
                         .forEach(result::add);
             }
-            if(result.isEmpty()) return false;
         }
         else if(isArg2Synonym) {
             for(TNode node : findTNode(arg1)) {
@@ -145,37 +130,27 @@ public class Evaluator {
                         })
                         .forEach(result::add);
             }
-            if(result.isEmpty()) return false;
         }
         else {
             if(!doesSolutionExist(arg1,arg2,functions.getIsFunction())) {
                 return false;
             }
-            for(Argument arg : returnValues) {
-                mergeResults(findTNode(arg).stream()
+            if(arg1.getName().equals("_") && arg2.getName().equals("_") && finalResult.isEmpty()) {
+                Argument key = synonyms.iterator().next();
+                AST.getNodesOfEntityTypes(key.getType()).stream()
                         .map(node -> {
                             Map<Argument, TNode> map = new HashMap<>();
-                            map.put(arg, node);
-                            return map;})
-                        .collect(Collectors.toSet()));
+                            map.put(key, node);
+                            return map;
+                        })
+                        .forEach(result::add);
             }
-//            if(arg1.getName().equals("_") && arg2.getName().equals("_") && finalResult.isEmpty()) {
-//                Argument key = synonyms.iterator().next();
-//                AST.getNodesOfEntityTypes(key.getType()).stream()
-//                        .map(node -> {
-//                            Map<Argument, TNode> map = new HashMap<>();
-//                            map.put(key, node);
-//                            return map;
-//                        })
-//                        .forEach(result::add);
-//            }
         }
         mergeResults(result);
         //print(resultMap);
         return true;
     }
     private void mergeResults(Set<Map<Argument, TNode>> newNodes) {
-
         if(finalResult.size() == 0 || newNodes.isEmpty()) {
             finalResult.addAll(newNodes);
             return;
@@ -233,38 +208,28 @@ public class Evaluator {
         }
         return false;
     }
-    private Boolean evaluateWith(WithStatement withStatement) {
+    private void evaluateWith(WithStatement withStatement,  Set<Map<Argument,TNode>> resultMap) {
         Argument arg1 = withStatement.getArg1();
         Argument arg2 = withStatement.getArg2();
         Set<TNode> arguments2 = findTNode(arg2);
 
-        if (finalResult.isEmpty() ||
-                !finalResult.iterator().next().containsKey(arg1) ||
-                (!finalResult.iterator().next().containsKey(arg2) &&
-                        arg2.getType() != EntityType.INTEGER &&
-                        arg2.getType() != EntityType.STRING)) {
-
-            Set<Map<Argument,TNode>> nodes = arguments2.stream()
+        if(resultMap.isEmpty()) {
+            arguments2.stream()
                     .map(node -> {
                         Map<Argument, TNode> map = new HashMap<>();
                         map.put(arg1, node);
                         map.put(arg2, node);
                         return map;
-                    }).collect(Collectors.toSet());
-
-            if(nodes.isEmpty()) return false;
-
-            mergeResults(nodes);
-        } else {
-            Iterator<Map<Argument, TNode>> iterator = finalResult.iterator();
-            while (iterator.hasNext()) {
-                Map<Argument, TNode> row = iterator.next();
-                if (!arguments2.contains(row.get(arg1))) {
-                    iterator.remove();
-                }
-            }
+                    })
+                    .forEach(finalResult::add);
         }
-        return !finalResult.isEmpty();
+        else {
+            Set<Map<Argument, TNode>> toDelete = resultMap.stream()
+                    .filter(row -> !arguments2.contains(row.get(arg1)))
+                    .collect(Collectors.toSet());
+
+            toDelete.forEach(resultMap::remove);
+        }
     }
     private Set<TNode> findTNode(Argument arg) {
         if(arg.getType().name().equals("INTEGER")) {

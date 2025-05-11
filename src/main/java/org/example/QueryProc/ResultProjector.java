@@ -51,50 +51,6 @@ public class ResultProjector {
 //        }
 //        return result;
 //    }
-    public String toPipeTesterFormat(Set<Map<Argument,TNode>> tNodes, List<Argument> returnValues) {
-        if(tNodes.isEmpty()) {
-            return "none";
-        }
-        StringBuilder result = new StringBuilder();
-
-        Set<EntityType> stmtTypes = EnumSet.of(
-                EntityType.STMT, EntityType.ASSIGN,
-                EntityType.IF, EntityType.WHILE, EntityType.CALL
-        );
-
-        for (Map<Argument, TNode> row : tNodes) {
-            StringBuilder line = new StringBuilder();
-
-            for (Argument key : returnValues) {
-                TNode tNode = row.get(key);
-                EntityType type = AST.getType(tNode);
-                String attribute;
-
-                if (stmtTypes.contains(type)) {
-                    attribute = String.valueOf(AST.getAttr(tNode).getLine());
-                } else if (type == EntityType.PROCEDURE) {
-                    attribute = AST.getAttr(tNode).getProcName();
-                } else if (type == EntityType.VARIABLE) {
-                    attribute = AST.getAttr(tNode).getVarName();
-                } else {
-                    attribute = "";
-                }
-
-                line.append(attribute).append(" ");
-            }
-
-            if (line.length() > 0) {
-                line.setLength(line.length() - 1);
-                result.append(line).append(", ");
-            }
-        }
-
-        if (result.length() >= 2) {
-            result.setLength(result.length() - 2);
-        }
-
-        return result.toString();
-    }
     public List<String> convertToString(Set<Map<Argument,TNode>> tNodes, List<Argument> returnValues) {
         List<String> result = new ArrayList<>();
         for(Map<Argument, TNode> row : tNodes) {
@@ -103,7 +59,6 @@ public class ResultProjector {
                 String attribute = "";
                 TNode tNode = row.get(key);
                 Set<EntityType> stmtTypes = new HashSet<>(Arrays.asList(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL));
-                System.out.println(tNode);
                 if(stmtTypes.contains(AST.getType(tNode))) {
                     attribute = AST.getAttr(tNode).getLine() + "";
                 }

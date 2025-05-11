@@ -93,9 +93,6 @@ public class PreProc {
         private final List<Argument> returnValues;
     }
     private ReturnDesc determineReturnValues(String returnBody,  Map<String,EntityType> synonyms) throws InvalidQueryException {
-        returnBody = returnBody.replace("<","");
-        returnBody = returnBody.replace(">","");
-
         String[] returnElements = Arrays.stream(returnBody
                         .split("[ ,]"))
                 .filter(s->!s.trim().isEmpty())

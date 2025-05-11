@@ -3,10 +3,7 @@ package org.example;
 import org.example.Frontend.Extractor.AbstractionExtractor;
 import org.example.Frontend.Parser;
 import org.example.Frontend.Tokenizer;
-import org.example.QueryProc.Evaluator;
-import org.example.QueryProc.PreProc;
 import org.example.QueryProc.ResultProjector;
-import org.example.QueryProc.model.QueryTree;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -40,8 +37,6 @@ public class MainPipeTester {
 
         System.out.println("READY");
         ResultProjector resultProjector = new ResultProjector();
-        PreProc preProc = new PreProc();
-        Evaluator evaluator = new Evaluator();
         while(true) {
             BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
             //System.out.println("Podaj pierwszą linię zapytania PQL (np. 'stmt s;'):");
@@ -56,16 +51,11 @@ public class MainPipeTester {
                 System.err.println("#Query missing SELECT part");
                 continue;
             }
-            //resultProjector.exePqlQueryFromPipeTester(pqlQuery1,pqlQuery2);
-            QueryTree queryTree = preProc.parseQuery(pqlQuery1+pqlQuery2);
-
-            if(queryTree.isBoolean()) {
-                System.out.println(evaluator.evaluateBooleanQuery(queryTree));
-            }
-            else {
-                System.out.println(resultProjector.toPipeTesterFormat(evaluator.evaluateQuery(queryTree),queryTree.getReturnValues()));
-            }
-
+            resultProjector.exePqlQueryFromPipeTester(pqlQuery1,pqlQuery2);
         }
+
+
+
+
     }
 }
