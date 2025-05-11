@@ -18,7 +18,7 @@ import java.util.logging.LogManager;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InvalidQueryException {
         LogManager.getLogManager().readConfiguration(Main.class.getClassLoader().getResourceAsStream("logging.properties"));
 
         System.out.println("MAIN EMPTY");
@@ -26,7 +26,7 @@ public class Main {
 
         Parser parser = Parser.getInstance();
 
-        parser.getTokens(tokenizer.getTokensFromFilename("SimpleCode1.txt"));
+        parser.getTokens(tokenizer.getTokensFromFilename("pipe-tester/SimpleCode1PK.txt"));
 
         AbstractionExtractor ae = new AbstractionExtractor();
 
@@ -43,17 +43,18 @@ public class Main {
 
         Evaluator evaluator = new Evaluator();
         ResultProjector resultProjector = new ResultProjector();
-        try {
+//        try {
 //            queryTree = preProc.parseQuery("stmt s1,s2; assign a; Select s1, s2 such that Modifies (s1, 2) such that Calls (s1, \"Second\") with a.procName= 19");
 //            queryTree = preProc.parseQuery("stmt s1,s2,s3; procedure p; Select p, s3 such that Follows (s1,s2) such that Calls (p, \"Second\") with p.procName = \"Third\"");
 //            queryTree = preProc.parseQuery("Boolean such that Follows (5,6)");
-//            queryTree = preProc.parseQuery("stmt s,s2; Select s such that Follows*(s,s2) with s.stmt# = 4");
-//            queryTree = preProc.parseQuery("stmt s; while w; variable v; Select v such that Modifies(s,v) such that Parent(4,s)");
-//            queryTree = preProc.parseQuery("stmt s; while w; variable v; Select v with s.stmt# = 1 such that Modifies(s,v)");
-            queryTree = preProc.parseQuery("variable v; Select v with v.varName = \"nowosc\"");
-        } catch (InvalidQueryException e) {
-            System.out.println(e.getMessage());
-        }
+//            queryTree = preProc.parseQuery("stmt p, ch; Select p, ch such that Parent* (p, ch)");
+////            queryTree = preProc.parseQuery("Select BOOLEAN such that Follows (10, _)");
+//            queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"a\")");
+            //queryTree = preProc.parseQuery("variable v; Select v such that Modifies (6, v)");
+            queryTree = preProc.parseQuery("if i;stmt s; Select i,s such that Follows (1, 2)");
+//        } catch (InvalidQueryException e) {
+//            System.out.println(e.getMessage());
+//        }
         Set<Map<Argument,TNode>> result = evaluator.evaluateQuery(queryTree);
         System.out.println(resultProjector.convertToString(result, queryTree.getReturnValues()));
     }

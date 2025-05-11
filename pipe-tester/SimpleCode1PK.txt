@@ -1,0 +1,27 @@
+procedure main {
+    a = 2;
+    b = a + 2;
+    c = a + 7;
+    while a {
+        d = b + c + 9;
+    }
+    e = d + 1;
+    f = e + c;
+    if f then {
+        g = 1;
+        h = g + 2;
+    } else {
+        i = 5;
+        j = i + b + 1;
+    }
+    k = j + h;
+    while k {
+        if e then {
+            k = k + 1;
+        } else {
+            k = k + 2;
+        }
+        l = 7;
+        m = l + 2;
+    }
+}
