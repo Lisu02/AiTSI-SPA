@@ -337,7 +337,11 @@ public class Parser {
                 case "*":
                     if(operator.peek().equals("*")){
                         right=values.pop();
+                        if(values.empty()){
+                            System.out.println("jestem pusty");
+                        }
                         left=values.pop();
+                        operator.pop();
                         log.info(left+"*"+right);
                         expr=iast.createTNode(EntityType.TIMES);
                         try {
