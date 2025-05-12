@@ -272,31 +272,33 @@ public class Parser {
 
     TNode expr(){
         TNode expr,left,right;
+        expr=iast.createTNode(EntityType.VARIABLE);
         Stack<String> operator=new Stack<>();
         operator.push("First");
         Stack<TNode> values= new Stack<>();
-        checkToken("NAME"); //[2] + 5 ;
-        try{
-            int cons=Integer.parseInt(nextToken);
-            expr=iast.createTNode(EntityType.CONSTANT);
-            Attr as = Attr.builder()
-                    .line(statementNumber)
-                    .constantValue(cons)
-                    .build();
-            iast.setAttr(expr,as);
-            values.push(expr);
-        }catch(NumberFormatException e){
-            expr=iast.createTNode(EntityType.VARIABLE);
-            Attr as = Attr.builder()
-                    .line(statementNumber)
-                    .varName(nextToken)
-                    .build();
-            iast.setAttr(expr,as);
-            values.push(expr);
+        if(!nextToken.equals("(")) {
+            checkToken("NAME"); //[2] + 5 ;
+            try {
+                int cons = Integer.parseInt(nextToken);
+                expr = iast.createTNode(EntityType.CONSTANT);
+                Attr as = Attr.builder()
+                        .line(statementNumber)
+                        .constantValue(cons)
+                        .build();
+                iast.setAttr(expr, as);
+                values.push(expr);
+            } catch (NumberFormatException e) {
+                expr = iast.createTNode(EntityType.VARIABLE);
+                Attr as = Attr.builder()
+                        .line(statementNumber)
+                        .varName(nextToken)
+                        .build();
+                iast.setAttr(expr, as);
+                values.push(expr);
+            }
+            nextToken=tokenIterator.next();
         }
-        nextToken=tokenIterator.next(); // + 5;
         log.info("next token przed whilem ze znakiem ';' -> " + nextToken);
-
         while(!Objects.equals(nextToken, ";") && !Objects.equals(nextToken,")")){
             switch(nextToken){ //[+]5
                 case "(":
