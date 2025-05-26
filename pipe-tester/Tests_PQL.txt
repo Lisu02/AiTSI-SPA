@@ -1,0 +1,288 @@
+stmt s;
+Select s such that Follows(1, s)
+2
+stmt s;
+Select s such that Follows(2, s)
+3
+stmt s;
+Select s such that Follows*(1, s)
+2, 3, 4, 5, 6, 119
+stmt s;
+Select s such that Follows(4, s)
+5
+stmt s;
+Select s such that Follows(5, s)
+6
+stmt s;
+Select s such that Follows*(4, s)
+5, 6, 119
+stmt s;
+Select s such that Follows(6, s)
+119
+stmt s;
+Select s such that Parent(3, s)
+none
+stmt s;
+Select s such that Parent*(3, s)
+none
+stmt s;
+Select s such that Follows(10, s)
+11
+stmt s;
+Select s such that Follows*(10, s)
+11, 12, 118
+stmt s;
+Select s such that Parent(20, s)
+none
+stmt s;
+Select s such that Parent(22, s)
+none
+stmt s;
+Select s such that Parent*(20, s)
+none
+stmt s;
+Select s such that Follows(30, s)
+31
+stmt s;
+Select s such that Follows*(30, s)
+31, 32, 33
+stmt s;
+Select s such that Parent(40, s)
+none
+stmt s;
+Select s such that Parent(42, s)
+none
+stmt s;
+Select s such that Parent*(40, s)
+none
+stmt s;
+Select s such that Follows(50, s)
+51
+stmt s;
+Select s such that Follows*(50, s)
+51
+stmt s;
+Select s such that Parent(60, s)
+none
+stmt s;
+Select s such that Parent(62, s)
+none
+stmt s;
+Select s such that Parent*(60, s)
+none
+stmt s;
+Select s such that Follows(70, s)
+71
+stmt s;
+Select s such that Follows*(70, s)
+71, 72, 75
+stmt s;
+Select s such that Parent(80, s)
+81, 82, 83, 89
+stmt s;
+Select s such that Parent(82, s)
+none
+stmt s;
+Select s such that Parent*(80, s)
+81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92
+stmt s;
+Select s such that Parent(90, s)
+none
+stmt s;
+Select s such that Follows(100, s)
+none
+stmt s;
+Select s such that Follows(101, s)
+105
+stmt s;
+Select s such that Follows*(100, s)
+none
+stmt s;
+Select s such that Parent(110, s)
+none
+stmt s;
+Select s such that Parent(112, s)
+none
+stmt s;
+Select s such that Parent*(110, s)
+none
+stmt s;
+Select s such that Follows(120, s)
+121
+stmt s;
+Select s such that Follows*(120, s)
+121, 122, 123, 124, 125, 126, 127, 128, 129
+stmt s;
+Select s such that Parent(130, s)
+none
+stmt s;
+Select s such that Parent(132, s)
+none
+stmt s;
+Select s such that Parent*(130, s)
+none
+stmt s;
+Select s such that Follows(140, s)
+143
+stmt s;
+Select s such that Follows*(140, s)
+143, 149
+stmt s;
+Select s such that Parent(150, s)
+none
+stmt s;
+Select s such that Parent*(150, s)
+none
+stmt s;
+Select s such that Parent(152, s)
+none
+stmt s;
+Select s such that Follows(160, s)
+none
+stmt s;
+Select s such that Follows*(160, s)
+none
+stmt s;
+Select s such that Parent(170, s)
+171, 172
+stmt s;
+Select s such that Parent(171, s)
+none
+stmt s;
+Select s such that Parent*(170, s)
+171, 172
+stmt s;
+Select s such that Follows(180, s)
+none
+stmt s;
+Select s such that Follows*(180, s)
+none
+stmt s;
+Select s such that Parent(190, s)
+none
+stmt s;
+Select s such that Parent*(190, s)
+none
+stmt s;
+Select s such that Parent(192, s)
+193, 194, 195
+stmt s;
+Select s such that Follows(200, s)
+none
+stmt s;
+Select s such that Follows(201, s)
+202
+stmt s;
+Select s such that Follows*(200, s)
+none
+stmt s;
+Select s such that Parent(210, s)
+none
+stmt s;
+Select s such that Parent(211, s)
+none
+stmt s;
+Select s such that Parent*(210, s)
+none
+stmt s;
+Select s such that Parent(220, s) and Follows(221, 222)
+none
+stmt s;
+Select s such that Parent*(230, 235) and Follows*(231, 237)
+none
+stmt s;
+Select s such that Follows(240, s) and Parent(250, s)
+none
+stmt s;
+Select s such that Follows*(260, s) and Parent*(265, s)
+none
+stmt s;
+Select s such that Parent(270, s) and Parent(271, s)
+none
+stmt s;
+Select s such that Parent(280, s) and Follows(281, s)
+none
+stmt s;
+Select s such that Parent*(290, s) and Follows*(291, s)
+none
+stmt s;
+Select s such that Follows(300, s) and Parent*(310, s)
+none
+stmt s;
+Select s such that Follows(320, s) and Follows(321, s)
+none
+stmt s;
+Select s such that Parent(320, s)
+none
+stmt s;
+Select s such that Parent*(320, s)
+none
+stmt s;
+Select s such that Follows(330, s)
+none
+stmt s;
+Select s such that Follows*(330, s)
+none
+stmt s;
+Select s such that Parent(340, s)
+none
+stmt s;
+Select s such that Parent(342, s)
+none
+stmt s;
+Select s such that Parent*(340, s)
+none
+stmt s;
+Select s such that Follows(350, s)
+none
+stmt s;
+Select s such that Follows*(350, s)
+none
+stmt s;
+Select s such that Parent(360, s)
+none
+stmt s;
+Select s such that Parent*(360, s)
+none
+stmt s;
+Select s such that Follows(370, s)
+none
+stmt s;
+Select s such that Follows*(370, s)
+none
+stmt s;
+Select s such that Parent(380, s)
+none
+stmt s;
+Select s such that Parent*(380, s)
+none
+stmt s;
+Select s such that Follows(390, s)
+none
+stmt s;
+Select s such that Follows*(390, s)
+none
+stmt s;
+Select s such that Parent(400, s)
+none
+stmt s;
+Select s such that Parent*(400, s)
+none
+stmt s;
+Select s such that Parent(420, s)
+none
+stmt s;
+Select s such that Follows(430, s)
+none
+stmt s;
+Select s such that Follows(431, s)
+none
+stmt s;
+Select s such that Follows*(430, s)
+none
+stmt s;
+Select s such that Parent(440, s) and Follows(441, 442)
+none
+stmt s;
+Select s such that Parent*(450, s) and Follows*(451, s)
+none
