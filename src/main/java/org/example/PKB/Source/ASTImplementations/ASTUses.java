@@ -11,8 +11,8 @@ import java.util.logging.Logger;
 public class ASTUses implements IUses {
     private static final Logger log = Logger.getLogger(ASTUses.class.getName());
     private final IAST AST = PKB.getAST();
-    private Map<TNode, List<TNode>> variableMap = new HashMap<>();
-    private Map<TNode, List<TNode>> nodeMap = new HashMap<>();
+    private Map<TNode, List<TNode>> variableMap = new LinkedHashMap<>();
+    private Map<TNode, List<TNode>> nodeMap = new LinkedHashMap<>();
     private static IUses astUses = new ASTUses();
     private ASTUses() {
 

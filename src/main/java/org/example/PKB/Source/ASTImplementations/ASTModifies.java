@@ -9,9 +9,9 @@ import java.util.*;
 
 public class ASTModifies implements IModifies {
     private final IAST AST = PKB.getAST();
-    private Map<TNode, List<TNode>> variableStmtMap = new HashMap<>();
+    private Map<TNode, List<TNode>> variableStmtMap = new LinkedHashMap<>();
 //    private final Map<TNode, List<TNode>> variableProcMap = new HashMap<>();
-    private Map<TNode, List<TNode>> nodeMap = new HashMap<>();
+    private Map<TNode, List<TNode>> nodeMap = new LinkedHashMap<>();
     private static IModifies astModifies = new ASTModifies();
     private ASTModifies() {
         super();

@@ -6,6 +6,7 @@ import org.example.PKB.Source.ASTNode;
 import org.example.PKB.Source.NodeImplementations.*;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 
@@ -73,7 +74,7 @@ public abstract class ASTFactory extends ASTEssential {
         {
             if(!entities.containsKey(entityType))
             {
-                entities.put(entityType, new HashSet<>());
+                entities.put(entityType, new LinkedHashSet<>());
             }
             entities.get(entityType).add(node);
         }
