@@ -55,7 +55,9 @@ public class Main {
             //queryTree = preProc.parseQuery("if i;stmt s; Select i,s such that Follows (1, 2)");
             //queryTree = preProc.parseQuery("stmt s1, s2; Select s1 such that Parent* (14, s1) and Follows(s2,s1) with s2.stmt# = 15");
             //queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
-            queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
+            //queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
+            queryTree = preProc.parseQuery("stmt s; Select s such that Uses (s, \"b\")");
+
 //        } catch (InvalidQueryException e) {
 //            System.out.println(e.getMessage());
 //        }
