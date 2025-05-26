@@ -23,13 +23,13 @@ public class ASTUses implements IUses {
 
     @Override
     public void setUses(TNode procedureTNode, List<TNode> tNodeList, String variableName) {
-        log.info(procedureTNode + ":" + tNodeList + ":" + variableName);
+        log.fine(procedureTNode + ":" + tNodeList + ":" + variableName);
         throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void setUses(TNode procedureTNode, List<TNode> tNodeList, TNode variableTNode) {
-        log.info(procedureTNode + ":" + tNodeList + ":" + variableTNode);
+        log.fine(procedureTNode + ":" + tNodeList + ":" + variableTNode);
         //throw new RuntimeException("Not implemented");
     }
 

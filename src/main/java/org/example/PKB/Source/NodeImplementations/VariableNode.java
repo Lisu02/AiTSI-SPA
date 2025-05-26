@@ -1,5 +1,6 @@
 package org.example.PKB.Source.NodeImplementations;
 
+import org.example.PKB.API.Attr;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.Source.ASTNode;
 
@@ -30,4 +31,23 @@ public class VariableNode extends RefNode{
 //        if (this.getAttr() != null && that.getAttr() == null) return false;
 //        return Objects.equals(this.getAttr().getVarName(), that.getAttr().getVarName());
 //    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        VariableNode other = (VariableNode) obj;
+        String thisName = this.getAttr() != null ? this.getAttr().getVarName() : null;
+        String otherName = other.getAttr() != null ? other.getAttr().getVarName() : null;
+
+        return Objects.equals(thisName, otherName);
+    }
+
+    @Override
+    public int hashCode() {
+        String varName = getAttr() != null ? getAttr().getVarName() : null;
+        return Objects.hash(varName);
+    }
+
 }

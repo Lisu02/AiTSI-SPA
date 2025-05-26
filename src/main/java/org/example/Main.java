@@ -19,30 +19,31 @@ import java.util.logging.LogManager;
 public class Main {
 
     public static void main(String[] args) throws IOException, InvalidQueryException {
-        LogManager.getLogManager().readConfiguration(Main.class.getClassLoader().getResourceAsStream("logging.properties"));
+        //try {
+            LogManager.getLogManager().readConfiguration(Main.class.getClassLoader().getResourceAsStream("logging.properties"));
 
-        System.out.println("MAIN EMPTY");
-        Tokenizer tokenizer = Tokenizer.getInstance();
+            System.out.println("MAIN EMPTY");
+            Tokenizer tokenizer = Tokenizer.getInstance();
 
-        Parser parser = Parser.getInstance();
+            Parser parser = Parser.getInstance();
 
-        parser.getTokens(tokenizer.getTokensFromFilename("pipe-tester/SimpleCode1PK.txt"));
+            parser.getTokens(tokenizer.getTokensFromFilename("pipe-tester/SimpleCode1PK.txt"));
 
-        AbstractionExtractor ae = new AbstractionExtractor();
+            AbstractionExtractor ae = new AbstractionExtractor();
 
-        ae.generateStarterAbstractions();
+            ae.generateStarterAbstractions();
 
-        // Bierzemy instancje tokenizera oraz parsera
-        // bierzemy tokeny z pliku od użytkownika
-        // przekazujemy tokeny do parsera
-        // parser wywołuje buduje drzewo za pomoca interfejsu PKB
+            // Bierzemy instancje tokenizera oraz parsera
+            // bierzemy tokeny z pliku od użytkownika
+            // przekazujemy tokeny do parsera
+            // parser wywołuje buduje drzewo za pomoca interfejsu PKB
 
 
-        QueryTree queryTree = null;
-        PreProc preProc = new PreProc();
+            QueryTree queryTree = null;
+            PreProc preProc = new PreProc();
 
-        Evaluator evaluator = new Evaluator();
-        ResultProjector resultProjector = new ResultProjector();
+            Evaluator evaluator = new Evaluator();
+            ResultProjector resultProjector = new ResultProjector();
 //        try {
 //            queryTree = preProc.parseQuery("stmt s1,s2; assign a; Select s1, s2 such that Modifies (s1, 2) such that Calls (s1, \"Second\") with a.procName= 19");
 //            queryTree = preProc.parseQuery("stmt s1,s2,s3; procedure p; Select p, s3 such that Follows (s1,s2) such that Calls (p, \"Second\") with p.procName = \"Third\"");
@@ -51,11 +52,17 @@ public class Main {
 ////            queryTree = preProc.parseQuery("Select BOOLEAN such that Follows (10, _)");
 //            queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"a\")");
             //queryTree = preProc.parseQuery("variable v; Select v such that Modifies (6, v)");
-            queryTree = preProc.parseQuery("if i;stmt s; Select i,s such that Follows (1, 2)");
+            //queryTree = preProc.parseQuery("if i;stmt s; Select i,s such that Follows (1, 2)");
+            //queryTree = preProc.parseQuery("stmt s1, s2; Select s1 such that Parent* (14, s1) and Follows(s2,s1) with s2.stmt# = 15");
+            //queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
+            queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
 //        } catch (InvalidQueryException e) {
 //            System.out.println(e.getMessage());
 //        }
-        Set<Map<Argument,TNode>> result = evaluator.evaluateQuery(queryTree);
-        System.out.println(resultProjector.convertToString(result, queryTree.getReturnValues()));
+            Set<Map<Argument, TNode>> result = evaluator.evaluateQuery(queryTree);
+            System.out.println(resultProjector.convertToString(result, queryTree.getReturnValues()));
+//        }catch (Exception e){
+//
+//        }
     }
 }

@@ -112,7 +112,7 @@ public class Evaluator {
                 functions.getByFunction().apply(node).stream()
                         .filter(n -> arg2.getType().allows(AST.getType(n)))
                         .map(n -> {
-                            Map<Argument, TNode> map = new HashMap<>();
+                            Map<Argument, TNode> map = new LinkedHashMap<>();
                             map.put(arg1, node);
                             map.put(arg2, n);
                             return map;
@@ -123,10 +123,10 @@ public class Evaluator {
         }
         else if(isArg1Synonym) {
             for(TNode node : findTNode(arg2)) {
-                functions.getFunction().apply(node).stream()
+                functions.getFunction().apply(node).stream() //todo : tutaj -Adrian 26.05.2025 modifies debug
                         .filter(n->arg1.getType().allows(AST.getType(n)))
                         .map(n -> {
-                            Map<Argument, TNode> map = new HashMap<>();
+                            Map<Argument, TNode> map = new LinkedHashMap<>();
                             map.put(arg1, n);
                             return map;
                         })
@@ -139,7 +139,7 @@ public class Evaluator {
                 functions.getByFunction().apply(node).stream()
                         .filter(n->arg2.getType().allows(AST.getType(n)))
                         .map(n -> {
-                            Map<Argument, TNode> map = new HashMap<>();
+                            Map<Argument, TNode> map = new LinkedHashMap<>();
                             map.put(arg2, n);
                             return map;
                         })
@@ -154,7 +154,7 @@ public class Evaluator {
             for(Argument arg : returnValues) {
                 mergeResults(findTNode(arg).stream()
                         .map(node -> {
-                            Map<Argument, TNode> map = new HashMap<>();
+                            Map<Argument, TNode> map = new LinkedHashMap<>();
                             map.put(arg, node);
                             return map;})
                         .collect(Collectors.toSet()));
@@ -210,11 +210,11 @@ public class Evaluator {
                 Iterator<Map<Argument, TNode>> iterator = newNodes.iterator();
                 if (!iterator.hasNext()) continue;
 
-                Map<Argument, TNode> first = new HashMap<>(iterator.next());
+                Map<Argument, TNode> first = new LinkedHashMap<>(iterator.next());
                 row.putAll(first);
 
                 while (iterator.hasNext()) {
-                    Map<Argument, TNode> next = new HashMap<>(row);
+                    Map<Argument, TNode> next = new LinkedHashMap<>(row);
                     next.putAll(iterator.next());
                     newRows.add(next);
                 }

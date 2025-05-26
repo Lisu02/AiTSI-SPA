@@ -38,10 +38,12 @@ public class ASTModifies implements IModifies {
         add(procedureNode,variableNode,nodeMap);
     }
     private void add(TNode keyNode, TNode valueNode, Map<TNode, List<TNode>> map) {
-        if(map.containsKey(keyNode) && !map.get(keyNode).contains(valueNode)) {
+        if(map.containsKey(keyNode) && !map.get(keyNode).contains(valueNode)) { //todo: fix
             map.get(keyNode).add(valueNode);
-        }
-        else {
+        } else if (map.get(keyNode) != null && map.get(keyNode).contains(valueNode)) {
+            //ignore a value that's already added | Set in favour of list?
+            System.out.println("jest");
+        } else {
             map.put(keyNode,new ArrayList<>(Collections.singletonList(valueNode)));
         }
     }

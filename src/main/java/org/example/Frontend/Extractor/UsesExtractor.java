@@ -75,7 +75,7 @@ public class UsesExtractor {
                     Integer.parseInt(iast.getAttr(leftVarNode).getVarName());
                 }catch (NumberFormatException e) {
                     iUses.setUses(tNodeProcedure,tNodeStack,leftVarNode); // Adding right side variable node
-                    log.info("Mam nazwe zmiennej nie liczba git!");
+                    log.fine("Mam nazwe zmiennej nie liczba git!");
                 }
             }
         }
@@ -85,7 +85,7 @@ public class UsesExtractor {
                     Integer.parseInt(iast.getAttr(currentTNode).getVarName());
                 }catch (NumberFormatException e) {
                     iUses.setUses(tNodeProcedure,tNodeStack,currentTNode); // Adding right side variable node
-                    log.info("Mam nazwe zmiennej nie liczba git!");
+                    log.fine("Mam nazwe zmiennej nie liczba git!");
                 }
             }else {
                 traverseAssignForUses(tNodeProcedure,currentTNode,tNodeStack);
