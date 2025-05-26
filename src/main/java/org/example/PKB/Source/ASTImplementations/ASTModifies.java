@@ -37,6 +37,21 @@ public class ASTModifies implements IModifies {
         add(stmtNode,variableNode,nodeMap);
         add(procedureNode,variableNode,nodeMap);
     }
+
+    @Override
+    public void addModifies(TNode procedureNode, List<TNode> tNodeList, TNode variableNode) {
+
+        add(variableNode,procedureNode,variableStmtMap);
+        for(TNode valueTNode: tNodeList){
+            add(variableNode,valueTNode,variableStmtMap);
+        }
+
+        add(procedureNode,variableNode,nodeMap);
+        for(TNode valueTNode: tNodeList){
+            add(valueTNode,variableNode,nodeMap);
+        }
+    }
+
     private void add(TNode keyNode, TNode valueNode, Map<TNode, List<TNode>> map) {
         if(map.containsKey(keyNode) && !map.get(keyNode).contains(valueNode)) { //todo: fix
             map.get(keyNode).add(valueNode);

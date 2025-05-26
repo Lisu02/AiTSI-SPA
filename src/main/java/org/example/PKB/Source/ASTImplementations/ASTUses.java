@@ -41,7 +41,6 @@ public class ASTUses implements IUses {
             add(valueTNode,variableTNode,nodeMap);
         }
 
-        //throw new RuntimeException("Not implemented");
     }
 
 

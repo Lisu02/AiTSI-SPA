@@ -48,7 +48,7 @@
         log.info("Amount of detected procedures -> {" + procedureList + "}\n");
 
         for(TNode procedureNode: procedureList){
-            modifiesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode));
+            modifiesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
             usesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
         }
     }

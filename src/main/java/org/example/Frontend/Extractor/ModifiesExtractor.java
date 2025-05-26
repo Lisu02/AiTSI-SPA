@@ -2,6 +2,7 @@ package org.example.Frontend.Extractor;
 
 import org.example.PKB.API.*;
 
+import java.util.Stack;
 import java.util.logging.Logger;
 
 public class ModifiesExtractor {
@@ -15,7 +16,10 @@ public class ModifiesExtractor {
         this.iModifies = iModifies;
     }
 
-    public void extract(TNode tNodeProcedure, TNode stmtListTNode){
+    public void extract(TNode tNodeProcedure, TNode stmtListTNode,Stack<TNode> tNodeStack){
+        if(tNodeStack == null){
+            tNodeStack = new Stack<>();
+        }
         TNode stmtNode = iast.getFirstChild(stmtListTNode);
         TNode variableNode;
 
@@ -23,22 +27,28 @@ public class ModifiesExtractor {
             EntityType stmtType = iast.getType(stmtNode);
             switch (stmtType){
                 case ASSIGN: {
+                    tNodeStack.push(stmtNode);
                     variableNode = iast.getFirstChild(stmtNode);
                     log.info("Modifies line "+iast.getAttr(stmtNode).getLine()+" : " + variableNode.toString() + " and " + stmtNode.toString());
                     log.info(iast.getAttr(variableNode).getVarName());
-                    iModifies.addModifies(tNodeProcedure,stmtNode,variableNode);
+                    iModifies.addModifies(tNodeProcedure,tNodeStack,variableNode); //todo: zmienic modifies na List<TNode>
+                    tNodeStack.pop();
                     break;
                 }
                 case WHILE: {
+                    tNodeStack.push(stmtNode);
                     TNode tmp = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode)); // variable(warunek) -> stmt
-                    extract(tNodeProcedure,tmp);// while -> stmtList do metody
+                    extract(tNodeProcedure,tmp,tNodeStack);// while -> stmtList do metody
+                    tNodeStack.pop();
                     break;
                 }
                 case IF: {
+                    tNodeStack.push(stmtNode);
                     TNode tmp = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode));
-                    extract(tNodeProcedure,tmp); // for if stmtList
+                    extract(tNodeProcedure,tmp,tNodeStack); // for if stmtList
                     tmp = iast.getLinkedNode(LinkType.RightSibling,tmp);
-                    extract(tNodeProcedure,tmp); // for else stmtList
+                    extract(tNodeProcedure,tmp,tNodeStack); // for else stmtList
+                    tNodeStack.pop();
                     break;
                 }
             }
