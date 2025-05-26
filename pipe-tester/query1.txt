@@ -80,7 +80,7 @@ stmt s;
 Select BOOLEAN such that Follows* (10, s)
 false
 stmt s1, s2;
-Select s1 such that Parent* (14, s1) and Follows(s2,s1)
+Select s1 such that Parent* (14, s1) and Follows(s2,s1) with s2.stmt# = 15
 18
 stmt s1, s2;
 Select <s2, s1> such that Parent* (14, s1) and Follows(s2,s1)

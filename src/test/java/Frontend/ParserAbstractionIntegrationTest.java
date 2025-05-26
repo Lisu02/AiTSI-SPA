@@ -1,5 +1,6 @@
 package Frontend;
 
+import org.example.Frontend.AbstractionExtractor;
 import org.example.Frontend.Parser;
 import org.example.Frontend.Tokenizer;
 import org.junit.jupiter.api.Assertions;
@@ -21,6 +22,9 @@ public class ParserAbstractionIntegrationTest {
 
         parser.getTokens(tokenList);
 
+        AbstractionExtractor ae = new AbstractionExtractor();
+
+        ae.generateStarterAbstractions();
         System.out.println("Koniec");
         Logger log = Logger.getLogger(this.getClass().getName());
 
