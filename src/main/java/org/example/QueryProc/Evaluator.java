@@ -14,19 +14,19 @@ import java.util.stream.Collectors;
 
 public class Evaluator {
     private static final IAST AST = PKB.getAST();
-    private final Set<Map<Argument, TNode>> finalResult = new HashSet<>();
+    private final Set<Map<Argument, TNode>> finalResult = new LinkedHashSet<>();
     public Set<Map<Argument,TNode>> evaluateQuery(QueryTree queryTree) {
         finalResult.clear();
 
         for(Relation relation : queryTree.getRelations()) {
             if(!evaluateRelation(relation,queryTree.getSynonyms(), queryTree.getReturnValues())) {
-                return new HashSet<>();
+                return new LinkedHashSet<>();
             }
         }
 
         for( WithStatement statement : queryTree.getWithStatements()) {
             if(!evaluateWith(statement)) {
-                return new HashSet<>();
+                return new LinkedHashSet<>();
             }
         }
 
@@ -62,7 +62,7 @@ public class Evaluator {
            evaluateWith(statement);
         }
         List<Argument> returnValues = queryTree.getReturnValues();
-        Set<String> results = new HashSet<>();
+        Set<String> results = new LinkedHashSet<>();
         if(queryTree.isBoolean()==false)
         {
             for (Map<Argument, TNode> mapping : finalResult) {
@@ -106,7 +106,7 @@ public class Evaluator {
         boolean isArg1Synonym = synonyms.contains(arg1);
         boolean isArg2Synonym = synonyms.contains(arg2);
 
-        Set<Map<Argument,TNode>> result = new HashSet<>();
+        Set<Map<Argument,TNode>> result = new LinkedHashSet<>();
         if(isArg1Synonym && isArg2Synonym) {
             for(TNode node : findTNode(arg1) ) {
                 functions.getByFunction().apply(node).stream()
@@ -191,7 +191,7 @@ public class Evaluator {
             ));
         }
         else if(!Collections.disjoint(resultKeys, newKeys)) {
-            Set<Map<Argument, TNode>> toDelete = new HashSet<>();
+            Set<Map<Argument, TNode>> toDelete = new LinkedHashSet<>();
             for (Map<Argument, TNode> row : finalResult) {
 
                 for (Map<Argument, TNode> next : newNodes) {
@@ -205,7 +205,7 @@ public class Evaluator {
             toDelete.forEach(finalResult::remove);
         }
         else {
-            Set<Map<Argument, TNode>> newRows = new HashSet<>();
+            Set<Map<Argument, TNode>> newRows = new LinkedHashSet<>();
             for (Map<Argument, TNode> row : finalResult) {
                 Iterator<Map<Argument, TNode>> iterator = newNodes.iterator();
                 if (!iterator.hasNext()) continue;

@@ -61,7 +61,7 @@ public class PreProc {
         return bodyElements;
     }
     private Map<String,EntityType> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
-        Map<String,EntityType> synonyms = new HashMap<>();
+        Map<String,EntityType> synonyms = new LinkedHashMap<>();
         for(String element : queryArguments) {
             String[] tmp = Arrays.stream(element
                             .split("[ ,]"))
