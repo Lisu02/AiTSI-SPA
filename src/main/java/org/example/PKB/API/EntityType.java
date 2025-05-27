@@ -26,7 +26,7 @@ public enum EntityType {
     BLANK,
     PROG_LINE;
     private static final Set<EntityType> STMT_TYPES = Collections.unmodifiableSet(
-            new HashSet<>(Arrays.asList(EntityType.IF, EntityType.ASSIGN, EntityType.WHILE))
+            new HashSet<>(Arrays.asList(EntityType.IF, EntityType.ASSIGN, EntityType.WHILE, EntityType.CALL, EntityType.PROG_LINE))
     );
     public boolean allows(EntityType type) {
         return this == type || (this == EntityType.STMT && STMT_TYPES.contains(type));

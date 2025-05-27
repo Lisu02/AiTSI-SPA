@@ -27,7 +27,9 @@ public class Main {
 
             Parser parser = Parser.getInstance();
 
-            parser.getTokens(tokenizer.getTokensFromFilename("pipe-tester/SimpleCode1PK.txt"));
+            //parser.getTokens(tokenizer.getTokensFromFilename("pipe-tester/SimpleCode1PK.txt"));
+
+            parser.getTokens(tokenizer.getTokensFromFilename("jarzabek.txt"));
 
             AbstractionExtractor ae = new AbstractionExtractor();
 
@@ -55,7 +57,8 @@ public class Main {
             //queryTree = preProc.parseQuery("if i;stmt s; Select i,s such that Follows (1, 2)");
             //queryTree = preProc.parseQuery("stmt s1, s2; Select s1 such that Parent* (14, s1) and Follows(s2,s1) with s2.stmt# = 15");
             //queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
-            queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
+            //queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
+            queryTree = preProc.parseQuery("stmt s; Select s such that Follows*(1, s)"); // 2, 3, 4, 5, 6, 119
             //queryTree = preProc.parseQuery("stmt s; Select s such that Uses (s, \"b\")");
 
 //        } catch (InvalidQueryException e) {

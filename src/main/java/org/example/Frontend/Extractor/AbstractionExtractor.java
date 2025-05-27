@@ -51,7 +51,7 @@
             modifiesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
             usesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
 
-            callsExtractor.extract(procedureNode,iast.getFirstChild(procedureNode));
+            //callsExtractor.extract(procedureNode,iast.getFirstChild(procedureNode));
         }
     }
 

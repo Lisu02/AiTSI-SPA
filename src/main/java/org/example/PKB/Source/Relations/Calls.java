@@ -35,7 +35,7 @@ public class Calls implements ICalls {
     public void setCalls(TNode node, TNode calls) throws RelationException {
         if(!(node instanceof ProcedureNode) || !(calls instanceof ProcedureNode))
             throw new RelationException("Incorrect nodes for Calls relation");
-        Set<TNode> nodes;
+        Set<TNode> nodes; //todo: null ptr exception kiedy to jest inicjalizowane? -Adrian 27.05.2025
         if(!this.calls.containsKey(node))
         {
             nodes = this.calls.put(node, new HashSet<>());

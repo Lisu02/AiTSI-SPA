@@ -147,16 +147,28 @@ public class Parser {
 
     private TNode callStmt() {
         TNode proc;
+        TNode call;
         checkToken("call");
-        proc= iast.createTNode(EntityType.CALL);
+        call= iast.createTNode(EntityType.CALL);
         checkToken("NAME");
         Attr at=new Attr();
         at.setLine(statementNumber);
         at.setProcName(nextToken);
-        iast.setAttr(proc,at);
+        iast.setAttr(call,at);
+        proc = iast.createTNode(EntityType.PROCEDURE);
+        Attr atProc = new Attr();
+        atProc.setLine(-1); //todo tu nie ma być -1 poźniej -Adrian 27.05.2025
+        atProc.setProcName(nextToken);
+        iast.setAttr(proc,atProc);
+        try{
+            iast.setParentChildLink(call,proc);
+        } catch (ASTBuildException e) {
+            System.out.println("PARSER 166 LINE OF CODE " + e.getMessage());
+        }
+
         nextToken=tokenIterator.next();
         checkToken(";");
-        return proc;
+        return call;
     }
 
     private TNode ifStmt() {
