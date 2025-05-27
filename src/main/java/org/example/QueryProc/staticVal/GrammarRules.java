@@ -92,7 +92,9 @@ public class GrammarRules {
                     EntityType.ASSIGN,
                     EntityType.IF,
                     EntityType.WHILE,
-                    EntityType.VARIABLE
+                    EntityType.VARIABLE,
+                    EntityType.CALL,
+                    EntityType.PROG_LINE
             ))
     );
 

@@ -1,6 +1,5 @@
 package org.example.QueryProc;
 
-import org.example.Exceptions.SolutionDoesNotExist;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.IAST;
 import org.example.PKB.API.PKB;
@@ -17,6 +16,17 @@ public class Evaluator {
     private final Set<Map<Argument, TNode>> finalResult = new LinkedHashSet<>();
     public Set<Map<Argument,TNode>> evaluateQuery(QueryTree queryTree) {
         finalResult.clear();
+//        System.out.println(AST.getNodesOfEntityTypes(queryTree.getReturnValues().get(0).getType()));
+        for(Argument arg : queryTree.getReturnValues()) {
+//            System.out.println(findTNode(arg));
+            mergeResults(findTNode(arg).stream()
+                    .map(node -> {
+                        Map<Argument, TNode> map = new LinkedHashMap<>();
+                        map.put(arg, node);
+                        return map;})
+                    .collect(Collectors.toSet()));
+        }
+        //return finalResult;
 
         for(Relation relation : queryTree.getRelations()) {
             if(!evaluateRelation(relation,queryTree.getSynonyms(), queryTree.getReturnValues())) {
@@ -47,56 +57,6 @@ public class Evaluator {
             }
         }
         return true;
-    }
-    public void evaluateQueryPipeTester(QueryTree queryTree) throws SolutionDoesNotExist {
-        //Set<Map<Argument,TNode>> finalResult = new HashSet<>();
-        finalResult.clear();
-
-        for(Relation relation : queryTree.getRelations()) {
-//            if(!evaluateRelation(relation,queryTree.getSynonyms())) {
-//              throw new SolutionDoesNotExist();
-//            }
-        }
-
-        for( WithStatement statement : queryTree.getWithStatements()) {
-           evaluateWith(statement);
-        }
-        List<Argument> returnValues = queryTree.getReturnValues();
-        Set<String> results = new LinkedHashSet<>();
-        if(queryTree.isBoolean()==false)
-        {
-            for (Map<Argument, TNode> mapping : finalResult) {
-                boolean allPresent = returnValues.stream().allMatch(mapping::containsKey);
-                if (!allPresent) {
-                    continue;
-                }
-
-                StringBuilder resultLine = new StringBuilder();
-                for (int i = 0; i < returnValues.size(); i++) {
-                    Argument arg = returnValues.get(i);
-                    TNode node = mapping.get(arg);
-                    if(AST.getType(node)==EntityType.VARIABLE)
-                    {
-                        resultLine.append(AST.getAttr(node).getVarName());
-                    }
-                    else {
-                        resultLine.append(AST.getAttr(node).getLine());
-                    }
-
-                    if (i < returnValues.size() - 1) {
-                        resultLine.append(" ");
-                    }
-                }
-                results.add(resultLine.toString());
-            }
-            System.out.println(String.join(",", results));
-        }
-        else
-        {
-            System.out.println("true");
-        }
-
-
     }
     private boolean evaluateRelation(Relation relation, Set<Argument> synonyms, List<Argument> returnValues) {
         RelationFunctions functions = GrammarRules.RELATION_FUNCTIONS.get(relation.getName());
@@ -151,14 +111,14 @@ public class Evaluator {
             if(!doesSolutionExist(arg1,arg2,functions.getIsFunction())) {
                 return false;
             }
-            for(Argument arg : returnValues) {
-                mergeResults(findTNode(arg).stream()
-                        .map(node -> {
-                            Map<Argument, TNode> map = new LinkedHashMap<>();
-                            map.put(arg, node);
-                            return map;})
-                        .collect(Collectors.toSet()));
-            }
+//            for(Argument arg : returnValues) {
+//                mergeResults(findTNode(arg).stream()
+//                        .map(node -> {
+//                            Map<Argument, TNode> map = new LinkedHashMap<>();
+//                            map.put(arg, node);
+//                            return map;})
+//                        .collect(Collectors.toSet()));
+//            }
 //            if(arg1.getName().equals("_") && arg2.getName().equals("_") && finalResult.isEmpty()) {
 //                Argument key = synonyms.iterator().next();
 //                AST.getNodesOfEntityTypes(key.getType()).stream()
