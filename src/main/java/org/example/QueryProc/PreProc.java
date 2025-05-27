@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 
 public class PreProc {
     public QueryTree parseQuery(String query) throws InvalidQueryException {
+        if(query.contains("pattern") || query.contains("Pattern")) {
+            throw new InvalidQueryException("Pattern not implemented");
+        }
+
         List<String> elements = new ArrayList<>(Arrays.asList(query.split(";")));
 
         List<String> args = elements.subList(0,elements.size()-1);
@@ -95,6 +99,10 @@ public class PreProc {
     private ReturnDesc determineReturnValues(String returnBody,  Map<String,EntityType> synonyms) throws InvalidQueryException {
         returnBody = returnBody.replace("<","");
         returnBody = returnBody.replace(">","");
+        returnBody = returnBody.replace(".stmt#","");
+        returnBody = returnBody.replace(".procName","");
+        returnBody = returnBody.replace(".varName","");
+        returnBody = returnBody.replace(".value","");
 
         String[] returnElements = Arrays.stream(returnBody
                         .split("[ ,]"))
