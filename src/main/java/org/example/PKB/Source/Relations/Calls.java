@@ -10,17 +10,24 @@ import java.util.*;
 
 public class Calls implements ICalls {
 
+    private static Calls instance = new Calls();
+
+
+
     private Map<TNode, Set<TNode>> calls;
     private Map<TNode, Set<TNode>> calledBy;
-
     private Map<TNode, Set<TNode>> callsAstra;
     private Map<TNode, Set<TNode>> calledByAstra;
 
-    public Calls() {
-        calls = new HashMap<>();
-        calledBy = new HashMap<>();
-        calledByAstra = new HashMap<>();
-        callsAstra = new HashMap<>();
+    private Calls() {
+        calls = new LinkedHashMap<>();
+        calledBy = new LinkedHashMap<>();
+        calledByAstra = new LinkedHashMap<>();
+        callsAstra = new LinkedHashMap<>();
+    }
+
+    public static Calls getInstance(){
+        return instance;
     }
 
 
