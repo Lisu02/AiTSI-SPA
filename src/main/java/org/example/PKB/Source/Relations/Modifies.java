@@ -25,6 +25,11 @@ public class Modifies implements IModifies {
     }
 
     @Override
+    public void addModifies(TNode procedureNode, List<TNode> tNodeList, TNode variableNode) {
+
+    }
+
+    @Override
     public List<TNode> getModifies(TNode node) {
         return Collections.emptyList();
     }

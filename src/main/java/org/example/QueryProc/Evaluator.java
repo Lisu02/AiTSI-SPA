@@ -1,6 +1,5 @@
 package org.example.QueryProc;
 
-import org.example.Exceptions.SolutionDoesNotExist;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.IAST;
 import org.example.PKB.API.PKB;
@@ -17,6 +16,17 @@ public class Evaluator {
     private final Set<Map<Argument, TNode>> finalResult = new LinkedHashSet<>();
     public Set<Map<Argument,TNode>> evaluateQuery(QueryTree queryTree) {
         finalResult.clear();
+//        System.out.println(AST.getNodesOfEntityTypes(queryTree.getReturnValues().get(0).getType()));
+        for(Argument arg : queryTree.getReturnValues()) {
+//            System.out.println(findTNode(arg));
+            mergeResults(findTNode(arg).stream()
+                    .map(node -> {
+                        Map<Argument, TNode> map = new LinkedHashMap<>();
+                        map.put(arg, node);
+                        return map;})
+                    .collect(Collectors.toSet()));
+        }
+        //return finalResult;
 
         for(Relation relation : queryTree.getRelations()) {
             if(!evaluateRelation(relation,queryTree.getSynonyms(), queryTree.getReturnValues())) {
@@ -48,56 +58,6 @@ public class Evaluator {
         }
         return true;
     }
-    public void evaluateQueryPipeTester(QueryTree queryTree) throws SolutionDoesNotExist {
-        //Set<Map<Argument,TNode>> finalResult = new HashSet<>();
-        finalResult.clear();
-
-        for(Relation relation : queryTree.getRelations()) {
-//            if(!evaluateRelation(relation,queryTree.getSynonyms())) {
-//              throw new SolutionDoesNotExist();
-//            }
-        }
-
-        for( WithStatement statement : queryTree.getWithStatements()) {
-           evaluateWith(statement);
-        }
-        List<Argument> returnValues = queryTree.getReturnValues();
-        Set<String> results = new LinkedHashSet<>();
-        if(queryTree.isBoolean()==false)
-        {
-            for (Map<Argument, TNode> mapping : finalResult) {
-                boolean allPresent = returnValues.stream().allMatch(mapping::containsKey);
-                if (!allPresent) {
-                    continue;
-                }
-
-                StringBuilder resultLine = new StringBuilder();
-                for (int i = 0; i < returnValues.size(); i++) {
-                    Argument arg = returnValues.get(i);
-                    TNode node = mapping.get(arg);
-                    if(AST.getType(node)==EntityType.VARIABLE)
-                    {
-                        resultLine.append(AST.getAttr(node).getVarName());
-                    }
-                    else {
-                        resultLine.append(AST.getAttr(node).getLine());
-                    }
-
-                    if (i < returnValues.size() - 1) {
-                        resultLine.append(" ");
-                    }
-                }
-                results.add(resultLine.toString());
-            }
-            System.out.println(String.join(",", results));
-        }
-        else
-        {
-            System.out.println("true");
-        }
-
-
-    }
     private boolean evaluateRelation(Relation relation, Set<Argument> synonyms, List<Argument> returnValues) {
         RelationFunctions functions = GrammarRules.RELATION_FUNCTIONS.get(relation.getName());
 
@@ -112,7 +72,7 @@ public class Evaluator {
                 functions.getByFunction().apply(node).stream()
                         .filter(n -> arg2.getType().allows(AST.getType(n)))
                         .map(n -> {
-                            Map<Argument, TNode> map = new HashMap<>();
+                            Map<Argument, TNode> map = new LinkedHashMap<>();
                             map.put(arg1, node);
                             map.put(arg2, n);
                             return map;
@@ -123,10 +83,10 @@ public class Evaluator {
         }
         else if(isArg1Synonym) {
             for(TNode node : findTNode(arg2)) {
-                functions.getFunction().apply(node).stream()
+                functions.getFunction().apply(node).stream() //todo : tutaj -Adrian 26.05.2025 modifies debug
                         .filter(n->arg1.getType().allows(AST.getType(n)))
                         .map(n -> {
-                            Map<Argument, TNode> map = new HashMap<>();
+                            Map<Argument, TNode> map = new LinkedHashMap<>();
                             map.put(arg1, n);
                             return map;
                         })
@@ -139,7 +99,7 @@ public class Evaluator {
                 functions.getByFunction().apply(node).stream()
                         .filter(n->arg2.getType().allows(AST.getType(n)))
                         .map(n -> {
-                            Map<Argument, TNode> map = new HashMap<>();
+                            Map<Argument, TNode> map = new LinkedHashMap<>();
                             map.put(arg2, n);
                             return map;
                         })
@@ -151,14 +111,14 @@ public class Evaluator {
             if(!doesSolutionExist(arg1,arg2,functions.getIsFunction())) {
                 return false;
             }
-            for(Argument arg : returnValues) {
-                mergeResults(findTNode(arg).stream()
-                        .map(node -> {
-                            Map<Argument, TNode> map = new HashMap<>();
-                            map.put(arg, node);
-                            return map;})
-                        .collect(Collectors.toSet()));
-            }
+//            for(Argument arg : returnValues) {
+//                mergeResults(findTNode(arg).stream()
+//                        .map(node -> {
+//                            Map<Argument, TNode> map = new LinkedHashMap<>();
+//                            map.put(arg, node);
+//                            return map;})
+//                        .collect(Collectors.toSet()));
+//            }
 //            if(arg1.getName().equals("_") && arg2.getName().equals("_") && finalResult.isEmpty()) {
 //                Argument key = synonyms.iterator().next();
 //                AST.getNodesOfEntityTypes(key.getType()).stream()
@@ -210,11 +170,11 @@ public class Evaluator {
                 Iterator<Map<Argument, TNode>> iterator = newNodes.iterator();
                 if (!iterator.hasNext()) continue;
 
-                Map<Argument, TNode> first = new HashMap<>(iterator.next());
+                Map<Argument, TNode> first = new LinkedHashMap<>(iterator.next());
                 row.putAll(first);
 
                 while (iterator.hasNext()) {
-                    Map<Argument, TNode> next = new HashMap<>(row);
+                    Map<Argument, TNode> next = new LinkedHashMap<>(row);
                     next.putAll(iterator.next());
                     newRows.add(next);
                 }

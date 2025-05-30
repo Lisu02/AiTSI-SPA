@@ -10,17 +10,24 @@ import java.util.*;
 
 public class Calls implements ICalls {
 
+    private static Calls instance = new Calls();
+
+
+
     private Map<TNode, Set<TNode>> calls;
     private Map<TNode, Set<TNode>> calledBy;
-
     private Map<TNode, Set<TNode>> callsAstra;
     private Map<TNode, Set<TNode>> calledByAstra;
 
-    public Calls() {
-        calls = new HashMap<>();
-        calledBy = new HashMap<>();
-        calledByAstra = new HashMap<>();
-        callsAstra = new HashMap<>();
+    private Calls() {
+        calls = new LinkedHashMap<>();
+        calledBy = new LinkedHashMap<>();
+        calledByAstra = new LinkedHashMap<>();
+        callsAstra = new LinkedHashMap<>();
+    }
+
+    public static Calls getInstance(){
+        return instance;
     }
 
 
@@ -28,7 +35,7 @@ public class Calls implements ICalls {
     public void setCalls(TNode node, TNode calls) throws RelationException {
         if(!(node instanceof ProcedureNode) || !(calls instanceof ProcedureNode))
             throw new RelationException("Incorrect nodes for Calls relation");
-        Set<TNode> nodes;
+        Set<TNode> nodes; //todo: null ptr exception kiedy to jest inicjalizowane? -Adrian 27.05.2025
         if(!this.calls.containsKey(node))
         {
             nodes = this.calls.put(node, new HashSet<>());

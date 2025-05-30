@@ -39,7 +39,7 @@ public class Tokenizer {
                 List<String> slicedWords = sliceWord(word);
                 tokenArrayList.addAll(slicedWords);
             } else if (isCalls && word.lastIndexOf(';') != -1) {
-                tokenArrayList.add(word.replace(";",""));
+                tokenArrayList.add(word.replace(";","")); //calls(triangle);
                 tokenArrayList.add(";");
             } else {
                 tokenArrayList.add(word);

@@ -11,7 +11,7 @@ public class PKB {
 
     private static IVarTable varTable = new VarTable();
     private static IAST ast = new AST();
-    private static ICalls calls = new Calls();
+    private static ICalls calls = Calls.getInstance();
     private static IModifies modifies;
     private static IUses uses = new Uses();
     private static INext next = new Next();

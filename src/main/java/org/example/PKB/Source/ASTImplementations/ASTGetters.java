@@ -5,6 +5,7 @@ import org.example.PKB.API.EntityType;
 import org.example.PKB.API.TNode;
 import org.example.PKB.Source.ASTNode;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public abstract class ASTGetters extends ASTFactory {
@@ -15,7 +16,10 @@ public abstract class ASTGetters extends ASTFactory {
 
     public EntityType getType(TNode node)
     {
-//        System.out.println(node);
+        if(node == null) {
+            System.out.println(node);
+        }
+//
         ASTNode astNode = (ASTNode) node;
         return astNode.getEntityType();
     }
@@ -28,6 +32,8 @@ public abstract class ASTGetters extends ASTFactory {
 
     public Set<TNode> getNodesOfEntityTypes(EntityType et)
     {
-        return entities.get(et);
+        Set<TNode> entitySet = entities.get(et);
+        return entitySet == null ? new HashSet<>() : entitySet;
+//        return entities.get(et);
     }
 }

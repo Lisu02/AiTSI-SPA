@@ -3,10 +3,10 @@
     import org.example.PKB.API.*;
     import org.example.PKB.Source.ASTImplementations.ASTModifies;
     import org.example.PKB.Source.ASTImplementations.ASTUses;
+    import org.example.PKB.Source.Relations.Calls;
 
     import java.util.ArrayList;
     import java.util.List;
-    import java.util.Stack;
     import java.util.logging.Logger;
 
     public class AbstractionExtractor {
@@ -20,7 +20,7 @@
         private CallsExtractor callsExtractor;
 
         public AbstractionExtractor(){
-            this(PKB.getAST(),ASTModifies.getInstance(),ASTUses.getInstance(),null); //temporary null for calls implementation
+            this(PKB.getAST(),ASTModifies.getInstance(),ASTUses.getInstance(), Calls.getInstance()); //temporary null for calls implementation
         }
         public AbstractionExtractor(IAST iast){
             this(iast,ASTModifies.getInstance(),ASTUses.getInstance(),null);
@@ -46,10 +46,12 @@
             procedureList.add(currentNode);
         }
         log.info("Amount of detected procedures -> {" + procedureList + "}\n");
-
+        callsExtractor.provide(procedureList);
         for(TNode procedureNode: procedureList){
-            modifiesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode));
+            modifiesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
             usesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
+
+            //callsExtractor.extract(procedureNode,iast.getFirstChild(procedureNode));
         }
     }
 

@@ -23,15 +23,26 @@ public class ASTUses implements IUses {
 
     @Override
     public void setUses(TNode procedureTNode, List<TNode> tNodeList, String variableName) {
-        log.info(procedureTNode + ":" + tNodeList + ":" + variableName);
+        log.fine(procedureTNode + ":" + tNodeList + ":" + variableName);
         throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void setUses(TNode procedureTNode, List<TNode> tNodeList, TNode variableTNode) {
-        log.info(procedureTNode + ":" + tNodeList + ":" + variableTNode);
-        //throw new RuntimeException("Not implemented");
+        log.fine(procedureTNode + ":" + tNodeList + ":" + variableTNode);
+
+        add(variableTNode,procedureTNode,variableMap);
+        for(TNode valueTNode: tNodeList){
+            add(variableTNode,valueTNode,variableMap);
+        }
+
+        add(procedureTNode,variableTNode,nodeMap);
+        for(TNode valueTNode: tNodeList){
+            add(valueTNode,variableTNode,nodeMap);
+        }
+
     }
+
 
     @Override
     public void setUses(TNode node, String value) {
@@ -56,8 +67,9 @@ public class ASTUses implements IUses {
     private void add(TNode keyNode, TNode valueNode, Map<TNode, List<TNode>> map) {
         if(map.containsKey(keyNode) && !map.get(keyNode).contains(valueNode)) {
             map.get(keyNode).add(valueNode);
-        }
-        else {
+        } else if (map.get(keyNode) != null && map.get(keyNode).contains(valueNode) ) {
+            // skip nic nie robic
+        } else {
             map.put(keyNode, new ArrayList<>(Collections.singletonList(valueNode)));
         }
     }
