@@ -3,7 +3,6 @@ package org.example.PKB.Source.Relations;
 import org.example.Exceptions.RelationException;
 import org.example.PKB.API.ICalls;
 import org.example.PKB.API.TNode;
-import org.example.PKB.Source.NodeImplementations.CallNode;
 import org.example.PKB.Source.NodeImplementations.ProcedureNode;
 
 import java.util.*;
@@ -11,8 +10,6 @@ import java.util.*;
 public class Calls implements ICalls {
 
     private static Calls instance = new Calls();
-
-
 
     private Map<TNode, Set<TNode>> calls;
     private Map<TNode, Set<TNode>> calledBy;

@@ -3,6 +3,7 @@ package org.example.QueryProc.staticVal;
 import org.example.PKB.API.*;
 import org.example.PKB.Source.ASTImplementations.ASTModifies;
 import org.example.PKB.Source.ASTImplementations.ASTUses;
+import org.example.PKB.Source.Relations.Calls;
 import org.example.QueryProc.model.ArgumentDefinition;
 import org.example.QueryProc.model.RelationFunctions;
 
@@ -12,6 +13,8 @@ public class GrammarRules {
     private static IAST IAST = PKB.getAST();
     private final static IModifies modifiesInterface = ASTModifies.getInstance();
     private final static IUses usesInterface = ASTUses.getInstance();
+    private final static ICalls callsInterface = Calls.getInstance();
+    private final static INext nextInterface = PKB.getNext();
     private static final List<String> STATEMENT_TYPES = Collections.unmodifiableList(
             Arrays.asList("stmt", "assign", "call", "while", "if", "blank", "integer", "prog_line")
     );
@@ -39,6 +42,8 @@ public class GrammarRules {
         relDefs.put("Uses*", new ArgumentDefinition(ALL_TYPES, VARIABLE_TYPES, EntityType.VARIABLE));
         relDefs.put("Calls", new ArgumentDefinition(PROCEDURE_TYPES, PROCEDURE_TYPES, EntityType.PROCEDURE));
         relDefs.put("Calls*", new ArgumentDefinition(PROCEDURE_TYPES, PROCEDURE_TYPES, EntityType.PROCEDURE));
+        relDefs.put("Next", new ArgumentDefinition(STATEMENT_TYPES, STATEMENT_TYPES, EntityType.STMT));
+        relDefs.put("Next*", new ArgumentDefinition(STATEMENT_TYPES, STATEMENT_TYPES, EntityType.STMT));
         RELATION_DEFINITIONS = Collections.unmodifiableMap(relDefs);
     }
 
@@ -80,6 +85,26 @@ public class GrammarRules {
                 usesInterface::getUses,
                 usesInterface::getUsedBy,
                 usesInterface::isUsing
+        ));
+        relFuncs.put("Calls", new RelationFunctions(
+                callsInterface::getCalls,
+                callsInterface::getCalledBy,
+                callsInterface::isCalls
+        ));
+        relFuncs.put("Calls*", new RelationFunctions(
+                callsInterface::getCallsAstra,
+                callsInterface::getCalledByAstra,
+                callsInterface::isCallsAstra
+        ));
+        relFuncs.put("Next", new RelationFunctions(
+                nextInterface::getNext,
+                nextInterface::getPrevious,
+                nextInterface::isNext
+        ));
+        relFuncs.put("Next*", new RelationFunctions(
+                nextInterface::getNextAstra,
+                nextInterface::getPreviousAstra,
+                nextInterface::isNextAstra
         ));
         RELATION_FUNCTIONS = Collections.unmodifiableMap(relFuncs);
     }
