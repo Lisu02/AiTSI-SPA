@@ -57,7 +57,7 @@ public class ASTModifies implements IModifies {
             map.get(keyNode).add(valueNode);
         } else if (map.get(keyNode) != null && map.get(keyNode).contains(valueNode)) {
             //ignore a value that's already added | Set in favour of list?
-            System.out.println("jest");
+            //System.out.println("jest");
         } else {
             map.put(keyNode,new ArrayList<>(Collections.singletonList(valueNode)));
         }

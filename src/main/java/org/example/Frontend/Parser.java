@@ -82,6 +82,7 @@ public class Parser {
         TNode root, child;
         root = iast.createTNode(EntityType.PROGRAM);
         iast.setRoot(root);
+        statementNumber++;
         while(nextToken.equals("procedure")){
             child=procedure();
             try{
@@ -94,13 +95,12 @@ public class Parser {
     }
 
     TNode procedure(){
-        statementNumber++;
         TNode stmtLst, procedure;
         checkToken("procedure");
         procedure=iast.createTNode(EntityType.PROCEDURE);
         checkToken("NAME");
         Attr at = new Attr();
-        at.setLine(statementNumber);
+        at.setLine(statementNumber+1);
         at.setProcName(nextToken);
         iast.setAttr(procedure, at);
         nextToken = tokenIterator.next();
