@@ -79,6 +79,7 @@ public class Evaluator {
                         })
                         .forEach(result::add);
             }
+            //System.out.println("cos");
             if(result.isEmpty()) return false;
         }
         else if(isArg1Synonym) {

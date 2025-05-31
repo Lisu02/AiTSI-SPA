@@ -3,10 +3,16 @@
     import org.example.PKB.API.*;
     import org.example.PKB.Source.ASTImplementations.ASTModifies;
     import org.example.PKB.Source.ASTImplementations.ASTUses;
+    import org.example.PKB.Source.ASTNode;
+    import org.example.PKB.Source.NodeImplementations.CallNode;
+    import org.example.PKB.Source.NodeImplementations.ProcedureNode;
     import org.example.PKB.Source.Relations.Calls;
 
     import java.util.ArrayList;
     import java.util.List;
+    import java.util.Optional;
+    import java.util.Set;
+    import java.util.function.Supplier;
     import java.util.logging.Logger;
 
     public class AbstractionExtractor {
@@ -55,10 +61,36 @@
         }
     }
 
+        /*
+        *   Usuwamy sztuczne procedury które powstały na skutek
+        *   polecenia calls ponieważ jeżeli calls ma procedure która jeszcze nie jest w drzewie ast
+        *   to tworzona jest sztuczna procedura wydmuszka ( widać w debugerze )
+        *
+         */
+        public void removeFakeProcedures() throws Exception{
+            Set<TNode> callTNodes =  iast.getNodesOfEntityTypes(EntityType.CALL);
+            Set<TNode> procedureNodes = iast.getNodesOfEntityTypes(EntityType.PROCEDURE);
+
+            for(TNode callTNode: callTNodes){
+                if(callTNode instanceof CallNode){
+                    CallNode callNode = (CallNode) callTNode;
+                    ASTNode procedureNode = callNode.getChild(0);
+                    String fakeProcName = procedureNode.getAttr().getProcName();
+
+                    ProcedureNode realProcedure = (procedureNodes.stream()
+                            .map(procTNode -> (ProcedureNode) procTNode)
+                            .filter(procNode -> procNode.getAttr().getLine() != -1)
+                            .filter(procNode -> procNode.getAttr().getProcName().equals(fakeProcName))
+                            .findFirst()
+                            .orElseThrow(RuntimeException::new));
+
+                    callNode.setNextChild(realProcedure);
+
+                }else {
+                    throw new RuntimeException("W AST-Entities-Call sa TNode'y inne niż typu Call! (instanceof)");
+                }
+            }
+        }
 
 
-
-
-
-
-}
+    }

@@ -25,7 +25,7 @@ public class CallNode extends StmtNode {
 
     @Override
     public int setNextChild(ASTNode child) throws ASTBuildException {
-        if (procedure != null) throw new ASTBuildException("Child already set");
+        //if (procedure != null) throw new ASTBuildException("Child already set");
         if(!(child instanceof ProcedureNode))throw new ASTBuildException("Call child must be a Procedure");
         procedure = (ProcedureNode) child;
         procedure.setId(0);
