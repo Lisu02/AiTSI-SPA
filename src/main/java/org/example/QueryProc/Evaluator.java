@@ -153,7 +153,7 @@ public class Evaluator {
         Set<Argument> commonKeys = new HashSet<>();
         for(Argument key : newKeys) {
             if(resultKeys.contains(key)) {
-                disjointKeys.add(key);
+                commonKeys.add(key);
             }
         }
 //        System.out.println(newKeys);
@@ -179,7 +179,7 @@ public class Evaluator {
                 Set<Map<Argument, TNode>> goodRows = new LinkedHashSet<>();
                 for (Map<Argument, TNode> next : newNodes) {
                     boolean match = true;
-                    for(Argument key : resultKeys) {
+                    for(Argument key : commonKeys) {
 //                        System.out.println(row.get(key) + " = " + next.get(key) + " " + (row.get(key) == next.get(key)));
                         if(row.get(key) != next.get(key)) {
                             match = false;
