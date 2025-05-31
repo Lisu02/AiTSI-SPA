@@ -541,3 +541,51 @@ none
 call c;
 Select c such that Parent*(c,_)
 none
+stmt s; variable v;
+Select s such that Modifies(s,v)
+2, 6, 12, 14, 15, 16, 29, 30, 47, 49, 79, 80, 82, 83, 85, 3, 31, 59, 61, 86, 88, 89, 91, 105, 107, 117, 262, 264, 265, 266, 272, 4, 17, 33, 34, 38, 42, 48, 60, 63, 66, 76, 78, 81, 90, 95, 96, 108, 133, 136, 137, 149, 180, 181, 187, 188, 22, 39, 69, 70, 75, 84, 97, 98, 184, 185, 250, 251, 253, 1, 7, 41, 67, 119, 120, 138, 159, 160, 163, 164, 165, 173, 174, 182, 245, 252, 65, 109, 110, 128, 134, 162, 5, 44, 54, 87, 118, 124, 130, 191, 192, 195, 259, 274, 8, 21, 72, 74, 121, 139, 166, 167, 168, 175, 186, 246, 254, 125, 131, 9, 23, 24, 26, 27, 122, 143, 144, 146, 147, 161, 176, 177, 178, 247, 256, 258, 45, 77, 113, 114, 126, 150, 10, 25, 28, 123, 145, 148, 179, 248, 255, 127, 151, 11, 32, 73, 99, 100, 257, 13, 20, 37, 129, 135, 169, 19, 35, 36, 152, 153, 40, 55, 56, 43, 46, 50, 51, 52, 53, 57, 64, 154, 58, 157, 158, 68, 71, 155, 93, 156, 94, 101, 102, 103, 104, 106, 116, 111, 112, 115, 132, 140, 141, 142, 170, 171, 172, 183, 189, 244, 249, 260, 261, 196, 198, 201, 204, 205, 207, 193, 270, 275, 194, 200, 206, 197, 203, 199, 202, 190, 209, 212, 210, 211, 18, 62, 92, 208, 213, 216, 217, 218, 227, 277, 214, 215, 236, 267, 269, 233, 219, 223, 224, 225, 273, 221, 222, 229, 230, 231, 232, 234, 235, 241, 242, 220, 228, 243, 268, 226, 237, 238, 239, 240, 263, 276, 271, 278, 279, 280, 281, 282, 283, 286, 287, 288, 289, 291, 292, 293, 295, 284, 285, 290, 294, 296, 297, 298, 301, 302, 307, 309, 311, 299, 303, 304, 306, 310, 300, 308, 305
+stmt s; variable v;
+Select v such that Modifies(s,v)
+width, height, tmp, I, x1, incre, left, x2, right, y1, top, y2, bottom, area, j, difference, decrement, radius, x3, x4, volume, distance, length, x5, x8, x9, x6, x7, y7, circumference, x, b, c, weight, factor, pct, dx, dy, marking, asterick, range, peak, trim, s, p1, p2, pink, green, blue, pixel, dot, notmove, line, edge, depth, semi, temporary, total, triangle, base, location, cs1, cs2, cs3, cs5, cs6, cs9, cs8
+stmt s; variable v;
+Select v such that Modifies(8,v)
+x2
+stmt s; variable v;
+Select s such that Modifies(s,"area")
+6, 11, 12, 14, 15, 16, 29, 32
+stmt s; variable v;
+Select s such that Uses(s,v)
+6, 7, 11, 12, 14, 15, 16, 29, 32, 34, 38, 40, 42, 63, 66, 76, 77, 79, 80, 83, 85, 105, 107, 109, 112, 180, 181, 186, 9, 33, 46, 78, 86, 108, 117, 136, 137, 143, 144, 148, 262, 263, 264, 265, 266, 273, 23, 26, 28, 47, 48, 50, 55, 57, 59, 61, 69, 72, 74, 89, 91, 95, 97, 101, 102, 103, 138, 139, 147, 13, 21, 22, 39, 65, 70, 71, 75, 84, 104, 184, 187, 250, 251, 252, 253, 254, 8, 19, 30, 36, 37, 41, 43, 45, 49, 64, 82, 87, 113, 114, 118, 140, 142, 150, 152, 153, 154, 155, 156, 157, 158, 159, 160, 162, 163, 165, 169, 185, 191, 204, 206, 245, 249, 259, 5, 10, 31, 35, 44, 54, 93, 110, 130, 134, 145, 161, 166, 167, 182, 192, 195, 244, 255, 274, 135, 246, 27, 141, 146, 151, 168, 176, 178, 247, 67, 131, 196, 198, 199, 248, 17, 73, 256, 257, 258, 18, 20, 62, 92, 208, 213, 216, 217, 218, 227, 277, 170, 56, 58, 51, 52, 68, 106, 116, 115, 173, 183, 188, 260, 193, 207, 194, 197, 270, 271, 272, 276, 200, 203, 190, 209, 212, 214, 215, 229, 237, 238, 239, 240, 267, 223, 234, 269, 230, 219, 220, 224, 226, 228, 275, 221, 222, 231, 232, 235, 241, 242, 243, 268, 233, 225, 236, 278, 279, 280, 281, 282, 289, 291, 286, 287, 288, 292, 293, 295, 294, 296, 297, 301, 302, 303, 304, 305, 306, 307, 309, 310, 311, 308
+stmt s; variable v;
+Select v such that Uses(s,v)
+width, height, tmp, I, x1, incre, left, x2, right, y1, top, y2, bottom, area, j, difference, k, decrement, radius, x3, x4, volume, length, x5, x8, x9, x6, x, c, weight, factor, pct, mtoggle, dx, lengx, cover, dy, marking, median, asterick, range, mean, s, pink, green, pixel, dot, notmove, line, edge, depth, semi, increase, temporary, decrease, half, notdone, triangle, base, degrees, triange, wrong, wcounter, unknown, correct, cs1, cs2, cs3, cs4, cs5, cs6, cs9
+stmt s; variable v;
+Select v such that Uses(8,v)
+x1, incre, right
+stmt s; variable v;
+Select s such that Uses(s,"area")
+6, 12, 14, 15, 16, 17, 29, 34, 95, 105, 107, 109, 112
+procedure p1,p2;
+Select p1 such that Calls(p1,p2)
+Main, Draw, Rotate, Shrink, Enlarge, Translate, RR, PP, TT, SS, UU
+procedure p1,p2;
+Select p2 such that Calls(p1,p2)
+Init, Random, Transform, Shift, Shear, Move, Draw, Clear, Show, Enlarge, Fill, Shrink, Translate, Rotate, PP, QQ, SS, TT, UU, XX
+procedure p1,p2;
+Select p1 such that Calls*(p1,p2)
+Main, Draw, Shrink, Translate, Rotate, Enlarge, RR, PP, TT, SS, UU
+procedure p1,p2;
+Select p2 such that Calls*(p1,p2)
+Init, Random, Transform, Shift, Shear, Move, Draw, Clear, Show, Enlarge, Fill, Shrink, Translate, Rotate, PP, QQ, SS, TT, UU, XX
+procedure p;
+Select p such that Calls("Main",p)
+Init, Random, Transform, Shift, Shear, Move, Draw, Enlarge, Shrink, Translate
+procedure p;
+Select p such that Calls(p,"Transform")
+Main
+procedure p;
+Select p such that Calls*("Main",p)
+Init, Random, Transform, Shift, Shear, Move, Draw, Clear, Show, Enlarge, Fill, Shrink, Translate, Rotate
+procedure p;
+Select p such that Calls*(p,"Transform")
+Main
