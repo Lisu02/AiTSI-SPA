@@ -3,7 +3,6 @@ package org.example.PKB.Source.Relations;
 import org.example.Exceptions.RelationException;
 import org.example.PKB.API.INext;
 import org.example.PKB.API.TNode;
-import org.example.PKB.Source.NodeImplementations.ProcedureNode;
 import org.example.PKB.Source.NodeImplementations.StmtNode;
 
 import java.util.*;
@@ -30,23 +29,17 @@ public class Next implements INext {
         Set<TNode> nodes;
         if(!this.next.containsKey(node))
         {
-            nodes = this.next.put(node, new HashSet<>());
+            this.next.put(node, new HashSet<>());
         }
-        else
-        {
-            nodes = this.next.get(node);
-        }
+        nodes = this.next.get(node);
         if(nodes.contains(next))return;
         nodes.add(next);
 
         if(!this.prev.containsKey(next))
         {
-            nodes = this.prev.put(next, new HashSet<>());
+            this.prev.put(next, new HashSet<>());
         }
-        else
-        {
-            nodes = this.prev.get(next);
-        }
+        nodes = this.prev.get(next);
         nodes.add(node);
     }
 
@@ -57,23 +50,17 @@ public class Next implements INext {
         Set<TNode> nodes;
         if(!this.nextAstra.containsKey(node))
         {
-            nodes = this.nextAstra.put(node, new HashSet<>());
+            this.nextAstra.put(node, new HashSet<>());
         }
-        else
-        {
-            nodes = this.nextAstra.get(node);
-        }
+        nodes = this.nextAstra.get(node);
         if(nodes.contains(next))return;
         nodes.add(next);
 
         if(!this.prevAstra.containsKey(next))
         {
-            nodes = this.prevAstra.put(next, new HashSet<>());
+            this.prevAstra.put(next, new HashSet<>());
         }
-        else
-        {
-            nodes = this.prevAstra.get(next);
-        }
+        nodes = this.prevAstra.get(next);
         nodes.add(node);
     }
 
