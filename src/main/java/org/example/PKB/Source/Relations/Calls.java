@@ -35,23 +35,17 @@ public class Calls implements ICalls {
         Set<TNode> nodes; //todo: null ptr exception kiedy to jest inicjalizowane? -Adrian 27.05.2025
         if(!this.calls.containsKey(node))
         {
-            nodes = this.calls.put(node, new HashSet<>());
+            this.calls.put(node, new HashSet<>());
         }
-        else
-        {
-            nodes = this.calls.get(node);
-        }
+        nodes = this.calls.get(node);
         if(nodes.contains(calls))return;
         nodes.add(calls);
 
         if(!this.calledBy.containsKey(calls))
         {
-            nodes = this.calledBy.put(calls, new HashSet<>());
+            this.calledBy.put(calls, new HashSet<>());
         }
-        else
-        {
-            nodes = this.calledBy.get(calls);
-        }
+        nodes = this.calledBy.get(calls);
         nodes.add(node);
 
 
@@ -64,23 +58,17 @@ public class Calls implements ICalls {
         Set<TNode> nodes;
         if(!this.callsAstra.containsKey(node))
         {
-            nodes = this.callsAstra.put(node, new HashSet<>());
+            this.callsAstra.put(node, new HashSet<>());
         }
-        else
-        {
-            nodes = this.callsAstra.get(node);
-        }
+        nodes = this.callsAstra.get(node);
         if(nodes.contains(calls))return;
         nodes.add(calls);
 
         if(!this.calledByAstra.containsKey(calls))
         {
-            nodes = this.calledByAstra.put(calls, new HashSet<>());
+            this.calledByAstra.put(calls, new HashSet<>());
         }
-        else
-        {
-            nodes = this.calledByAstra.get(calls);
-        }
+        nodes = this.calledByAstra.get(calls);
         nodes.add(node);
     }
 
