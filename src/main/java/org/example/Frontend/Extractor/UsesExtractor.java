@@ -59,7 +59,7 @@ public class UsesExtractor {
                     tNodeStack.pop();
                     break;
                 case CALL:
-                    log.warning("CALL nie ma implementacji USES");
+                    log.warning("USES nie ma implementacji CALL");
                     break;
             }
 

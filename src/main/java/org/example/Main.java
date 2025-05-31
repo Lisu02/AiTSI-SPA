@@ -18,7 +18,7 @@ import java.util.logging.LogManager;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, InvalidQueryException {
+    public static void main(String[] args) throws Exception {
         //try {
             LogManager.getLogManager().readConfiguration(Main.class.getClassLoader().getResourceAsStream("logging.properties"));
 
@@ -34,6 +34,7 @@ public class Main {
 
             AbstractionExtractor ae = new AbstractionExtractor();
 
+            ae.removeFakeProcedures();
             ae.generateStarterAbstractions();
 
             // Bierzemy instancje tokenizera oraz parsera
@@ -60,11 +61,11 @@ public class Main {
             //queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
             //queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
             //queryTree = preProc.parseQuery("stmt s; Select s such that Follows*(1, s)"); // 2, 3, 4, 5, 6, 119
-//            queryTree = preProc.parseQuery("stmt s; variable v;\n" +
-//                    "Select v such that Modifies(s,v)"); // 121
-//            QueryTree queryTree2 = preProc.parseQuery("stmt s;\n" +
-//                    "Select s such that Modifies(s,\"cs4\")"); // 121
-            queryTree = preProc.parseQuery("stmt s; while w; variable v; Select s such that Parent(w,s) such that Modifies(s,v)");
+
+            //queryTree = preProc.parseQuery("stmt s; Select s such that Follows(120, s)"); // 121
+            //queryTree = preProc.parseQuery("procedure p1,p2; Select p1 such that Calls(p1,p2)"); // WYWALA SIE PKB ICALLS null ptr
+              queryTree = preProc.parseQuery("stmt s; variable v; Select v such that Modifies(s,v)");
+
             //queryTree = preProc.parseQuery("stmt s; Select s such that Uses (s, \"b\")");
 
 //        } catch (InvalidQueryException e) {
