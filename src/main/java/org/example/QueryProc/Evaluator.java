@@ -69,7 +69,7 @@ public class Evaluator {
         if(isArg1Synonym && isArg2Synonym) {
             for(TNode node : findTNode(arg1) ) {
                 functions.getByFunction().apply(node).stream()
-                        .filter(n -> arg2.getType().allows(AST.getType(n)))
+                        .filter(n -> arg2.getType().allows(AST.getAllTypes(n)))
                         .map(n -> {
                             Map<Argument, TNode> map = new LinkedHashMap<>();
                             map.put(arg1, node);
@@ -84,7 +84,7 @@ public class Evaluator {
         else if(isArg1Synonym) {
             for(TNode node : findTNode(arg2)) {
                 functions.getFunction().apply(node).stream() //todo : tutaj -Adrian 26.05.2025 modifies debug
-                        .filter(n->arg1.getType().allows(AST.getType(n)))
+                        .filter(n->arg1.getType().allows(AST.getAllTypes(n)))
                         .map(n -> {
                             Map<Argument, TNode> map = new LinkedHashMap<>();
                             map.put(arg1, n);
@@ -97,7 +97,7 @@ public class Evaluator {
         else if(isArg2Synonym) {
             for(TNode node : findTNode(arg1)) {
                 functions.getByFunction().apply(node).stream()
-                        .filter(n->arg2.getType().allows(AST.getType(n)))
+                        .filter(n->arg2.getType().allows(AST.getAllTypes(n)))
                         .map(n -> {
                             Map<Argument, TNode> map = new LinkedHashMap<>();
                             map.put(arg2, n);

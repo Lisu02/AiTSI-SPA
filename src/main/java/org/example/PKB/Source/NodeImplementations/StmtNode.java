@@ -15,6 +15,7 @@ public abstract class StmtNode extends ASTNode {
     public Set<EntityType> getAllEntityTypes() {
         Set<EntityType> set = super.getAllEntityTypes();
         set.add(EntityType.STMT);
+        set.add(EntityType.PROG_LINE);
         return set;
     }
 }

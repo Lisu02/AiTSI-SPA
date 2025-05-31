@@ -4,6 +4,7 @@ import org.example.Exceptions.ASTBuildException;
 import org.example.PKB.API.*;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +38,11 @@ public class IASTImplementationFrontend implements IAST {
     @Override
     public EntityType getType(TNode node) {
         return null;
+    }
+
+    @Override
+    public Set<EntityType> getAllTypes(TNode node) {
+        return new HashSet<>();
     }
 
     @Override
