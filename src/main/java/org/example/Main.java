@@ -1,6 +1,5 @@
 package org.example;
 
-import org.example.Exceptions.InvalidQueryException;
 import org.example.Frontend.Extractor.AbstractionExtractor;
 import org.example.Frontend.Parser;
 import org.example.Frontend.Tokenizer;
@@ -11,7 +10,6 @@ import org.example.QueryProc.ResultProjector;
 import org.example.QueryProc.model.Argument;
 import org.example.QueryProc.model.QueryTree;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.LogManager;
