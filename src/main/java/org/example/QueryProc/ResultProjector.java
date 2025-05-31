@@ -67,7 +67,6 @@ public class ResultProjector {
                 String attribute = "";
                 TNode tNode = row.get(key);
                 Set<EntityType> stmtTypes = new LinkedHashSet<>(Arrays.asList(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL));
-                System.out.println(tNode);
                 if(stmtTypes.contains(AST.getType(tNode))) {
                     attribute = AST.getAttr(tNode).getLine() + "";
                 }

@@ -29,7 +29,8 @@ public class Main {
 
             //parser.getTokens(tokenizer.getTokensFromFilename("pipe-tester/SimpleCode1PK.txt"));
 
-            parser.getTokens(tokenizer.getTokensFromFilename("jarzabek.txt"));
+//            parser.getTokens(tokenizer.getTokensFromFilename("jarzabek.txt"));
+            parser.getTokens(tokenizer.getTokensFromFilename("SimpleCode1.txt"));
 
             AbstractionExtractor ae = new AbstractionExtractor();
 
@@ -60,6 +61,7 @@ public class Main {
             //queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
             //queryTree = preProc.parseQuery("stmt s; Select s such that Modifies (s, \"k\")");
             //queryTree = preProc.parseQuery("stmt s; Select s such that Follows*(1, s)"); // 2, 3, 4, 5, 6, 119
+
             //queryTree = preProc.parseQuery("stmt s; Select s such that Follows(120, s)"); // 121
             //queryTree = preProc.parseQuery("procedure p1,p2; Select p1 such that Calls(p1,p2)"); // WYWALA SIE PKB ICALLS null ptr
               queryTree = preProc.parseQuery("stmt s; variable v; Select v such that Modifies(s,v)");
@@ -70,7 +72,14 @@ public class Main {
 //            System.out.println(e.getMessage());
 //        }
             Set<Map<Argument, TNode>> result = evaluator.evaluateQuery(queryTree);
-            System.out.println(resultProjector.convertToString(result, queryTree.getReturnValues()));
+//            System.out.println(result.size());
+//            System.out.println(resultProjector.convertToString(result, queryTree.getReturnValues()));
+            System.out.println(resultProjector.toPipeTesterFormat(result, queryTree.getReturnValues()));
+
+//            Set<Map<Argument, TNode>> result2 = evaluator.evaluateQuery(queryTree2);
+////            System.out.println(result.size());
+////            System.out.println(resultProjector.convertToString(result, queryTree.getReturnValues()));
+//            System.out.println(resultProjector.toPipeTesterFormat(result, queryTree2.getReturnValues()));
 //        }catch (Exception e){
 //
 //        }
