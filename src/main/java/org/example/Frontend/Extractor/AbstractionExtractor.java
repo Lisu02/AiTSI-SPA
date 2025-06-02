@@ -8,10 +8,7 @@
     import org.example.PKB.Source.NodeImplementations.ProcedureNode;
     import org.example.PKB.Source.Relations.Calls;
 
-    import java.util.ArrayList;
-    import java.util.List;
-    import java.util.Optional;
-    import java.util.Set;
+    import java.util.*;
     import java.util.function.Supplier;
     import java.util.logging.Logger;
 
@@ -24,6 +21,7 @@
         private ModifiesExtractor modifiesExtractor;
         private UsesExtractor usesExtractor;
         private CallsExtractor callsExtractor;
+        private CallsAstraExtractor callsAstraExtractor;
 
         public AbstractionExtractor(){
             this(PKB.getAST(),ASTModifies.getInstance(),ASTUses.getInstance(), Calls.getInstance()); //temporary null for calls implementation
@@ -36,6 +34,7 @@
             this.modifiesExtractor = new ModifiesExtractor(iast,iModifies);
             this.usesExtractor = new UsesExtractor(iast,iUses);
             this.callsExtractor = new CallsExtractor(iast,iCalls);
+            this.callsAstraExtractor = new CallsAstraExtractor(iast, iCalls);
         }
 
     //Generowanie Modifies oraz Uses do PKB
@@ -53,11 +52,17 @@
         }
         log.info("Amount of detected procedures -> {" + procedureList + "}\n");
         callsExtractor.provide(procedureList);
-        for(TNode procedureNode: procedureList){
-            modifiesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
-            usesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
-            callsExtractor.extract(procedureNode,iast.getFirstChild(procedureNode));
+        try{
+            for(TNode procedureNode: procedureList){
+                modifiesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
+                usesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
+                callsExtractor.extract(procedureNode,iast.getFirstChild(procedureNode));
+                callsAstraExtractor.extract(procedureNode,new LinkedList<>(),iast.getFirstChild(procedureNode));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
         /*
