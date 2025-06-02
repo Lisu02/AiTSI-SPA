@@ -168,8 +168,27 @@ public class Evaluator {
         if(resultKeys.containsAll(newKeys)) {
             finalResult.removeIf(row -> newNodes.stream()
                     .noneMatch(newRow -> newKeys.stream()
-                            .allMatch(key -> newRow.get(key) == row.get(key))
+                            .allMatch(key -> newRow.get(key).equals(row.get(key)))
             ));
+//            Set<Map<Argument, TNode>> toDelete = new LinkedHashSet<>();
+//            for(Map<Argument,TNode> row : finalResult) {
+//                boolean delete = true;
+//                for(Map<Argument,TNode> newRow : newNodes) {
+//                    boolean match = true;
+//                    for(Argument key : resultKeys) {
+//                        if(row.get(key).equals(newRow.get(key))) {
+//                            match = false;
+//                        }
+//                    }
+//                    if(match)  {
+//                        delete = false;
+//                    }
+//                }
+//                if(delete) {
+//                    toDelete.add(row);
+//                }
+//            }
+//            toDelete.forEach(finalResult::remove);
         }
         else if(!disjointKeys.isEmpty()) {
             Set<Map<Argument, TNode>> toDelete = new LinkedHashSet<>();

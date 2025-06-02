@@ -11,8 +11,15 @@ import java.util.*;
 public class ResultProjector {
     private final IAST AST = PKB.getAST();
     public String toPipeTesterFormat(Set<Map<Argument,TNode>> tNodes, List<Argument> returnValues) {
+//        System.out.println(tNodes);
+
         if(tNodes.isEmpty()) {
             return "none";
+        }
+        for(Argument key : returnValues) {
+            if(tNodes.iterator().next().get(key) == null) {
+                return "none";
+            }
         }
         Set<String> resultSet = new HashSet<>();
         String result = "";

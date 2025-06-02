@@ -74,22 +74,22 @@ public class Calls implements ICalls {
 
     @Override
     public List<TNode> getCalls(TNode node) {
-        return new ArrayList<>(calls.get(node));
+        return calls.get(node) == null ? new ArrayList<>() : new ArrayList<>(calls.get(node));
     }
 
     @Override
     public List<TNode> getCalledBy(TNode node) {
-        return new ArrayList<>(calledBy.get(node));
+        return calledBy.get(node) == null ? new ArrayList<>() : new ArrayList<>(calledBy.get(node));
     }
 
     @Override
     public List<TNode> getCallsAstra(TNode node) {
-        return new ArrayList<>(callsAstra.get(node));
+        return callsAstra.get(node) == null ? new ArrayList<>() : new ArrayList<>(callsAstra.get(node));
     }
 
     @Override
     public List<TNode> getCalledByAstra(TNode node) {
-        return new ArrayList<>(calledByAstra.get(node));
+        return calledByAstra.get(node) == null ? new ArrayList<>() : new ArrayList<>(calledByAstra.get(node));
     }
 
     @Override

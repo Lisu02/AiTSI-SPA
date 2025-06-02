@@ -27,8 +27,8 @@ public class Main {
 
             //parser.getTokens(tokenizer.getTokensFromFilename("pipe-tester/SimpleCode1PK.txt"));
 
-//            parser.getTokens(tokenizer.getTokensFromFilename("jarzabek.txt"));
-            parser.getTokens(tokenizer.getTokensFromFilename("SimpleCode1.txt"));
+            parser.getTokens(tokenizer.getTokensFromFilename("jarzabek.txt"));
+//            parser.getTokens(tokenizer.getTokensFromFilename("SimpleCode1.txt"));
 
             AbstractionExtractor ae = new AbstractionExtractor();
 
@@ -62,17 +62,32 @@ public class Main {
 
             //queryTree = preProc.parseQuery("stmt s; Select s such that Follows(120, s)"); // 121
             //queryTree = preProc.parseQuery("procedure p1,p2; Select p1 such that Calls(p1,p2)"); // WYWALA SIE PKB ICALLS null ptr
-              queryTree = preProc.parseQuery("stmt s; variable v; Select v such that Modifies(s,v)");
+              //queryTree = preProc.parseQuery("stmt s; variable v; Select v such that Modifies(s,v)");
+
+//            queryTree = preProc.parseQuery("stmt s; variable v;\n" +
+//                    "Select v such that Modifies(s,v)"); // 121
+//            QueryTree queryTree2 = preProc.parseQuery("stmt s;\n" +
+//                    "Select s such that Modifies(s,\"cs4\")"); // 121
+            //QueryTree queryTree2 = preProc.parseQuery("stmt s; while w; variable v; Select s such that Parent(w,s) such that Modifies(s,v)");
+           // queryTree = preProc.parseQuery("stmt s; variable v; Select s such that Modifies(s,v)");
 
             //queryTree = preProc.parseQuery("stmt s; Select s such that Uses (s, \"b\")");
 
 //        } catch (InvalidQueryException e) {
 //            System.out.println(e.getMessage());
 //        }
-            Set<Map<Argument, TNode>> result = evaluator.evaluateQuery(queryTree);
+            //Set<Map<Argument, TNode>> result = evaluator.evaluateQuery(queryTree);
+ //           Set<Map<Argument, TNode>> result2 = evaluator.evaluateQuery(queryTree2);
 //            System.out.println(result.size());
 //            System.out.println(resultProjector.convertToString(result, queryTree.getReturnValues()));
-            System.out.println(resultProjector.toPipeTesterFormat(result, queryTree.getReturnValues()));
+           // System.out.println(resultProjector.toPipeTesterFormat(result, queryTree.getReturnValues()));
+
+            //QueryTree queryTree2 = preProc.parseQuery("stmt s; variable v; Select s such that Modifies(s,\"area\""); // 6, 11, 12, 14, 15, 16, 29, 32
+            QueryTree queryTree2 = preProc.parseQuery("variable v; Select v such that Modifies (\"Init\", v)"); //x1, x2, y1, y2, left, right, top, bottom, incre, decrement
+            Set<Map<Argument, TNode>> result2 = evaluator.evaluateQuery(queryTree2);
+            System.out.println(resultProjector.toPipeTesterFormat(result2, queryTree2.getReturnValues()));
+            //System.out.println("test");
+ ///           System.out.println(resultProjector.toPipeTesterFormat(result2, queryTree.getReturnValues()));
 
 //            Set<Map<Argument, TNode>> result2 = evaluator.evaluateQuery(queryTree2);
 ////            System.out.println(result.size());

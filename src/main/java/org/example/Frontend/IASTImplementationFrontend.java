@@ -10,6 +10,11 @@ import java.util.Set;
 
 public class IASTImplementationFrontend implements IAST {
     @Override
+    public void removeFakeProcedures() {
+
+    }
+
+    @Override
     public TNode createTNode(EntityType et) {
         System.out.println("Creating node type: " + et.name());
         return new TNodeImpl();
