@@ -62,8 +62,8 @@
                 usesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
                 callsExtractor.extract(procedureNode,iast.getFirstChild(procedureNode));
                 callsAstraExtractor.extract(procedureNode,new LinkedList<>(),iast.getFirstChild(procedureNode));
-                nextExtractor.extract();
             }
+            nextExtractor.extract();
         } catch (Exception e) {
             e.printStackTrace();
         }
