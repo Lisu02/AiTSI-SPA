@@ -19,9 +19,9 @@ public class ModifiesExtractor {
 
     public void extract(TNode tNodeProcedure, TNode stmtListTNode,Stack<TNode> tNodeStack){
         if(tNodeProcedure == null || stmtListTNode == null){
-            System.out.println("nulle!");
-            System.out.println(tNodeStack);
-            System.out.println("isCalls: " + isCalls);
+            //System.out.println("nulle!");
+           // System.out.println(tNodeStack);
+            //System.out.println("isCalls: " + isCalls);
         }
         if(tNodeStack == null){
             tNodeStack = new Stack<>();

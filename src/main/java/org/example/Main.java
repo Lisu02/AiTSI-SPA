@@ -86,7 +86,7 @@ public class Main {
             QueryTree queryTree2 = preProc.parseQuery("variable v; Select v such that Modifies (\"Init\", v)"); //x1, x2, y1, y2, left, right, top, bottom, incre, decrement
             Set<Map<Argument, TNode>> result2 = evaluator.evaluateQuery(queryTree2);
             System.out.println(resultProjector.toPipeTesterFormat(result2, queryTree2.getReturnValues()));
-            System.out.println("test");
+            //System.out.println("test");
  ///           System.out.println(resultProjector.toPipeTesterFormat(result2, queryTree.getReturnValues()));
 
 //            Set<Map<Argument, TNode>> result2 = evaluator.evaluateQuery(queryTree2);
