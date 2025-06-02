@@ -38,31 +38,31 @@ public class NextExtractor {
                 return extractNode(iast.getFirstChild(node));
 
             case ASSIGN:
-                nextNode = iast.getLinkedNode(LinkType.RightSibling, node);
+                nextNode = iast.getLinkedNode(LinkType.Follows, node);
                 if(nextNode == null)return node;
                 safeAddRelation(node, nextNode);
                 return extractNode(nextNode);
 
             case CALL:
-                nextNode = iast.getLinkedNode(LinkType.RightSibling, node);
+                nextNode = iast.getLinkedNode(LinkType.Follows, node);
                 if(nextNode == null)return node;
                 safeAddRelation(node, nextNode);
                 return extractNode(nextNode);
 
             case WHILE:
-                extractIfWhileHandler(node, iast.getLinkedNode(LinkType.RightSibling, iast.getFirstChild(node)));
+                extractIfWhileHandler(node, iast.getLinkedNode(LinkType.Follows, iast.getFirstChild(node)));
 
-                nextNode = iast.getLinkedNode(LinkType.RightSibling, node);
+                nextNode = iast.getLinkedNode(LinkType.Follows, node);
                 if (nextNode == null) return node;
                 safeAddRelation(node, nextNode);
                 return extractNode(nextNode);
 
             case IF:
-                nextNode = iast.getLinkedNode(LinkType.RightSibling, iast.getFirstChild(node));
+                nextNode = iast.getLinkedNode(LinkType.Follows, iast.getFirstChild(node));
                 extractIfWhileHandler(node, nextNode);
-                extractIfWhileHandler(node, iast.getLinkedNode(LinkType.RightSibling, nextNode));
+                extractIfWhileHandler(node, iast.getLinkedNode(LinkType.Follows, nextNode));
 
-                nextNode = iast.getLinkedNode(LinkType.RightSibling, node);
+                nextNode = iast.getLinkedNode(LinkType.Follows, node);
                 if (nextNode == null) return node;
                 safeAddRelation(node, nextNode);
                 return extractNode(nextNode);
