@@ -9,6 +9,10 @@ import java.util.Set;
  * API interface for AST tree
  */
 public interface IAST {
+
+    public void removeFakeProcedures();
+
+
     /**
      * Produces new node of type corresponding to @p et.
      * @param et node type.

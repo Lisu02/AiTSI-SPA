@@ -7,10 +7,26 @@ import org.example.PKB.Source.NodeImplementations.*;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public abstract class ASTFactory extends ASTEssential {
+
+    public void removeFakeProcedures(){
+        ASTNode astNode = new ProcedureNode();
+        Set<EntityType> nodeEntities = astNode.getAllEntityTypes();
+
+        for(EntityType entityType : nodeEntities){
+            Set<TNode> entitiesSet = entities.get(entityType);
+            Set<TNode> toRemove = entitiesSet.stream()
+                    .filter(tNode -> getAttr(tNode).getLine() == -1)
+                    .collect(Collectors.toSet());
+            entitiesSet.removeAll(toRemove);
+        }
+    }
+
     public TNode createTNode(EntityType et)
     {
         ASTNode node;

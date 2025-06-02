@@ -36,6 +36,7 @@ public class MainPipeTester {
 
             parser.getTokens(tokenList);
 
+            ae.removeFakeProcedures();
             ae.generateStarterAbstractions();
 
             System.out.println("READY");
@@ -67,7 +68,7 @@ public class MainPipeTester {
 
             }
         }catch (Exception e){
-
+            //e.printStackTrace();
         }
     }
 }

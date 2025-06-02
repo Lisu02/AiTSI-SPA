@@ -70,7 +70,7 @@
         public void removeFakeProcedures() throws Exception{
             Set<TNode> callTNodes =  iast.getNodesOfEntityTypes(EntityType.CALL);
             Set<TNode> procedureNodes = iast.getNodesOfEntityTypes(EntityType.PROCEDURE);
-
+            //Podmianka fake procedures w TNode call na prawdziwe
             for(TNode callTNode: callTNodes){
                 if(callTNode instanceof CallNode){
                     CallNode callNode = (CallNode) callTNode;
@@ -90,6 +90,8 @@
                     throw new RuntimeException("W AST-Entities-Call sa TNode'y inne niż typu Call! (instanceof)");
                 }
             }
+            //Usuwanie ProcedureNode w entities linkedhashmapi'e w AST
+            iast.removeFakeProcedures();
         }
 
 
