@@ -2,8 +2,7 @@ package org.example.Frontend.Extractor;
 
 import org.example.PKB.API.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class NextExtractor {
@@ -21,9 +20,10 @@ public class NextExtractor {
         extractNode(node);
     }
 
-    private TNode extractNode(TNode node) {
+    private List<TNode> extractNode(TNode node) {
         if(node == null)return null;
         TNode nextNode;
+        List<TNode> nextNodes;
         switch (iast.getType(node)) {
             case PROGRAM:
                 extractNode(iast.getFirstChild(node));
@@ -39,45 +39,57 @@ public class NextExtractor {
 
             case ASSIGN:
                 nextNode = iast.getLinkedNode(LinkType.RightSibling, node);
-                if(nextNode == null)return node;
+                if(nextNode == null)break;
                 safeAddRelation(node, nextNode);
                 return extractNode(nextNode);
 
             case CALL:
                 nextNode = iast.getLinkedNode(LinkType.RightSibling, node);
-                if(nextNode == null)return node;
+                if(nextNode == null)break;
                 safeAddRelation(node, nextNode);
                 return extractNode(nextNode);
 
             case WHILE:
-                nextNode = extractIfWhileHandler(node, iast.getLinkedNode(LinkType.RightSibling, iast.getFirstChild(node)));
-                safeAddRelation(nextNode, node);
+                nextNodes = extractWhileHandler(node, iast.getLinkedNode(LinkType.RightSibling, iast.getFirstChild(node)));
+                for(TNode n : nextNodes) {
+                    safeAddRelation(n, node);
+                }
 
                 nextNode = iast.getLinkedNode(LinkType.RightSibling, node);
-                if (nextNode == null) return node;
+                if (nextNode == null) break;
                 safeAddRelation(node, nextNode);
                 return extractNode(nextNode);
 
             case IF:
                 nextNode = iast.getLinkedNode(LinkType.RightSibling, iast.getFirstChild(node));
-                extractIfWhileHandler(node, nextNode);
-                extractIfWhileHandler(node, iast.getLinkedNode(LinkType.RightSibling, nextNode));
+                nextNodes = new ArrayList<>();
+                nextNodes.addAll(extractIfHandler(node, nextNode));
+                nextNodes.addAll(extractIfHandler(node, iast.getLinkedNode(LinkType.RightSibling, nextNode)));
 
                 nextNode = iast.getLinkedNode(LinkType.RightSibling, node);
-                if (nextNode == null) return node;
-                safeAddRelation(node, nextNode);
+                if (nextNode == null) return nextNodes;
+                for (TNode n : nextNodes) {
+                    safeAddRelation(n, nextNode);
+                }
                 return extractNode(nextNode);
 
         }
-        return node;
+        return new ArrayList<>(Collections.singletonList(node));
     }
-    private TNode extractIfWhileHandler(TNode condNode, TNode listNode)
+    private List<TNode> extractIfHandler(TNode condNode, TNode listNode)
     {
         TNode nextNode = iast.getFirstChild(listNode);
-        if (nextNode == null) return condNode;
+        if (nextNode == null) return new ArrayList<>(Collections.singletonList(condNode));
         safeAddRelation(condNode, nextNode);
-        nextNode = extractNode(listNode);
-        return nextNode;
+        return extractNode(listNode);
+    }
+
+    private List<TNode> extractWhileHandler(TNode condNode, TNode listNode)
+    {
+        TNode nextNode = iast.getFirstChild(listNode);
+        if (nextNode == null) return new ArrayList<>(Collections.singletonList(condNode));
+        safeAddRelation(condNode, nextNode);
+        return extractNode(listNode);
     }
 
     private void safeAddRelation(TNode lNode, TNode rNode) {
