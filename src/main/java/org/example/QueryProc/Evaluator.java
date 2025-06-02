@@ -157,13 +157,6 @@ public class Evaluator {
                 commonKeys.add(key);
             }
         }
-//        System.out.println(newKeys);
-//        disjointKeys.removeAll(resultKeys);
-//        System.out.println(newKeys);
-//        System.out.println(disjointKeys);
-
-//        Set<Argument> variables =
-//        System.out.println(newNodes.size());
 
         if(resultKeys.containsAll(newKeys)) {
             finalResult.removeIf(row -> newNodes.stream()
@@ -191,7 +184,6 @@ public class Evaluator {
 //            toDelete.forEach(finalResult::remove);
         }
         else if(!disjointKeys.isEmpty()) {
-            Set<Map<Argument, TNode>> toDelete = new LinkedHashSet<>();
             Set<Map<Argument, TNode>> result = new LinkedHashSet<>();
             int sum = 0;
 
@@ -200,8 +192,7 @@ public class Evaluator {
                 for (Map<Argument, TNode> next : newNodes) {
                     boolean match = true;
                     for(Argument key : commonKeys) {
-//                        System.out.println(row.get(key) + " = " + next.get(key) + " " + (row.get(key) == next.get(key)));
-                        if(row.get(key) != next.get(key)) {
+                        if(!row.get(key).equals(next.get(key))) {
                             match = false;
                             break;
                         }
@@ -211,7 +202,6 @@ public class Evaluator {
                     }
                 }
                 sum += goodRows.size();
-//                System.out.println(goodRows.size());
                 if(!goodRows.isEmpty()) {
                     for(Map<Argument, TNode> next : goodRows) {
                         Map<Argument, TNode> tmp = new HashMap<>();
@@ -225,31 +215,10 @@ public class Evaluator {
                     }
 
                 }
-//                else {
-//                    toDelete.add(row);
-//                }
             }
-//            toDelete.forEach(finalResult::remove);
-//            System.out.println(sum);
             finalResult.clear();
             finalResult.addAll(result);
         }
-//        else if(!Collections.disjoint(resultKeys, newKeys)) {
-//            Set<Map<Argument, TNode>> toDelete = new LinkedHashSet<>();
-//
-//            for (Map<Argument, TNode> row : finalResult) {
-//                for (Map<Argument, TNode> next : newNodes) {
-//
-//                    if (newKeys.stream().anyMatch(key -> next.get(key) == row.get(key))) {
-//                        row.putAll(next);
-//                    } else {
-//                        toDelete.add(row);
-//                    }
-//                }
-//            }
-//            toDelete.forEach(finalResult::remove);
-//
-//        }
         else {
             Set<Map<Argument, TNode>> newRows = new LinkedHashSet<>();
             for (Map<Argument, TNode> row : finalResult) {
