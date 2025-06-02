@@ -59,7 +59,12 @@ public class UsesExtractor {
                     tNodeStack.pop();
                     break;
                 case CALL:
-                    log.warning("USES nie ma implementacji CALL");
+                    TNode callProcedure = iast.getFirstChild(currentTNode);
+                    TNode callProcedureStmtList = iast.getFirstChild(callProcedure);
+                    tNodeStack.add(currentTNode);
+                    extract(tNodeProcedure,callProcedureStmtList,tNodeStack);
+                    tNodeStack.pop();
+                    //log.warning("USES nie ma implementacji CALL");
                     break;
             }
 
