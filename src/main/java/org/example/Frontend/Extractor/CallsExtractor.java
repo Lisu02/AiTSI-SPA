@@ -1,10 +1,7 @@
 package org.example.Frontend.Extractor;
 
 import org.example.Exceptions.RelationException;
-import org.example.PKB.API.EntityType;
-import org.example.PKB.API.IAST;
-import org.example.PKB.API.ICalls;
-import org.example.PKB.API.TNode;
+import org.example.PKB.API.*;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -27,21 +24,35 @@ public class CallsExtractor {
     }
 
     public void extract(TNode procedureNode, TNode stmtListTNode){
-
         TNode stmtNode = iast.getFirstChild(stmtListTNode);
+
         while(stmtNode != null) {
             switch (iast.getType(stmtNode)){
                 case CALL: {
                     TNode calledProcedure = iast.getFirstChild(stmtNode);
                     try{
                         iCalls.setCalls(procedureNode,calledProcedure);
+                        log.info(iast.getType(stmtNode).name());
+                        EntityType type = iast.getType(stmtNode);
                     } catch (RelationException e) {
                         Logger.getLogger(getClass().getName()).severe(e.getMessage());
                     }
+                    break;
                 }
-                case WHILE:
-
+                case WHILE: {
+                    TNode whileStmtList = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode));
+                    extract(procedureNode,whileStmtList);
+                    break;
+                }
+                case IF: {
+                    TNode thenStmtList = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode));
+                    TNode elseStmtList = iast.getLinkedNode(LinkType.RightSibling,thenStmtList);
+                    extract(procedureNode,thenStmtList );
+                    extract(procedureNode,elseStmtList );
+                    break;
+                }
             }
+            stmtNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);
         }
     }
 }
