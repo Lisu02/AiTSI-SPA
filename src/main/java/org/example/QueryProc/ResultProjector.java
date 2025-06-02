@@ -11,8 +11,6 @@ import java.util.*;
 public class ResultProjector {
     private final IAST AST = PKB.getAST();
     public String toPipeTesterFormat(Set<Map<Argument,TNode>> tNodes, List<Argument> returnValues) {
-//        System.out.println(tNodes);
-
         if(tNodes.isEmpty()) {
             return "none";
         }
@@ -47,7 +45,7 @@ public class ResultProjector {
                     attribute = "";
                 }
 
-                line += line + attribute + " ";
+                line += attribute + " ";
             }
 
             resultSet.add(line);
