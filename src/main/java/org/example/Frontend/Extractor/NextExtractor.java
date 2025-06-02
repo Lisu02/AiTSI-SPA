@@ -31,7 +31,7 @@ public class NextExtractor {
 
             case PROCEDURE:
                 extractNode(iast.getFirstChild(node));
-                extractNode(iast.getFollows(node));
+                extractNode(iast.getLinkedNode(LinkType.RightSibling, node));
                 break;
 
             case STMTLIST:
@@ -50,7 +50,8 @@ public class NextExtractor {
                 return extractNode(nextNode);
 
             case WHILE:
-                extractIfWhileHandler(node, iast.getLinkedNode(LinkType.RightSibling, iast.getFirstChild(node)));
+                nextNode = extractIfWhileHandler(node, iast.getLinkedNode(LinkType.RightSibling, iast.getFirstChild(node)));
+                safeAddRelation(nextNode, node);
 
                 nextNode = iast.getLinkedNode(LinkType.RightSibling, node);
                 if (nextNode == null) return node;
@@ -70,13 +71,13 @@ public class NextExtractor {
         }
         return node;
     }
-    private void extractIfWhileHandler(TNode condNode, TNode listNode)
+    private TNode extractIfWhileHandler(TNode condNode, TNode listNode)
     {
         TNode nextNode = iast.getFirstChild(listNode);
-        if (nextNode == null) return;
+        if (nextNode == null) return condNode;
         safeAddRelation(condNode, nextNode);
         nextNode = extractNode(listNode);
-        if(iast.getType(condNode) == EntityType.WHILE)safeAddRelation(nextNode, condNode);
+        return nextNode;
     }
 
     private void safeAddRelation(TNode lNode, TNode rNode) {
