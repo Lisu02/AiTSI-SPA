@@ -16,9 +16,7 @@ public class Evaluator {
     private final Set<Map<Argument, TNode>> finalResult = new LinkedHashSet<>();
     public Set<Map<Argument,TNode>> evaluateQuery(QueryTree queryTree) {
         finalResult.clear();
-//        System.out.println(AST.getNodesOfEntityTypes(queryTree.getReturnValues().get(0).getType()));
         for(Argument arg : queryTree.getReturnValues()) {
-//            System.out.println(findTNode(arg));
             mergeResults(findTNode(arg).stream()
                     .map(node -> {
                         Map<Argument, TNode> map = new LinkedHashMap<>();
@@ -26,9 +24,9 @@ public class Evaluator {
                         return map;})
                     .collect(Collectors.toSet()));
         }
-        //return finalResult;
+
         for(Relation relation : queryTree.getRelations()) {
-            if(!evaluateRelation(relation,queryTree.getSynonyms(), queryTree.getReturnValues())) {
+            if(!evaluateRelation(relation,queryTree.getSynonyms(), queryTree.getReturnValues()) || finalResult.isEmpty()) {
                 return new LinkedHashSet<>();
             }
         }
@@ -45,7 +43,7 @@ public class Evaluator {
         finalResult.clear();
 
         for(Relation relation : queryTree.getRelations()) {
-            if(!evaluateRelation(relation,queryTree.getSynonyms(),queryTree.getReturnValues())) {
+            if(!evaluateRelation(relation,queryTree.getSynonyms(),queryTree.getReturnValues()) || finalResult.isEmpty()) {
                 return false;
             }
         }
