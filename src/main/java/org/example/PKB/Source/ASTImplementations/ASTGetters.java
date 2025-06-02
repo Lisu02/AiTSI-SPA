@@ -24,6 +24,11 @@ public abstract class ASTGetters extends ASTFactory {
         return astNode.getEntityType();
     }
 
+    public Set<EntityType> getAllTypes(TNode node)
+    {
+        return node != null ? ((ASTNode)node).getAllEntityTypes() : new HashSet<>();
+    }
+
     public Attr getAttr(TNode node)
     {
         ASTNode astNode = (ASTNode) node;

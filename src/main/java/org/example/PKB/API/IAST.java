@@ -55,6 +55,13 @@ public interface IAST {
     public EntityType getType(TNode node);
 
     /**
+     * Evaluate all types of @p node.
+     * @param node Node to be evaluated.
+     * @return Set of Entity types of evaluated @p node.
+     */
+    public Set<EntityType> getAllTypes(TNode node);
+
+    /**
      * Returns stored attribute inside node
      * @param node Node for extraction.
      * @return Extracted attribute from node, or NULL if nothing stored or invalid entity given.
