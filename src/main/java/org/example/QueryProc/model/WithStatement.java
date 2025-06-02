@@ -1,3 +1,13 @@
 package org.example.QueryProc.model;
 
-public record WithStatement (Argument arg1, String attribute, Argument arg2) {}
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class WithStatement {
+    private Argument arg1;
+    private String attribute;
+    private Argument arg2;
+}
+

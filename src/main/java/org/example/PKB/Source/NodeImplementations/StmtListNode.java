@@ -28,7 +28,7 @@ public class StmtListNode extends ASTNode {
             throw new ASTBuildException("Can't add null child node");
         }
         if (!(child instanceof StmtNode))
-            throw new ASTBuildException("Next child of WhileNode must be a StmtNode!");
+            throw new ASTBuildException("Next child of StmtListNode must be a StmtNode!");
         StmtNode stmtChild = (StmtNode)child;
         stmtChildren.add(stmtChild);
         stmtChild.setId(stmtChildren.size() - 1);

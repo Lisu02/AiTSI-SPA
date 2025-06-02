@@ -1,5 +1,7 @@
 package org.example.QueryProc;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.example.Exceptions.InvalidQueryException;
 import org.example.PKB.API.EntityType;
 import org.example.QueryProc.model.*;
@@ -10,7 +12,11 @@ import java.util.stream.Collectors;
 
 public class PreProc {
     public QueryTree parseQuery(String query) throws InvalidQueryException {
-        List<String> elements = List.of(query.split(";"));
+        if(query.contains("pattern") || query.contains("Pattern")) {
+            throw new InvalidQueryException("Pattern not implemented");
+        }
+
+        List<String> elements = new ArrayList<>(Arrays.asList(query.split(";")));
 
         List<String> args = elements.subList(0,elements.size()-1);
         String body = elements.get(elements.size()-1);
@@ -59,11 +65,11 @@ public class PreProc {
         return bodyElements;
     }
     private Map<String,EntityType> separateSynonyms(List<String> queryArguments) throws InvalidQueryException {
-        Map<String,EntityType> synonyms = new HashMap<>();
+        Map<String,EntityType> synonyms = new LinkedHashMap<>();
         for(String element : queryArguments) {
             String[] tmp = Arrays.stream(element
                             .split("[ ,]"))
-                    .filter(s->!s.isBlank())
+                    .filter(s -> !s.trim().isEmpty())
                     .toArray(String[]::new);
 
             EntityType entityType = GrammarRules.ENTITIES
@@ -84,12 +90,23 @@ public class PreProc {
         }
         return synonyms;
     }
-  
-    private record ReturnDesc(boolean isBoolean, List<Argument> returnValues) {}
+    @Getter
+    @AllArgsConstructor
+    public static class ReturnDesc {
+        private final boolean isBoolean;
+        private final List<Argument> returnValues;
+    }
     private ReturnDesc determineReturnValues(String returnBody,  Map<String,EntityType> synonyms) throws InvalidQueryException {
+        returnBody = returnBody.replace("<","");
+        returnBody = returnBody.replace(">","");
+        returnBody = returnBody.replace(".stmt#","");
+        returnBody = returnBody.replace(".procName","");
+        returnBody = returnBody.replace(".varName","");
+        returnBody = returnBody.replace(".value","");
+
         String[] returnElements = Arrays.stream(returnBody
                         .split("[ ,]"))
-                .filter(s->!s.isBlank())
+                .filter(s->!s.trim().isEmpty())
                 .toArray(String[]::new);
 
 //        if(returnElements[0].equals("Boolean")) {
@@ -102,7 +119,7 @@ public class PreProc {
             if(returnElements.length != 2) {
                 throw new InvalidQueryException("BOOLEAN query can't have return values");
             }
-            return new ReturnDesc(true,new ArrayList<>());
+            return new ReturnDesc(true, new ArrayList<>());
         }
         if(returnElements.length == 1) {
             throw new InvalidQueryException("Missing return values");
@@ -119,10 +136,14 @@ public class PreProc {
             }
             returnValues.add(arg);
         }
-        return new ReturnDesc(false,returnValues);
+        return new ReturnDesc(false, returnValues);
     }
-  
-    private record BodyDesc(List<String[]> suchThatStatements, List<String[]> withStatements) {}
+    @Getter
+    @AllArgsConstructor
+    public static class BodyDesc {
+        private final List<String[]> suchThatStatements;
+        private final List<String[]> withStatements;
+    }
     private BodyDesc determineQueryBody(List<String> queryBody) throws InvalidQueryException {
         List<String[]> suchThatStatements = new ArrayList<>();
         List<String[]> withStatements = new ArrayList<>();
@@ -132,7 +153,7 @@ public class PreProc {
                 String[] relation = Arrays.stream(s
                                 .replace("such that", "")
                                 .trim().split("[ ,()]"))
-                        .filter(t -> !t.isBlank())
+                        .filter(t -> !t.trim().isEmpty())
                         .toArray(String[]::new);
 
                 suchThatStatements.add(relation);
@@ -144,7 +165,7 @@ public class PreProc {
                 String[] tmp = Arrays.stream(s
                                 .replace("with", "")
                                 .trim().split("[ .=]"))
-                        .filter(t -> !t.isBlank())
+                        .filter(t -> !t.trim().isEmpty())
                         .toArray(String[]::new);
 
                 withStatements.add(tmp);
@@ -175,7 +196,7 @@ public class PreProc {
                     type[i-1] = EntityType.STRING;
                 }
                 else if(relation[i].equals("_")) {
-                    type[i-1] = signature.defaultType();
+                    type[i-1] = signature.getDefaultType();
                 }
                 else {
                     type[i-1] = synonyms.get(relation[i]);

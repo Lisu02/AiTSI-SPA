@@ -1,9 +1,10 @@
 package org.example.PKB.Source.NodeImplementations;
 
-import org.example.PKB.Source.ASTNode;
 import org.example.Exceptions.ASTBuildException;
 import org.example.PKB.API.EntityType;
-import java.util.ArrayList;
+import org.example.PKB.Source.ASTNode;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public class ProcedureNode extends ASTNode {
 
     @Override
     public List<ASTNode> getChildren() {
-        return List.of(children);  //
+        return Collections.singletonList(children);
     }
 
     @Override

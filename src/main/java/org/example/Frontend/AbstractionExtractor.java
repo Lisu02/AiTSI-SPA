@@ -9,13 +9,10 @@
     import java.util.Stack;
     import java.util.logging.Logger;
 
-    import static org.example.PKB.API.EntityType.ASSIGN;
-
     public class AbstractionExtractor {
 
         private static final Logger log = Logger.getLogger(AbstractionExtractor.class.getName());
 
-        //Na razie testowo imodifies
         private IAST iast;
         private IModifies iModifies;
         private IUses iUses;
@@ -47,12 +44,10 @@
             procedureList.add(currentNode);
         }
 
-        //System.out.println(procedureList);
         log.info(procedureList.toString());
         for(TNode procedureNode: procedureList){
             generateModifies(procedureNode,iast.getFirstChild(procedureNode));
             generateUsesPoprawka(procedureNode,iast.getFirstChild(procedureNode),null);
-            //generateUses(procedureNode);
         }
     }
 
@@ -64,20 +59,23 @@
         while(stmtNode != null){
             EntityType stmtType = iast.getType(stmtNode);
             switch (stmtType){
-                case ASSIGN -> {
+                case ASSIGN : {
                     variableNode = iast.getFirstChild(stmtNode);
                     log.fine("Modifies line "+iast.getAttr(stmtNode).getLine()+" : " + variableNode.toString().substring(43,62) + " and " + stmtNode.toString().substring(43,60));
                     iModifies.addModifies(tNodeProcedure,stmtNode,variableNode);
+                    break;
                 }
-                case WHILE -> {
+                case WHILE : {
                     TNode tmp = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode)); // variable(warunek) -> stmt
                     generateModifies(tNodeProcedure,tmp);// while -> stmtList do metody
+                    break;
                 }
-                case IF -> {
+                case IF: {
                     TNode tmp = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(stmtNode));
                     generateModifies(tNodeProcedure,tmp); // for if stmtList
                     tmp = iast.getLinkedNode(LinkType.RightSibling,tmp);
                     generateModifies(tNodeProcedure,tmp); // for else stmtList
+                    break;
                 }
             }
             stmtNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);
@@ -100,14 +98,15 @@
         while (currentTNode != null){
             EntityType currentType = iast.getType(currentTNode);
             switch (currentType){
-                case ASSIGN -> {
+                case ASSIGN: {
                     tNodeStack.push(currentTNode); //assign node
                     TNode leftVarNode = iast.getFirstChild(currentTNode);
                     leftVarNode = iast.getLinkedNode(LinkType.RightSibling,leftVarNode);
                     traverseAssignForUses(tNodeProcedure,leftVarNode,(Stack<TNode>) tNodeStack.clone());
                     tNodeStack.pop();
+                    break;
                 }
-                case WHILE -> {
+                case WHILE: {
                     tNodeStack.push(currentTNode);
 
                     TNode variableTNode = iast.getFirstChild(currentTNode);
@@ -116,11 +115,15 @@
                     TNode whileStmtList = iast.getLinkedNode(LinkType.RightSibling,iast.getFirstChild(currentTNode));
                     generateUsesPoprawka(tNodeProcedure,whileStmtList,tNodeStack);
                     tNodeStack.pop(); //zdjęcie while ze stosu ponieważ idziemy dalej
+                    break;
                 }
-                case IF -> log.warning("IF nie ma implementacji USES");
-                case CALL -> log.warning("CALL nie ma implementacji USES");
+                case IF:
+                    log.warning("IF nie ma implementacji USES");
+                    break;
+                case CALL:
+                    log.warning("CALL nie ma implementacji USES");
+                    break;
             }
-
             currentTNode = iast.getLinkedNode(LinkType.RightSibling,currentTNode);
         }
     }

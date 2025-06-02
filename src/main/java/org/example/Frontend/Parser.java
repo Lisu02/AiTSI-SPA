@@ -5,6 +5,7 @@ import org.example.PKB.API.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Stack;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,6 +82,7 @@ public class Parser {
         TNode root, child;
         root = iast.createTNode(EntityType.PROGRAM);
         iast.setRoot(root);
+        statementNumber++;
         while(nextToken.equals("procedure")){
             child=procedure();
             try{
@@ -93,13 +95,12 @@ public class Parser {
     }
 
     TNode procedure(){
-        statementNumber++;
         TNode stmtLst, procedure;
         checkToken("procedure");
         procedure=iast.createTNode(EntityType.PROCEDURE);
         checkToken("NAME");
         Attr at = new Attr();
-        at.setLine(statementNumber);
+        at.setLine(statementNumber+1);
         at.setProcName(nextToken);
         iast.setAttr(procedure, at);
         nextToken = tokenIterator.next();
@@ -132,26 +133,42 @@ public class Parser {
 
     TNode stmt(){
         statementNumber++;
-        return switch (nextToken){
-            case "while" -> whileStmt();
-            case "if" -> ifStmt();
-            case "call" -> callStmt();
-            default -> assignStmt();
-        };
+        switch (nextToken){
+            case "while":
+                return whileStmt();
+            case "if":
+                return ifStmt();
+            case "call":
+                return callStmt();
+            default:
+                return assignStmt();
+        }
     }
 
     private TNode callStmt() {
         TNode proc;
+        TNode call;
         checkToken("call");
-        proc= iast.createTNode(EntityType.CALL);
+        call= iast.createTNode(EntityType.CALL);
         checkToken("NAME");
         Attr at=new Attr();
         at.setLine(statementNumber);
         at.setProcName(nextToken);
-        iast.setAttr(proc,at);
+        iast.setAttr(call,at);
+        proc = iast.createTNode(EntityType.PROCEDURE);
+        Attr atProc = new Attr();
+        atProc.setLine(-1); //todo tu nie ma być -1 poźniej -Adrian 27.05.2025
+        atProc.setProcName(nextToken);
+        iast.setAttr(proc,atProc);
+        try{
+            iast.setParentChildLink(call,proc);
+        } catch (ASTBuildException e) {
+            System.out.println("PARSER 166 LINE OF CODE " + e.getMessage());
+        }
+
         nextToken=tokenIterator.next();
         checkToken(";");
-        return proc;
+        return call;
     }
 
     private TNode ifStmt() {
@@ -216,13 +233,8 @@ public class Parser {
         nextToken=tokenIterator.next();
         try {
             iast.setParentChildLink(whil,checkVar);
-        } catch (ASTBuildException e) {
-            log.severe("Setting parent-child link failed: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
-        checkToken("{");
-        stmtList=stmtLst();
-        try {
+            checkToken("{");
+            stmtList=stmtLst();
             iast.setParentChildLink(whil,stmtList);
         } catch (ASTBuildException e) {
             log.severe("Setting parent-child link failed: " + e.getMessage());
@@ -259,13 +271,8 @@ public class Parser {
         nextToken=tokenIterator.next();
         try {
             iast.setParentChildLink(assign,leftVar);
-        } catch (ASTBuildException e) {
-            log.severe("Setting parent-child link failed: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
-        checkToken("="); // zmienna [=] 2 + 5 ;
-        expr=expr();
-        try {
+            checkToken("="); // zmienna [=] 2 + 5 ;
+            expr=expr();
             iast.setParentChildLink(assign,expr);
         } catch (ASTBuildException e) {
             log.severe("Setting parent-child link failed: " + e.getMessage());
@@ -275,72 +282,124 @@ public class Parser {
         return assign;
      }
 
-    TNode expr(){
-        TNode expr,left,right;
-        checkToken("NAME"); //[2] + 5 ;
-        try{
-            int cons=Integer.parseInt(nextToken);
-            expr=iast.createTNode(EntityType.CONSTANT);
-            Attr as = Attr.builder()
-                    .line(statementNumber)
-                    .constantValue(cons)
-                    .build();
-            iast.setAttr(expr,as);
-        }catch(NumberFormatException e){
-            expr=iast.createTNode(EntityType.VARIABLE);
-            Attr as = Attr.builder()
-                    .line(statementNumber)
-                    .varName(nextToken)
-                    .build();
-            iast.setAttr(expr,as);
+    TNode expr() {
+        Stack<String> operator = new Stack<>();
+        Stack<TNode> values = new Stack<>();
+        operator.push("First");
+
+        if (!nextToken.equals("(")) {
+            checkToken("NAME");
+            try {
+                int cons = Integer.parseInt(nextToken);
+                TNode constant = iast.createTNode(EntityType.CONSTANT);
+                Attr as = Attr.builder()
+                        .line(statementNumber)
+                        .constantValue(cons)
+                        .build();
+                iast.setAttr(constant, as);
+                values.push(constant);
+            } catch (NumberFormatException e) {
+                TNode variable = iast.createTNode(EntityType.VARIABLE);
+                Attr as = Attr.builder()
+                        .line(statementNumber)
+                        .varName(nextToken)
+                        .build();
+                iast.setAttr(variable, as);
+                values.push(variable);
+            }
+            nextToken = tokenIterator.next();
         }
-        nextToken=tokenIterator.next(); // + 5;
+
         log.info("next token przed whilem ze znakiem ';' -> " + nextToken);
 
-        while(!Objects.equals(nextToken, ";")){
-            switch(nextToken){ //[+]5
-                case "+":   // zmienna = 2 + 5 ;
-                    nextToken=tokenIterator.next();
-                    log.info("Gorny next token -> " + nextToken);
-                    left=expr;
-                    expr=iast.createTNode(EntityType.PLUS);
+        while (!Objects.equals(nextToken, ";") && !Objects.equals(nextToken, ")")) {
+            switch (nextToken) {
+                case "(":
+                    nextToken = tokenIterator.next();
+                    TNode par = expr();
+                    values.push(par);
+                    checkToken(")");
+                    break;
+                case "-":
+                case "*":
+                case "+":
+                    while (!operator.peek().equals("First") &&
+                            precedence(operator.peek()) >= precedence(nextToken)) {
+                        applyOperator(values, operator.pop());
+                    }
+                    operator.push(nextToken);
+                    nextToken = tokenIterator.next();
+                    break;
+                default:
                     checkToken("NAME");
-                    try{
-                        int cons=Integer.parseInt(nextToken);
-                        right=iast.createTNode(EntityType.CONSTANT);
+                    try {
+                        int cons = Integer.parseInt(nextToken);
+                        TNode constant = iast.createTNode(EntityType.CONSTANT);
                         Attr as = Attr.builder()
                                 .line(statementNumber)
                                 .constantValue(cons)
                                 .build();
-                        iast.setAttr(right,as);
-                    }catch(NumberFormatException e){
-                        right=iast.createTNode(EntityType.VARIABLE);
+                        iast.setAttr(constant, as);
+                        values.push(constant);
+                    } catch (NumberFormatException e) {
+                        TNode variable = iast.createTNode(EntityType.VARIABLE);
                         Attr as = Attr.builder()
                                 .line(statementNumber)
                                 .varName(nextToken)
                                 .build();
-                        iast.setAttr(right,as);
+                        iast.setAttr(variable, as);
+                        values.push(variable);
                     }
-                    try {
-                        iast.setParentChildLink(expr,left);
-                    } catch (ASTBuildException e) {
-                        log.severe("Setting parent-child link failed: " + e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                    try {
-                        iast.setParentChildLink(expr,right);
-                    } catch (ASTBuildException e) {
-                        log.severe("Setting parent-child link failed: " + e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                    nextToken=tokenIterator.next();
-                    log.info("Dolny next token -> " + nextToken);
+                    nextToken = tokenIterator.next();
                     break;
-                default:
-                    log.severe("Symbol w linii " + statementNumber + " nie jest prawidłowy.");
-                    throw new RuntimeException();
             }
         }
-        return expr;
+
+        while (!operator.peek().equals("First")) {
+            applyOperator(values, operator.pop());
+        }
+
+        return values.isEmpty() ? null : values.pop();
     }
+
+    private void applyOperator(Stack<TNode> values, String op) {
+        TNode right = values.pop();
+        TNode left = values.pop();
+        TNode expr = null;
+
+        switch (op) {
+            case "+":
+                expr = iast.createTNode(EntityType.PLUS);
+                break;
+            case "-":
+                expr = iast.createTNode(EntityType.MINUS);
+                break;
+            case "*":
+                expr = iast.createTNode(EntityType.TIMES);
+                break;
+        }
+
+        try {
+            iast.setParentChildLink(expr, left);
+            iast.setParentChildLink(expr, right);
+        } catch (ASTBuildException e) {
+            log.severe("Setting parent-child link failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        values.push(expr);
+    }
+
+    private int precedence(String op) {
+        switch (op) {
+            case "*":
+                return 2;
+            case "+":
+            case "-":
+                return 1;
+            default:
+                return 0;
+        }
+    }
+
 }

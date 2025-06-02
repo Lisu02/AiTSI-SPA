@@ -1,0 +1,18 @@
+procedure Example {
+    a = 1;
+    b = 2;
+
+    while a {
+        c = 3;
+        if b then {
+            d = 4;
+            e = 5;
+        } else {
+            f = 6;
+        }
+        g = 7;
+    }
+
+    h = 8;
+    i = 9;
+}

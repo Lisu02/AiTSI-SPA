@@ -11,8 +11,8 @@ import java.util.logging.Logger;
 public class ASTUses implements IUses {
     private static final Logger log = Logger.getLogger(ASTUses.class.getName());
     private final IAST AST = PKB.getAST();
-    private Map<TNode, List<TNode>> variableMap = new HashMap<>();
-    private Map<TNode, List<TNode>> nodeMap = new HashMap<>();
+    private Map<TNode, List<TNode>> variableMap = new LinkedHashMap<>();
+    private Map<TNode, List<TNode>> nodeMap = new LinkedHashMap<>();
     private static IUses astUses = new ASTUses();
     private ASTUses() {
 
@@ -23,15 +23,26 @@ public class ASTUses implements IUses {
 
     @Override
     public void setUses(TNode procedureTNode, List<TNode> tNodeList, String variableName) {
-        log.info(procedureTNode + ":" + tNodeList + ":" + variableName);
+        log.fine(procedureTNode + ":" + tNodeList + ":" + variableName);
         throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void setUses(TNode procedureTNode, List<TNode> tNodeList, TNode variableTNode) {
-        log.info(procedureTNode + ":" + tNodeList + ":" + variableTNode);
-        //throw new RuntimeException("Not implemented");
+        log.fine(procedureTNode + ":" + tNodeList + ":" + variableTNode);
+
+        add(variableTNode,procedureTNode,variableMap);
+        for(TNode valueTNode: tNodeList){
+            add(variableTNode,valueTNode,variableMap);
+        }
+
+        add(procedureTNode,variableTNode,nodeMap);
+        for(TNode valueTNode: tNodeList){
+            add(valueTNode,variableTNode,nodeMap);
+        }
+
     }
+
 
     @Override
     public void setUses(TNode node, String value) {
@@ -44,9 +55,10 @@ public class ASTUses implements IUses {
                 .findFirst()
                 .orElse(null);
 
-        if(tmp instanceof VariableNode variable) {
-            add(variable,node,variableMap);
-            add(node,variable,nodeMap);
+        if (tmp instanceof VariableNode) {
+            VariableNode variable = (VariableNode) tmp;
+            add(variable, node, variableMap);
+            add(node, variable, nodeMap);
         }
         else {
             //throw new ASTBuildException("Variable doesn't exist");
@@ -55,9 +67,10 @@ public class ASTUses implements IUses {
     private void add(TNode keyNode, TNode valueNode, Map<TNode, List<TNode>> map) {
         if(map.containsKey(keyNode) && !map.get(keyNode).contains(valueNode)) {
             map.get(keyNode).add(valueNode);
-        }
-        else {
-            map.put(keyNode,new ArrayList<>(List.of(valueNode)));
+        } else if (map.get(keyNode) != null && map.get(keyNode).contains(valueNode) ) {
+            // skip nic nie robic
+        } else {
+            map.put(keyNode, new ArrayList<>(Collections.singletonList(valueNode)));
         }
     }
 

@@ -1,7 +1,12 @@
 package org.example.QueryProc.model;
 
-public record Relation(
-        String name,
-        Argument arg1,
-        Argument arg2
-) {}
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class Relation{
+    private String name;
+    private Argument arg1;
+    private Argument arg2;
+}

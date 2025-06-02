@@ -1,12 +1,13 @@
 package QueryProc;
 
 import org.example.Exceptions.InvalidQueryException;
-import org.example.Frontend.AbstractionExtractor;
+import org.example.Frontend.Extractor.AbstractionExtractor;
 import org.example.Frontend.Parser;
 import org.example.Frontend.Tokenizer;
 import org.example.QueryProc.Evaluator;
 import org.example.QueryProc.PreProc;
 import org.example.QueryProc.ResultProjector;
+import org.example.QueryProc.model.QueryTree;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,7 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +42,7 @@ public class EvaluatorTest {
     }
 
     static Stream<Arguments> queryProvider() throws IOException {
-        return Files.lines(Path.of("src/test/resources/queryEvaluator1"))
+        return Files.lines(Paths.get("src/test/resources/queryEvaluator1"))
                 //.filter(line-> !line.isEmpty() && !line.startsWith("//"))
                 .map(line -> line.split("!", 2))
                 .map(parts ->
@@ -54,13 +55,14 @@ public class EvaluatorTest {
     @ParameterizedTest
     @MethodSource("queryProvider")
     void evaluateQuery(String query, List<String> expectedResult) throws InvalidQueryException {
-        List<String> result = resultProjector.convertToString(evaluator.evaluateQuery(preProc.parseQuery(query)));
+        QueryTree queryTree = preProc.parseQuery(query);
+        List<String> result = resultProjector.convertToString(evaluator.evaluateQuery(queryTree), queryTree.getReturnValues());
 
         Collections.sort(expectedResult);
         Collections.sort(result);
 
         System.out.println(query);
-        System.out.println(preProc.parseQuery(query));
+        System.out.println(queryTree);
         System.out.println(result);
 
         assertEquals(expectedResult,result);

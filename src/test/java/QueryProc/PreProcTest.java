@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +31,7 @@ public class PreProcTest {
 //        return synonyms;
 //    }
     static Stream<Arguments> queryProvider() throws IOException {
-        return Files.lines(Path.of("src/test/resources/pql/invalid_query_list"))
+        return Files.lines(Paths.get("src/test/resources/pql/invalid_query_list"))
                 .filter(line-> !line.isEmpty() && !line.startsWith("//"))
                 .map(line -> line.split("!", 2))
                 .map(parts -> Arguments.of(parts[0].trim(), parts[1].trim()));
@@ -46,7 +46,7 @@ public class PreProcTest {
     }
 
     static Stream<Arguments> validQueryProvider() throws IOException {
-        return Files.lines(Path.of("src/test/resources/pql/valid_query_list"))
+        return Files.lines(Paths.get("src/test/resources/pql/valid_query_list"))
                 .map(Arguments::of);
     }
     @ParameterizedTest

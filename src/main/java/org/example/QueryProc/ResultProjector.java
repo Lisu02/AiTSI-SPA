@@ -1,67 +1,77 @@
 package org.example.QueryProc;
 
-import org.example.Exceptions.InvalidQueryException;
-import org.example.Exceptions.SolutionDoesNotExist;
 import org.example.PKB.API.EntityType;
 import org.example.PKB.API.IAST;
 import org.example.PKB.API.PKB;
 import org.example.PKB.API.TNode;
 import org.example.QueryProc.model.Argument;
-import org.example.QueryProc.model.QueryTree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ResultProjector {
     private final IAST AST = PKB.getAST();
-    public void exePqlQueryFromPipeTester(String pqlQuery1, String pqlQuery2) {
-        String pqlQuery = pqlQuery1+pqlQuery2;
-        QueryTree queryTree = null;
-        PreProc preProc = new PreProc();
-        Evaluator evaluator = new Evaluator();
-        try {
-            queryTree = preProc.parseQuery(pqlQuery);
-            evaluator.evaluateQueryPipeTester(queryTree);
-        } catch (InvalidQueryException e) {
-            System.err.println("#" + e.getMessage());
-        }catch (SolutionDoesNotExist ex)
-        {
-            if(queryTree.isBoolean())
-                System.out.println("false");
-            else
-             System.err.println("#" + ex.getMessage());
+    public String toPipeTesterFormat(Set<Map<Argument,TNode>> tNodes, List<Argument> returnValues) {
+        if(tNodes.isEmpty()) {
+            return "none";
         }
-    }
-    public List<String> convertToString(Set<TNode> tNodes) {
-        List<String> result = new ArrayList<>();
-        for(TNode tNode : tNodes) {
-
-            String attribute = "";
-            Set<EntityType> stmtTypes = Set.of(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL);
-            if(stmtTypes.contains(AST.getType(tNode))) {
-                attribute = AST.getAttr(tNode).getLine() + "";
+        for(Argument key : returnValues) {
+            if(tNodes.iterator().next().get(key) == null) {
+                return "none";
             }
-            else if(AST.getType(tNode) == EntityType.PROCEDURE) {
-                attribute = AST.getAttr(tNode).getProcName();
-            }
-            else if(AST.getType(tNode) == EntityType.VARIABLE) {
-                attribute = AST.getAttr(tNode).getVarName();
-            }
-
-           result.add(AST.getType(tNode) + " " + attribute);
         }
+        Set<String> resultSet = new HashSet<>();
+        String result = "";
+
+        Set<EntityType> stmtTypes = EnumSet.of(
+                EntityType.STMT, EntityType.ASSIGN,
+                EntityType.IF, EntityType.WHILE, EntityType.CALL
+        );
+
+        for (Map<Argument, TNode> row : tNodes) {
+            String line = "";
+
+            for (Argument key : returnValues) {
+                TNode tNode = row.get(key);
+                EntityType type = AST.getType(tNode);
+                String attribute;
+
+                if (stmtTypes.contains(type)) {
+                    attribute = String.valueOf(AST.getAttr(tNode).getLine());
+                } else if (type == EntityType.PROCEDURE) {
+                    attribute = AST.getAttr(tNode).getProcName();
+                } else if (type == EntityType.VARIABLE) {
+                    attribute = AST.getAttr(tNode).getVarName();
+                } else {
+                    attribute = "";
+                }
+
+                line += attribute + " ";
+            }
+
+            resultSet.add(line);
+        }
+
+        for (String line : resultSet) {
+            if (line.length() > 0) {
+                line = line.substring(0, line.length() - 1); // usuń ostatni znak
+                result += line + ", ";
+            }
+        }
+
+        if (result.endsWith(", ")) {
+            result = result.substring(0, result.length() - 2);
+        }
+
         return result;
     }
-    public List<String> convertToString2(Set<Map<Argument,TNode>> tNodes) {
+    public List<String> convertToString(Set<Map<Argument,TNode>> tNodes, List<Argument> returnValues) {
         List<String> result = new ArrayList<>();
         for(Map<Argument, TNode> row : tNodes) {
             String line = "";
-            for(Argument key : row.keySet()) {
+            for(Argument key : returnValues) {
                 String attribute = "";
                 TNode tNode = row.get(key);
-                Set<EntityType> stmtTypes = Set.of(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL);
+                Set<EntityType> stmtTypes = new LinkedHashSet<>(Arrays.asList(EntityType.STMT, EntityType.ASSIGN, EntityType.IF, EntityType.WHILE, EntityType.CALL));
                 if(stmtTypes.contains(AST.getType(tNode))) {
                     attribute = AST.getAttr(tNode).getLine() + "";
                 }
@@ -71,10 +81,10 @@ public class ResultProjector {
                 else if(AST.getType(tNode) == EntityType.VARIABLE) {
                     attribute = AST.getAttr(tNode).getVarName();
                 }
-                line += AST.getType(tNode) + " " + attribute;
+                line += AST.getType(tNode) + " " + attribute + " ";
 
             }
-            result.add(line);
+            result.add(line.trim());
         }
         return result;
     }

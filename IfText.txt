@@ -1,0 +1,12 @@
+procedure square {
+    x = 5;
+    a = x + 2;
+    c = a + x;
+    while x {
+        c = a + x;
+    }
+    call kolejny;
+}
+procedure kolejny {
+    aba = 10;
+}

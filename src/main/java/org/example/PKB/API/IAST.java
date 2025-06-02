@@ -9,6 +9,10 @@ import java.util.Set;
  * API interface for AST tree
  */
 public interface IAST {
+
+    public void removeFakeProcedures();
+
+
     /**
      * Produces new node of type corresponding to @p et.
      * @param et node type.
@@ -49,6 +53,13 @@ public interface IAST {
      * @return Entity type of evaluated @p node, or NULL if incorrect entity was given.
      */
     public EntityType getType(TNode node);
+
+    /**
+     * Evaluate all types of @p node.
+     * @param node Node to be evaluated.
+     * @return Set of Entity types of evaluated @p node.
+     */
+    public Set<EntityType> getAllTypes(TNode node);
 
     /**
      * Returns stored attribute inside node
