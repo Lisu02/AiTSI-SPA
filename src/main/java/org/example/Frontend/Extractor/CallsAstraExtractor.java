@@ -14,7 +14,6 @@ public class CallsAstraExtractor {
     private final Logger log = Logger.getLogger(this.getClass().getName());
     private final IAST iast;
     private final ICalls iCalls;
-    private List<TNode> procedureList;
 
     public CallsAstraExtractor(IAST iast, ICalls iCalls){
         this.iast = iast;

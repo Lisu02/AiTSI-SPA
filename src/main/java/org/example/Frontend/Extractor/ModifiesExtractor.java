@@ -2,6 +2,7 @@ package org.example.Frontend.Extractor;
 
 import org.example.PKB.API.*;
 
+import java.util.EmptyStackException;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -58,27 +59,18 @@ public class ModifiesExtractor {
                     break;
                 }
                 case CALL: {
-//                    insideCalls(tNodeProcedure,stmtListTNode,tNodeStack,stmtNode);
-//                    if(true) {
-//                        isCalls = true;
-//                        tNodeStack.push(stmtNode);
-//                        TNode procedureTmp = null;
-//                        TNode stmtListProc = null;
-//                        if(stmtNode != null){
-//                            procedureTmp = iast.getLinkedNode(LinkType.FirstChild,stmtNode);
-//                            //System.out.println("procedureTMP:" + procedureTmp);
-//                        }
-//                        if(procedureTmp != null){
-//                            stmtListProc = iast.getLinkedNode(LinkType.FirstChild,procedureTmp);
-//                            stmtListProc = iast.getFirstChild(procedureTmp);
-//                            //System.out.println("stmtListProc:" + stmtListProc);
-//                        }
-//
-//                        //System.out.println(tNodeProcedure + " | " + stmtListProc + " | " + tNodeStack);
-//                        extract(tNodeProcedure,stmtListProc,tNodeStack);
-//                        //log.warning("Going calls ");
-//                        //log.warning("CALL IN MODIFIES | CALL IN MODIFIES | CALL IN MODIFIES");
-//                    }
+                    TNode procedureNode = iast.getFirstChild(stmtNode);
+                    if(!tNodeStack.contains(procedureNode) || !procedureNode.equals(tNodeProcedure)){
+                        tNodeStack.add(stmtNode);
+//                        Stack<TNode> newStack = new Stack<>();
+//                        try{
+//                            newStack.add(tNodeStack.peek());
+//                        }catch (EmptyStackException e){}
+//                        newStack.add(stmtNode);
+                        extract(tNodeProcedure,iast.getFirstChild(procedureNode),tNodeStack);
+                    }
+                    tNodeStack.pop();
+                    break;
                 }
             }
             stmtNode = iast.getLinkedNode(LinkType.RightSibling,stmtNode);
