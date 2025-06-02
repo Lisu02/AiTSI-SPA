@@ -31,4 +31,8 @@ public enum EntityType {
     public boolean allows(EntityType type) {
         return this == type || (this == EntityType.STMT && STMT_TYPES.contains(type));
     }
+
+    public boolean allows(Set<EntityType> types) {
+        return types.contains(this);
+    }
 }
