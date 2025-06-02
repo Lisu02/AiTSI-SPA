@@ -83,10 +83,12 @@ public class Main {
            // System.out.println(resultProjector.toPipeTesterFormat(result, queryTree.getReturnValues()));
 
             //QueryTree queryTree2 = preProc.parseQuery("stmt s; variable v; Select s such that Modifies(s,\"area\""); // 6, 11, 12, 14, 15, 16, 29, 32
-            QueryTree queryTree2 = preProc.parseQuery("variable v; Select v such that Modifies (\"Init\", v)"); //x1, x2, y1, y2, left, right, top, bottom, incre, decrement
+            //QueryTree queryTree2 = preProc.parseQuery("variable v; Select v such that Modifies (\"Init\", v)"); //x1, x2, y1, y2, left, right, top, bottom, incre, decrement
+            //QueryTree queryTree2 = preProc.parseQuery("while w; Select w such that Uses(w, \"tmp\")"); //6, 12, 16, 26, 29, 47, 59, 69, 79, 89, 95, 101, 103, 105, 136, 143, 180, 181
+            QueryTree queryTree2 = preProc.parseQuery("variable v; Select v such that Uses (5, v)");
             Set<Map<Argument, TNode>> result2 = evaluator.evaluateQuery(queryTree2);
             System.out.println(resultProjector.toPipeTesterFormat(result2, queryTree2.getReturnValues()));
-            //System.out.println("test");
+            System.out.println("incre, top, bottom, decrement");
  ///           System.out.println(resultProjector.toPipeTesterFormat(result2, queryTree.getReturnValues()));
 
 //            Set<Map<Argument, TNode>> result2 = evaluator.evaluateQuery(queryTree2);
