@@ -8,8 +8,10 @@
     import org.example.PKB.Source.NodeImplementations.ProcedureNode;
     import org.example.PKB.Source.Relations.Calls;
 
-    import java.util.*;
-    import java.util.function.Supplier;
+    import java.util.ArrayList;
+    import java.util.LinkedList;
+    import java.util.List;
+    import java.util.Set;
     import java.util.logging.Logger;
 
     public class AbstractionExtractor {
@@ -22,19 +24,21 @@
         private UsesExtractor usesExtractor;
         private CallsExtractor callsExtractor;
         private CallsAstraExtractor callsAstraExtractor;
+        private NextExtractor nextExtractor;
 
         public AbstractionExtractor(){
-            this(PKB.getAST(),ASTModifies.getInstance(),ASTUses.getInstance(), Calls.getInstance()); //temporary null for calls implementation
+            this(PKB.getAST(),ASTModifies.getInstance(),ASTUses.getInstance(), Calls.getInstance(), PKB.getNext()); //temporary null for calls implementation
         }
         public AbstractionExtractor(IAST iast){
-            this(iast,ASTModifies.getInstance(),ASTUses.getInstance(),null);
+            this(iast,ASTModifies.getInstance(),ASTUses.getInstance(),null,null);
         }
-        public AbstractionExtractor(IAST iast, IModifies iModifies,IUses iUses, ICalls iCalls){
+        public AbstractionExtractor(IAST iast, IModifies iModifies,IUses iUses, ICalls iCalls, INext iNext){
             this.iast = iast;
             this.modifiesExtractor = new ModifiesExtractor(iast,iModifies);
             this.usesExtractor = new UsesExtractor(iast,iUses);
             this.callsExtractor = new CallsExtractor(iast,iCalls);
             this.callsAstraExtractor = new CallsAstraExtractor(iast, iCalls);
+            this.nextExtractor = new NextExtractor(iast, iNext);
         }
 
     //Generowanie Modifies oraz Uses do PKB
@@ -58,6 +62,7 @@
                 usesExtractor.extract(procedureNode,iast.getFirstChild(procedureNode),null);
                 callsExtractor.extract(procedureNode,iast.getFirstChild(procedureNode));
                 callsAstraExtractor.extract(procedureNode,new LinkedList<>(),iast.getFirstChild(procedureNode));
+                nextExtractor.extract();
             }
         } catch (Exception e) {
             e.printStackTrace();

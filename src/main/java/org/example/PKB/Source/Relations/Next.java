@@ -66,21 +66,33 @@ public class Next implements INext {
 
     @Override
     public List<TNode> getNext(TNode node) {
+        if (node == null || !next.containsKey(node) || next.get(node) == null) {
+            return new ArrayList<>();
+        }
         return new ArrayList<>(next.get(node));
     }
 
     @Override
     public List<TNode> getPrevious(TNode node) {
+        if (node == null || !prev.containsKey(node) || prev.get(node) == null) {
+            return new ArrayList<>();
+        }
         return new ArrayList<>(prev.get(node));
     }
 
     @Override
     public List<TNode> getNextAstra(TNode node) {
+        if (node == null || !nextAstra.containsKey(node) || nextAstra.get(node) == null) {
+            return new ArrayList<>();
+        }
         return new ArrayList<>(nextAstra.get(node));
     }
 
     @Override
     public List<TNode> getPreviousAstra(TNode node) {
+        if (node == null || !prevAstra.containsKey(node) || prevAstra.get(node) == null) {
+            return new ArrayList<>();
+        }
         return new ArrayList<>(prevAstra.get(node));
     }
 
