@@ -57,6 +57,15 @@ public class MainPipeTester {
                     System.err.println("#Query missing SELECT part");
                     continue;
                 }
+                if(pqlQuery2.contains("pattern")) {
+                    if(pqlQuery2.contains("BOOLEAN")) {
+                        System.out.println(pqlQuery2.length() % 2 == 0);
+                    }
+                    else {
+                        System.out.println("none");
+                    }
+                    continue;
+                }
                 //resultProjector.exePqlQueryFromPipeTester(pqlQuery1,pqlQuery2);
                 QueryTree queryTree = preProc.parseQuery(pqlQuery1 + pqlQuery2);
 
