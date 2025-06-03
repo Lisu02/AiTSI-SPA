@@ -85,13 +85,18 @@
                     CallNode callNode = (CallNode) callTNode;
                     ASTNode procedureNode = callNode.getChild(0);
                     String fakeProcName = procedureNode.getAttr().getProcName();
+                    ProcedureNode realProcedure;
+                    try {
+                        realProcedure = (procedureNodes.stream()
+                                .map(procTNode -> (ProcedureNode) procTNode)
+                                .filter(procNode -> procNode.getAttr().getLine() != -1)
+                                .filter(procNode -> procNode.getAttr().getProcName().equals(fakeProcName))
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new));
+                    }catch (Exception e){
+                        continue;
+                    }
 
-                    ProcedureNode realProcedure = (procedureNodes.stream()
-                            .map(procTNode -> (ProcedureNode) procTNode)
-                            .filter(procNode -> procNode.getAttr().getLine() != -1)
-                            .filter(procNode -> procNode.getAttr().getProcName().equals(fakeProcName))
-                            .findFirst()
-                            .orElseThrow(RuntimeException::new));
 
                     callNode.setNextChild(realProcedure);
 
