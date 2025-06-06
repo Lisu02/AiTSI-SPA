@@ -9,7 +9,7 @@ public class Tokenizer {
 
     private static final Logger log = Logger.getLogger(Tokenizer.class.getName());
     private static Tokenizer tokenizerInstance = null;
-    private static Set<Character> SIGNS = new HashSet<>(Arrays.asList('+', '=', '*', ';', '(',')'));
+    private static Set<Character> SIGNS = new HashSet<>(Arrays.asList('+', '=', '*', ';', '(',')','{','}'));
 
     private Tokenizer() {}
 

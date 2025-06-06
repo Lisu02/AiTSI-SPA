@@ -21,7 +21,7 @@ public class CallsAstraExtractor {
     }
 
     public void extract(TNode primaryProcedureNode,List<TNode> visitedNodesList, TNode stmtListTNode) throws RelationException {
-
+        if(stmtListTNode == null) return;
         TNode stmtNode = iast.getFirstChild(stmtListTNode);
         while (stmtNode != null){
             switch (iast.getType(stmtNode)){

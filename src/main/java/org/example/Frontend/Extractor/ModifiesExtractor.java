@@ -27,6 +27,9 @@ public class ModifiesExtractor {
         if(tNodeStack == null){
             tNodeStack = new Stack<>();
         }
+        if(stmtListTNode == null){
+            System.out.println("null modifiesExtractor linia 31");
+        }
         TNode stmtNode = iast.getFirstChild(stmtListTNode);
         TNode variableNode;
 
@@ -60,6 +63,7 @@ public class ModifiesExtractor {
                 }
                 case CALL: {
                     TNode procedureNode = iast.getFirstChild(stmtNode);
+                    if(iast.getAttr(procedureNode).getLine() == -1) break;
                     if(!tNodeStack.contains(procedureNode) || !procedureNode.equals(tNodeProcedure)){
                         tNodeStack.add(stmtNode);
 //                        Stack<TNode> newStack = new Stack<>();
@@ -67,6 +71,9 @@ public class ModifiesExtractor {
 //                            newStack.add(tNodeStack.peek());
 //                        }catch (EmptyStackException e){}
 //                        newStack.add(stmtNode);
+                        if(iast.getFirstChild(procedureNode) == null){
+                            iast.getFirstChild(procedureNode);
+                        }
                         extract(tNodeProcedure,iast.getFirstChild(procedureNode),tNodeStack);
                     }
                     tNodeStack.pop();
