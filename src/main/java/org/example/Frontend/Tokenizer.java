@@ -9,7 +9,9 @@ public class Tokenizer {
 
     private static final Logger log = Logger.getLogger(Tokenizer.class.getName());
     private static Tokenizer tokenizerInstance = null;
-    private static Set<Character> SIGNS = new HashSet<>(Arrays.asList('+', '=', '*', ';', '(',')','{','}'));
+    private static final Set<Character> SIGNS = new HashSet<>(
+            Arrays.asList('(', ')', '{', '}', '[', ']', ';', ',', '=', '+', '-', '*', '/', '<', '>', '!', '&', '|')
+    );
 
     private Tokenizer() {}
 
@@ -21,72 +23,61 @@ public class Tokenizer {
     }
 
     public List<String> getTokensFromFilename(String filename){
-        Scanner fileScanner;
-        try{
-            fileScanner = getScanner(filename);
+        List<String> tokenArrayList = new ArrayList<>();
+        try (Scanner scanner = getScanner(filename)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                tokenArrayList.addAll(tokenizeLine(line));
+            }
         } catch (FileNotFoundException e) {
             log.throwing(Tokenizer.class.getName(), "getTokensFromFilename", e);
             throw new RuntimeException(e);
         }
 
-        String word;
-        int statmentNumber = 1; //todo: do rozwazenia liczenie statementow
-        ArrayList<String> tokenArrayList = new ArrayList<>();
-        boolean isCalls = false;
-        while(fileScanner.hasNext()){
-            word = fileScanner.next();
-            if(word.length() > 1 && isGluedAssign(word) && !isCalls){  // sprawdzic czy poprzedni token to nie call
-                List<String> slicedWords = sliceWord(word);
-                tokenArrayList.addAll(slicedWords);
-            } else if (isCalls && word.lastIndexOf(';') != -1) {
-                tokenArrayList.add(word.replace(";","")); //calls(triangle);
-                tokenArrayList.add(";");
-            } else {
-                tokenArrayList.add(word);
-            }
-            isCalls = false;
-            if(word.equals("call")){
-                isCalls = true;
-                log.info("CALLS APPEARED \n");
-            }
-
-        }
         log.fine("Tokenizer list:\n");
         for (String token : tokenArrayList) {
             log.info(token + "\n");
         }
+
         return tokenArrayList;
     }
 
-    //Rozciecie slowa x=a+2+b; na x = a + 2 + b ; w ArrayList
-    //Returns sliced word based on apperance of math operators during assignment
-    public List<String> sliceWord(String word){
-        List<String> slicedWord = new ArrayList<>();
+    private List<String> tokenizeLine(String line) {
+        List<String> tokens = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
 
-        StringBuilder wordBuilder = new StringBuilder();
-        for(Character c : word.toCharArray()){
-            if(!isOperator(c)){
-                wordBuilder.append(c);
-            } else if (isOperator(c) && wordBuilder.length() > 0) {
-                slicedWord.add(wordBuilder.toString().trim());
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
 
-                slicedWord.add(Character.toString(c));
-                wordBuilder.delete(0,wordBuilder.length());
+            if (Character.isWhitespace(c)) {
+                if (current.length() > 0) {
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                }
+            } else if (SIGNS.contains(c)) {
+                if (current.length() > 0) {
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                }
+                tokens.add(Character.toString(c));
+            } else if (Character.isLetterOrDigit(c) || c == '_') {
+                current.append(c);
             } else {
-                slicedWord.add(Character.toString(c)); // Adding operator
-                wordBuilder.delete(0, wordBuilder.length()); // Clearing
+                if (current.length() > 0) {
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                }
+                tokens.add(Character.toString(c)); // for any other punctuation
             }
-//            if(!wordBuilder.isEmpty()){
-//                slicedWord.add(wordBuilder.toString());
-//            }
         }
-        if(wordBuilder.length() > 0){
 
-            slicedWord.add(wordBuilder.toString().trim());
-            wordBuilder.delete(0,wordBuilder.length());
+        if (current.length() > 0) {
+            tokens.add(current.toString());
         }
-        return slicedWord;
+
+        return tokens;
     }
+
 
 
     private boolean isOperator(Character sign){
