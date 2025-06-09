@@ -3,6 +3,8 @@ package org.example.PKB.API;
 import org.example.Exceptions.RelationException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public interface INext {
     void setNext(TNode node, TNode next) throws RelationException;
@@ -13,4 +15,6 @@ public interface INext {
     List<TNode> getPreviousAstra(TNode node);
     boolean isNext(TNode node, TNode next);
     boolean isNextAstra(TNode node, TNode next);
+    public void setUnitedNodes(Map<TNode, TNode> unitedNodes);
+    public void setCycles(Map<TNode, Set<TNode>> cycles);
 }

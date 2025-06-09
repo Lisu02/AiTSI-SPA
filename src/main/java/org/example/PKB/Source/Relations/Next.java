@@ -2,6 +2,7 @@ package org.example.PKB.Source.Relations;
 
 import org.example.Exceptions.RelationException;
 import org.example.PKB.API.INext;
+import org.example.PKB.API.PKB;
 import org.example.PKB.API.TNode;
 import org.example.PKB.Source.NodeImplementations.StmtNode;
 
@@ -15,11 +16,24 @@ public class Next implements INext {
     private Map<TNode, Set<TNode>> nextAstra;
     private Map<TNode, Set<TNode>> prevAstra;
 
+    private Map<TNode, TNode> unitedNodes;
+    private Map<TNode, Set<TNode>> cycles;
+
     public Next() {
         next = new HashMap<TNode, Set<TNode>>();
         prev = new HashMap<TNode, Set<TNode>>();
         nextAstra = new HashMap<TNode, Set<TNode>>();
         prevAstra = new HashMap<TNode, Set<TNode>>();
+    }
+
+    @Override
+    public void setUnitedNodes(Map<TNode, TNode> unitedNodes) {
+        this.unitedNodes = unitedNodes;
+    }
+
+    @Override
+    public void setCycles(Map<TNode, Set<TNode>> cycles) {
+        this.cycles = cycles;
     }
 
     @Override
@@ -48,6 +62,7 @@ public class Next implements INext {
         if(!(node instanceof StmtNode) || !(next instanceof StmtNode))
             throw new RelationException("Incorrect nodes for Calls relation");
         Set<TNode> nodes;
+
         if(!this.nextAstra.containsKey(node))
         {
             this.nextAstra.put(node, new HashSet<>());
@@ -82,18 +97,31 @@ public class Next implements INext {
 
     @Override
     public List<TNode> getNextAstra(TNode node) {
-        if (node == null || !nextAstra.containsKey(node) || nextAstra.get(node) == null) {
-            return new ArrayList<>();
+        List<TNode> resuts = new ArrayList<>();
+        if (node == null || !nextAstra.containsKey(unitedNodes.get(node)) || nextAstra.get(unitedNodes.get(node)) == null) {
+            return resuts;
         }
-        return new ArrayList<>(nextAstra.get(node));
+
+        for (TNode n : nextAstra.get(unitedNodes.get(node))) {
+            resuts.addAll(cycles.get(n));
+        }
+        return resuts;
     }
 
     @Override
     public List<TNode> getPreviousAstra(TNode node) {
-        if (node == null || !prevAstra.containsKey(node) || prevAstra.get(node) == null) {
-            return new ArrayList<>();
+        List<TNode> resuts = new ArrayList<>();
+        if (node == null || !prevAstra.containsKey(unitedNodes.get(node)) || prevAstra.get(unitedNodes.get(node)) == null) {
+            return resuts;
         }
-        return new ArrayList<>(prevAstra.get(node));
+        TNode prev = unitedNodes.get(node);
+        for (TNode n : prevAstra.get(unitedNodes.get(node))) {
+            TNode LOW = unitedNodes.get(n);
+            Set<TNode> cy = cycles.get(n);
+            resuts.addAll(cycles.get(n));
+        }
+
+        return resuts;
     }
 
     @Override
@@ -104,7 +132,12 @@ public class Next implements INext {
 
     @Override
     public boolean isNextAstra(TNode node, TNode next) {
-        Set<TNode> nodes = this.nextAstra.get(node);
-        return nodes != null && nodes.contains(next);
+        Set<TNode> nodes = this.nextAstra.get(unitedNodes.get(node));
+//        return nodes != null && nodes.contains(unitedNodes.get(next));
+        if(nodes == null) return false;
+        for (TNode n : nodes) {
+            if(cycles.get(n).contains(next))return true;
+        }
+        return false;
     }
 }
